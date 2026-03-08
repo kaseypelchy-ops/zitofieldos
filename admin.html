@@ -283,7 +283,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="sb-user-name" id="sb-admin-name">Jordan Davis</div>
         <div class="sb-user-role">Workspace Admin</div>
       </div>
-      <button class="sb-signout" title="Sign out">⎋</button>
+      <button class="sb-signout" title="Sign out" onclick="signOut()">⎋</button>
     </div>
   </div>
 </nav>
@@ -540,19 +540,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 </div>
 
 <script>
+// ── AUTH GUARD ────────────────────────────────────────
 (function() {
   var session = localStorage.getItem('fieldos_manager');
   if (!session) { window.location.replace('landing.html'); return; }
   try {
     var s = JSON.parse(session);
     if (!s.loggedIn || !s.name) throw new Error('invalid');
-    // Session expires after 8 hours
     if (Date.now() - s.loginTime > 8 * 60 * 60 * 1000) {
       localStorage.removeItem('fieldos_manager');
       window.location.replace('landing.html');
       return;
     }
-    // Make manager name available globally
     window.MANAGER_NAME  = s.name;
     window.MANAGER_EMAIL = s.email;
   } catch(e) {
@@ -561,11 +560,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   }
 })();
 
-// ── SIGN OUT function — wire to a "Sign Out" button in admin.html ──
 function signOut() {
   localStorage.removeItem('fieldos_manager');
   window.location.replace('landing.html');
 }
+// ── END AUTH GUARD ────────────────────────────────────
+
 // ── CONFIG ───────────────────────────────────────────
 // ▶ zito.gs — your real backend
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
@@ -631,8 +631,10 @@ async function loadDashboardData() {
   } catch(e) { console.warn('Stats load failed:', e); }
 
   // Render everything with real data
-  document.querySelector('#sb-admin-name').textContent   = WORKSPACE.adminName;
-  document.querySelector('#sb-avatar-init').textContent  = initials(WORKSPACE.adminName);
+  // Use the logged-in manager name from session
+  const sessionName = window.MANAGER_NAME || WORKSPACE.adminName;
+  document.querySelector('#sb-admin-name').textContent   = sessionName;
+  document.querySelector('#sb-avatar-init').textContent  = initials(sessionName);
   document.querySelector('#ws-name-display').textContent = WORKSPACE.name;
   document.querySelector('#next-bill-date').textContent  = nextBillDate();
 

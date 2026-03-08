@@ -885,7 +885,7 @@ footer {
     <a href="admin.html">Admin Demo</a>
   </div>
   <div class="nav-cta">
-    <button class="btn-ghost" onclick="window.location='admin.html'">Sign In</button>
+    <button class="btn-ghost" onclick="showSignIn()">Sign In</button>
     <button class="btn-gold" onclick="window.location='onboarding.html'">Start Free Trial</button>
   </div>
   <button class="nav-hamburger" id="hamburger">☰</button>
@@ -1346,7 +1346,7 @@ footer {
     </details>
     <details class="faq-item">
       <summary class="faq-q">Can I white-label this for our company? <div class="faq-icon">+</div></summary>
-      <div class="faq-a">Yes, on the Enterprise plan. We replace the FieldOS logo with yours, customize the color scheme to match your brand, and update the app name. Your reps see your company's branding throughout. <a href="/cdn-cgi/l/email-protection#186b79747d6b587e717d747c776b367177">Contact us</a> to discuss.</div>
+      <div class="faq-a">Yes, on the Enterprise plan. We replace the FieldOS logo with yours, customize the color scheme to match your brand, and update the app name. Your reps see your company's branding throughout. <a href="mailto:sales@zitomedia.com">Contact us</a> to discuss.</div>
     </details>
     <details class="faq-item">
       <summary class="faq-q">Does it integrate with Salesforce or HubSpot? <div class="faq-icon">+</div></summary>
@@ -1393,8 +1393,8 @@ footer {
       <div class="footer-links">
         <a href="#">About</a>
         <a href="#">Blog</a>
-        <a href="/cdn-cgi/l/email-protection#493a28252c3a092f202c252d263a672026">Contact Sales</a>
-        <a href="/cdn-cgi/l/email-protection#374442474758454377515e525b535844195e58">Support</a>
+        <a href="mailto:sales@zitomedia.com">Contact Sales</a>
+        <a href="mailto:support@zitomedia.com">Support</a>
       </div>
     </div>
     <div>
@@ -1402,7 +1402,7 @@ footer {
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms of Service</a>
-        <a href="mailto:security@fieldos.io">Security</a>
+        <a href="mailto:security@zitomedia.com">Security</a>
         <a href="#">GDPR</a>
       </div>
     </div>
@@ -1412,7 +1412,7 @@ footer {
     <div class="footer-legal">
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Terms</a>
-      <a href="mailto:security@fieldos.io">Security</a>
+      <a href="mailto:security@zitomedia.com">Security</a>
     </div>
   </div>
 </footer>
@@ -1421,7 +1421,7 @@ footer {
 <style>
 @keyframes fade-addr { to { opacity: 1; } }
 </style>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── NAV SCROLL ──────────────────────────────────────────
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
@@ -1511,7 +1511,273 @@ function setBilling(mode) {
   billingMode = mode;
   document.getElementById('bill-monthly').classList.toggle('active', mode === 'monthly');
   document.getElementById('bill-annual').classList.toggle('active', mode === 'annual');
-  document.getElementById('annual-save').style.display = mode === 'annual' ? '' : 'none';
-  const idx = mode === 'annual' ? 1 : 0;
-  document.getElementById('p-starter').textContent = prices.starter[idx];
-  document.getElemen
+  document.getElementById('annual-badge').style.display = mode === 'annual' ? 'inline' : 'none';
+  const keys = ['starter','growth'];
+  keys.forEach(k => {
+    const el = document.getElementById('price-' + k);
+    if (el) el.textContent = prices[k][mode === 'annual' ? 1 : 0] === 'Custom' ? 'Custom' : '$' + prices[k][mode === 'annual' ? 1 : 0];
+  });
+}
+</script>
+
+<!-- ══ SIGN-IN MODAL ════════════════════════════════════ -->
+<style>
+/* Modal backdrop */
+#signin-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(7,11,19,.85);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+#signin-overlay.open { opacity: 1; pointer-events: all; }
+
+/* Modal card */
+#signin-card {
+  width: 420px; max-width: calc(100vw - 32px);
+  background: #0c1220;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(212,165,58,.08);
+  transform: translateY(16px) scale(.97);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+}
+#signin-overlay.open #signin-card { transform: translateY(0) scale(1); }
+
+.si-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 28px;
+}
+.si-mark {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #b8891e, #d4a53a);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #07090f;
+}
+.si-brand { font-size: 16px; font-weight: 800; }
+.si-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; color: #e8eeff; }
+.si-sub   { font-size: 13px; color: #8fa5c9; margin-bottom: 28px; }
+
+.si-field { margin-bottom: 16px; }
+.si-field label {
+  display: block; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: #8fa5c9; margin-bottom: 7px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.si-field input {
+  width: 100%; background: #111a2c;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 12px 15px;
+  color: #e8eeff; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; outline: none;
+  transition: border-color .18s, box-shadow .18s;
+}
+.si-field input:focus {
+  border-color: #d4a53a;
+  box-shadow: 0 0 0 3px rgba(212,165,58,.12);
+}
+.si-field input::placeholder { color: #4d6080; }
+
+.si-error {
+  font-size: 12px; color: #f43f5e;
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 14px; min-height: 18px;
+  display: none;
+}
+.si-error.show { display: block; }
+
+.si-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #b8891e, #d4a53a);
+  border: none; border-radius: 10px;
+  color: #07090f; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 0 4px 16px rgba(212,165,58,.25);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.si-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.si-btn:disabled { opacity: .6; cursor: default; transform: none; }
+
+.si-ring {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(7,11,19,.3);
+  border-top-color: #07090f;
+  border-radius: 50%; animation: si-spin .6s linear infinite;
+  display: none;
+}
+.si-btn.loading .si-ring { display: block; }
+.si-btn.loading .si-btn-text { display: none; }
+@keyframes si-spin { to { transform: rotate(360deg); } }
+
+.si-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none;
+  color: #4d6080; font-size: 20px; cursor: pointer;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.si-close:hover { background: rgba(255,255,255,.06); color: #8fa5c9; }
+
+.si-forgot {
+  text-align: center; margin-top: 16px;
+  font-size: 11px; color: #4d6080;
+}
+.si-forgot a { color: #d4a53a; text-decoration: none; cursor: pointer; }
+.si-forgot a:hover { text-decoration: underline; }
+</style>
+
+<div id="signin-overlay" onclick="handleOverlayClick(event)">
+  <div id="signin-card">
+    <button class="si-close" onclick="closeSignIn()">✕</button>
+    <div class="si-logo">
+      <div class="si-mark">F</div>
+      <div class="si-brand">FieldOS</div>
+    </div>
+    <div class="si-title">Manager Sign In</div>
+    <div class="si-sub">Access your territory dashboard and rep analytics.</div>
+
+    <div class="si-field">
+      <label>Work Email</label>
+      <input type="email" id="si-email" placeholder="you@company.com" autocomplete="email">
+    </div>
+    <div class="si-field">
+      <label>Password</label>
+      <input type="password" id="si-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <div class="si-error" id="si-error"></div>
+
+    <button class="si-btn" id="si-submit" onclick="submitSignIn()">
+      <div class="si-ring"></div>
+      <span class="si-btn-text">Sign In to Dashboard</span>
+    </button>
+
+    <div class="si-forgot">
+      Need help? <a onclick="showPasswordHelp()">Reset password</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SIGN-IN MODAL ────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
+
+function showSignIn() {
+  document.getElementById('signin-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('si-email').focus(), 150);
+}
+function closeSignIn() {
+  document.getElementById('signin-overlay').classList.remove('open');
+  document.getElementById('si-error').classList.remove('show');
+  document.getElementById('si-error').textContent = '';
+  document.getElementById('si-password').value = '';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('signin-overlay')) closeSignIn();
+}
+
+// Enter key submits
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSignIn();
+  if (e.key === 'Enter' && document.getElementById('signin-overlay').classList.contains('open')) {
+    submitSignIn();
+  }
+});
+
+// If already logged in, skip straight to admin
+window.addEventListener('load', () => {
+  const session = localStorage.getItem('fieldos_manager');
+  if (session) {
+    try {
+      const s = JSON.parse(session);
+      if (s.name && s.loggedIn) {
+        // Already authenticated — show a brief flash then redirect
+        // (don't auto-redirect on landing, only if they click Sign In)
+      }
+    } catch(e) { localStorage.removeItem('fieldos_manager'); }
+  }
+});
+
+async function submitSignIn() {
+  const email = document.getElementById('si-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('si-password').value;
+  const errEl = document.getElementById('si-error');
+  const btn   = document.getElementById('si-submit');
+
+  // Basic validation
+  if (!email || !email.includes('@')) {
+    showError('Please enter a valid email address.'); return;
+  }
+  if (!pass) {
+    showError('Please enter your password.'); return;
+  }
+
+  // Loading state
+  btn.disabled = true;
+  btn.classList.add('loading');
+  errEl.classList.remove('show');
+
+  try {
+    const res  = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ type: 'manager_login', email, password: pass })
+    });
+    const json = await res.json();
+
+    if (json.status === 'ok') {
+      // Save session to localStorage
+      localStorage.setItem('fieldos_manager', JSON.stringify({
+        name:      json.name,
+        email:     json.email,
+        territory: json.territory,
+        loggedIn:  true,
+        loginTime: Date.now()
+      }));
+      // Redirect to dashboard
+      window.location.href = 'admin.html';
+    } else {
+      showError(json.message || 'Sign in failed. Please try again.');
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  } catch(err) {
+    showError('Connection error — please check your internet and try again.');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('si-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  // Shake animation
+  const card = document.getElementById('signin-card');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'si-shake .4s';
+}
+
+function showPasswordHelp() {
+  closeSignIn();
+  setTimeout(() => alert('To reset your password, contact your FieldOS administrator or run the setManagerPassword() function in your Google Apps Script dashboard.'), 100);
+}
+</script>
+<style>
+@keyframes si-shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+</style>
+</html>
