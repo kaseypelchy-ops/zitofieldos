@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldOS — Route Replay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --bg:#070b13;--surface:#0c1220;--s2:#111a2c;--s3:#162033;
+  --border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);
+  --gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-t:#f0c96a;
+  --gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--warn:#fb923c;
+  --blue:#3b82f6;--indigo:#6366f1;
+  --text:#e8eeff;--t2:#8fa5c9;--muted:#4d6080;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* ── TOP BAR ─────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:1000;
+  display:flex;align-items:center;gap:0;
+  background:rgba(7,11,19,.95);
+  border-bottom:1px solid var(--border-s);
+  backdrop-filter:blur(12px);
+  box-shadow:0 1px 0 rgba(212,165,58,.08);
+}
+.tb-logo{display:flex;align-items:center;gap:9px;padding:0 20px;font-size:14px;font-weight:800;flex-shrink:0;border-right:1px solid var(--border)}
+.tb-mark{width:26px;height:26px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#07090f}
+.tb-title{padding:0 20px;font-size:13px;font-weight:700;color:var(--t2);border-right:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-title span{color:var(--gold-t)}
+
+/* Controls row */
+.tb-controls{display:flex;align-items:center;gap:10px;padding:0 16px;flex:1}
+.ctrl-group{display:flex;align-items:center;gap:6px}
+.ctrl-sep{width:1px;height:24px;background:var(--border-s);margin:0 6px}
+
+/* Date selector */
+.ctrl-date{background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:6px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;cursor:pointer;transition:border-color .18s}
+.ctrl-date:focus{border-color:var(--gold)}
+
+/* Date quick picks */
+.date-list{background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:6px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;cursor:pointer;transition:border-color .18s}
+.date-list:focus{border-color:var(--gold)}
+option{background:var(--s2)}
+
+/* Rep pills */
+.rep-pills{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;max-width:380px}
+.rep-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .18s;white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.rep-pill.active{border-color:currentColor}
+.rep-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* View toggle */
+.view-toggle{display:flex;background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:2px;gap:2px}
+.vt-opt{padding:4px 12px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;transition:all .18s;color:var(--muted);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+.vt-opt.active{background:var(--gold-dim);border:1px solid rgba(212,165,58,.3);color:var(--gold-t)}
+
+/* Action buttons */
+.btn-tb{background:none;border:1px solid var(--border-s);border-radius:7px;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-tb:hover{border-color:var(--gold);color:var(--gold-t)}
+.btn-tb.gold{background:var(--gold-dim);border-color:rgba(212,165,58,.4);color:var(--gold-t)}
+.btn-tb:disabled{opacity:.4;cursor:default}
+.btn-tb:disabled:hover{border-color:var(--border-s);color:var(--t2)}
+
+/* Back link */
+.tb-back{padding:0 16px;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:color .15s;border-left:1px solid var(--border);height:100%;flex-shrink:0;text-decoration:none}
+.tb-back:hover{color:var(--t2)}
+
+/* ── MAP ─────────────────────────────────────────── */
+#map{
+  position:fixed;top:52px;left:0;right:340px;bottom:100px;
+  z-index:1;
+}
+#map .leaflet-tile{filter:brightness(.45) contrast(1.1) hue-rotate(200deg) saturate(.6)}
+#map .leaflet-container{background:#070b13}
+
+/* ── RIGHT PANEL ─────────────────────────────────── */
+#panel{
+  position:fixed;top:52px;right:0;width:340px;bottom:100px;
+  background:var(--surface);border-left:1px solid var(--border-s);
+  display:flex;flex-direction:column;overflow:hidden;z-index:2;
+}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border-s)}
+.ptab{flex:1;padding:10px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;transition:all .18s;border-bottom:2px solid transparent}
+.ptab.active{color:var(--gold-t);border-bottom-color:var(--gold)}
+.panel-body{flex:1;overflow-y:auto;padding:16px}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:2px}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-card{background:var(--s2);border:1px solid var(--border-s);border-radius:10px;padding:12px}
+.stat-val{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
+.stat-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+.stat-card.wide{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+
+/* Mini bars */
+.mini-bars{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.mb-row{display:flex;align-items:center;gap:8px}
+.mb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mb-label{font-size:11px;color:var(--t2);flex:1;font-weight:600}
+.mb-track{flex:2;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.mb-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.mb-val{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+
+/* Timeline events */
+.event-list{display:flex;flex-direction:column;gap:0}
+.ev-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background .1s;border-radius:6px;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ev-row:hover{background:rgba(255,255,255,.025)}
+.ev-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;box-shadow:0 0 6px currentColor}
+.ev-body{flex:1;min-width:0}
+.ev-street{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-meta{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+.ev-tag{font-size:8px;font-weight:700;padding:1px 6px;border-radius:999px;font-family:'IBM Plex Mono',monospace;flex-shrink:0;align-self:center}
+
+/* Rep comparison */
+.rep-stat-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rep-color-bar{width:3px;height:36px;border-radius:2px;flex-shrink:0}
+.rep-stat-name{font-size:12px;font-weight:800;margin-bottom:2px}
+.rep-stat-nums{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+
+/* No data state */
+.no-data{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--muted);text-align:center;padding:24px}
+.no-data-icon{font-size:32px;opacity:.5}
+.no-data h3{font-size:14px;color:var(--t2);font-weight:700}
+.no-data p{font-size:11px;line-height:1.6}
+
+/* ── TIMELINE BAR ────────────────────────────────── */
+#timeline{
+  position:fixed;bottom:0;left:0;right:0;height:100px;
+  background:rgba(7,11,19,.97);border-top:1px solid var(--border-s);
+  backdrop-filter:blur(12px);z-index:1000;
+  display:flex;flex-direction:column;padding:10px 20px 14px;gap:8px;
+}
+.tl-top{display:flex;align-items:center;gap:14px}
+
+/* Playback buttons */
+.play-btn{width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 3px 12px rgba(212,165,58,.3);flex-shrink:0}
+.play-btn:hover{filter:brightness(1.1);transform:scale(1.05)}
+.play-btn:disabled{opacity:.4;cursor:default;transform:none}
+.skip-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-s);background:var(--s2);color:var(--t2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.skip-btn:hover{border-color:var(--gold);color:var(--gold-t)}
+.skip-btn:disabled{opacity:.4;cursor:default}
+
+/* Speed */
+.speed-pills{display:flex;gap:4px}
+.sp-pill{padding:4px 9px;border-radius:999px;font-size:9px;font-weight:700;cursor:pointer;border:1px solid var(--border-s);color:var(--muted);transition:all .15s;font-family:'IBM Plex Mono',monospace}
+.sp-pill.active{background:var(--gold-dim);border-color:rgba(212,165,58,.4);color:var(--gold-t)}
+
+/* Time display */
+.tl-time{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--text);flex:1;letter-spacing:.5px}
+.tl-duration{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+
+/* Progress */
+.tl-progress{display:flex;align-items:center;gap:10px}
+.tl-track{flex:1;height:6px;background:var(--s2);border-radius:3px;cursor:pointer;position:relative;overflow:visible}
+.tl-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-t));border-radius:3px;transition:width .1s linear;pointer-events:none}
+.tl-thumb{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--gold-t);border:2px solid #07090f;transform:translate(-50%,-50%);transition:left .1s linear;box-shadow:0 0 8px rgba(240,201,106,.6);cursor:grab}
+.tl-thumb:active{cursor:grabbing;transform:translate(-50%,-50%) scale(1.2)}
+.tl-markers{position:absolute;top:0;left:0;right:0;height:100%;pointer-events:none}
+.tl-marker{position:absolute;top:-2px;width:3px;height:10px;border-radius:2px;transform:translateX(-50%)}
+
+/* Door count ticker */
+.tl-counts{display:flex;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:10px}
+.tl-count{display:flex;align-items:center;gap:4px;color:var(--muted)}
+.tl-count-dot{width:6px;height:6px;border-radius:50%}
+.tl-count strong{color:var(--text)}
+
+/* ── CUSTOM MAP MARKERS ──────────────────────────── */
+.cmarker{
+  width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.6);
+  cursor:pointer;transition:transform .15s;position:relative;
+}
+.cmarker:hover{transform:scale(1.5)!important}
+.cmarker.sold{background:var(--gig);box-shadow:0 0 8px rgba(45,212,191,.7)}
+.cmarker.mega{background:var(--mega);box-shadow:0 0 8px rgba(167,139,250,.7)}
+.cmarker.nh{background:var(--warn)}
+.cmarker.ni{background:var(--danger)}
+.cmarker.cb{background:var(--gold)}
+.cmarker.ic{background:var(--blue)}
+.cmarker.comp{background:#64748b}
+.cmarker.ac{background:#10b981}
+.cmarker.vac{background:#374151}
+.cmarker.biz{background:#8b5cf6}
+.cmarker.pend{background:var(--muted);box-shadow:none}
+
+/* Leaflet popup override */
+.leaflet-popup-content-wrapper{
+  background:var(--surface)!important;
+  border:1px solid var(--border-s)!important;
+  border-radius:10px!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.6)!important;
+  color:var(--text)!important;
+  font-family:'Plus Jakarta Sans',sans-serif!important;
+}
+.leaflet-popup-tip{background:var(--surface)!important}
+.leaflet-popup-close-button{color:var(--muted)!important}
+.popup-street{font-size:13px;font-weight:800;margin-bottom:4px}
+.popup-meta{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:6px}
+.popup-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;font-family:'IBM Plex Mono',monospace;letter-spacing:.3px}
+
+/* ── LOADING OVERLAY ─────────────────────────────── */
+#loading{
+  position:fixed;inset:0;background:rgba(7,11,19,.95);
+  z-index:2000;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;
+  transition:opacity .4s;
+}
+#loading.hide{opacity:0;pointer-events:none}
+.loading-ring{width:48px;height:48px;border:3px solid rgba(212,165,58,.15);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-label{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+
+/* Fetch spinner (inline, smaller) */
+.fetch-ring{width:14px;height:14px;border:2px solid rgba(212,165,58,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+
+/* ── HEATMAP CANVAS ──────────────────────────────── */
+#heatmap-canvas{position:fixed;top:52px;left:0;right:340px;bottom:100px;z-index:3;pointer-events:none;display:none}
+
+/* ── TOOLTIP ─────────────────────────────────────── */
+#map-tooltip{position:fixed;background:rgba(7,11,19,.95);border:1px solid var(--border-s);border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:500;display:none;backdrop-filter:blur(8px)}
+#map-tooltip strong{display:block;color:var(--text);margin-bottom:2px;font-size:12px}
+#map-tooltip span{color:var(--muted);font-family:'IBM Plex Mono',monospace}
+
+/* Status chip in topbar */
+#data-status{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:4px}
+#data-status.loaded{color:#10b981}
+#data-status.error{color:var(--danger)}
+
+/* Animations */
+@keyframes fade-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.marker-appear{animation:fade-in .3s cubic-bezier(.175,.885,.32,1.275) forwards}
+
+/* ── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:900px){
+  #map{right:0}
+  #panel{display:none}
+  #heatmap-canvas{right:0}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <div style="width:28px;height:28px;background:linear-gradient(135deg,#b8891e,#d4a53a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#07090f">F</div>
+    <div style="font-size:15px;font-weight:800">FieldOS</div>
+  </div>
+  <div class="loading-ring"></div>
+  <div class="loading-label" id="loading-label">Connecting to field data…</div>
+</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-logo">
+    <div class="tb-mark">F</div>
+    <div style="line-height:1"><div>FieldOS</div><div style="font-size:8px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px">ROUTE REPLAY</div></div>
+  </div>
+  <div class="tb-title">
+    <span id="tb-territory">Loading…</span>
+    <span style="color:var(--muted);font-size:10px">·</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)" id="tb-date-label">—</span>
+  </div>
+
+  <div class="tb-controls">
+    <!-- Date quick-pick (populated from available_dates) -->
+    <div class="ctrl-group">
+      <select class="date-list" id="date-list" title="Select date">
+        <option value="">Loading dates…</option>
+      </select>
+      <input type="date" class="ctrl-date" id="date-picker" title="Custom date">
+    </div>
+    <div class="ctrl-sep"></div>
+    <!-- Rep pills (dynamic) -->
+    <div class="ctrl-group">
+      <div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-right:2px">REPS</div>
+      <div class="rep-pills" id="rep-pills">
+        <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">—</div>
+      </div>
+    </div>
+    <div class="ctrl-sep"></div>
+    <div class="view-toggle">
+      <div class="vt-opt active" onclick="setView('replay')" id="vt-replay">⏵ Replay</div>
+      <div class="vt-opt" onclick="setView('heatmap')" id="vt-heat">⬛ Heatmap</div>
+      <div class="vt-opt" onclick="setView('coverage')" id="vt-cov">◉ Coverage</div>
+    </div>
+    <div class="ctrl-sep"></div>
+    <div id="data-status">—</div>
+    <div class="ctrl-sep"></div>
+    <button class="btn-tb gold" id="export-btn" onclick="exportData()" disabled>↓ Export CSV</button>
+  </div>
+
+  <a class="tb-back" href="admin.html">← Dashboard</a>
+</div>
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- HEATMAP CANVAS (overlay) -->
+<canvas id="heatmap-canvas"></canvas>
+
+<!-- RIGHT PANEL -->
+<div id="panel">
+  <div class="panel-tabs">
+    <div class="ptab active" onclick="setTab('stats')" id="tab-stats">Stats</div>
+    <div class="ptab" onclick="setTab('events')" id="tab-events">Timeline</div>
+    <div class="ptab" onclick="setTab('compare')" id="tab-compare">Compare</div>
+  </div>
+  <div class="panel-body" id="panel-body">
+    <div class="no-data">
+      <div class="no-data-icon">📡</div>
+      <h3>Fetching route data…</h3>
+      <p>Loading knocked addresses and GPS coordinates from the field.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline">
+  <div class="tl-top">
+    <button class="skip-btn" id="btn-skipback" onclick="skipBack()" title="Rewind" disabled>⏮</button>
+    <button class="play-btn" id="play-btn" onclick="togglePlay()" disabled>▶</button>
+    <button class="skip-btn" id="btn-skipfwd" onclick="skipFwd()" title="Skip forward" disabled>⏭</button>
+    <div class="speed-pills">
+      <div class="sp-pill active" onclick="setSpeed(1)"   id="sp-1">1×</div>
+      <div class="sp-pill"       onclick="setSpeed(8)"   id="sp-8">8×</div>
+      <div class="sp-pill"       onclick="setSpeed(32)"  id="sp-32">32×</div>
+      <div class="sp-pill"       onclick="setSpeed(128)" id="sp-128">128×</div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="tl-time" id="tl-time">— : —</div>
+    <div class="tl-duration" id="tl-duration">no data</div>
+    <div style="flex:1"></div>
+    <div class="tl-counts" id="tl-counts"></div>
+  </div>
+  <div class="tl-progress">
+    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:40px;flex-shrink:0" id="tl-start-label">—</div>
+    <div class="tl-track" id="tl-track">
+      <div class="tl-fill" id="tl-fill" style="width:0%"></div>
+      <div class="tl-markers" id="tl-markers"></div>
+      <div class="tl-thumb" id="tl-thumb" style="left:0%"></div>
+    </div>
+    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:40px;text-align:right;flex-shrink:0" id="tl-end-label">—</div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="map-tooltip"><strong></strong><span></span></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const RAW_TERRITORY = URL_PARAMS.get('territory') || '';
+// Pretty-print territory for the topbar
+const TERRITORY_DISPLAY = RAW_TERRITORY
+  ? RAW_TERRITORY.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/Tx$/, 'TX').replace(/Nc$/, 'NC')
+  : 'All Territories';
+
+// ═══════════════════════════════════════════════════
+//  COLOUR PALETTE — auto-assigned to reps
+// ═══════════════════════════════════════════════════
+const PALETTE = [
+  { line:'#2dd4bf', dot:'#99f6e4', dim:'rgba(45,212,191,.2)'   },
+  { line:'#a78bfa', dot:'#c4b5fd', dim:'rgba(167,139,250,.2)'  },
+  { line:'#fb923c', dot:'#fed7aa', dim:'rgba(251,146,60,.2)'   },
+  { line:'#38bdf8', dot:'#bae6fd', dim:'rgba(56,189,248,.2)'   },
+  { line:'#f472b6', dot:'#fbcfe8', dim:'rgba(244,114,182,.2)'  },
+  { line:'#a3e635', dot:'#d9f99d', dim:'rgba(163,230,53,.2)'   },
+  { line:'#fbbf24', dot:'#fde68a', dim:'rgba(251,191,36,.2)'   },
+  { line:'#34d399', dot:'#a7f3d0', dim:'rgba(52,211,153,.2)'   },
+];
+
+// Disposition colours & labels
+const DISP_COLOR = {
+  sold:'#2dd4bf', mega:'#a78bfa', nh:'#fb923c',
+  ni:'#f43f5e',   cb:'#d4a53a',   ic:'#3b82f6',
+  comp:'#64748b', ac:'#10b981',   vac:'#374151', biz:'#8b5cf6'
+};
+const DISP_LABEL = {
+  sold:'SOLD', mega:'MEGA', nh:'NOT HOME',
+  ni:'NOT INT.', cb:'GO BACK', ic:'IN CONTRACT',
+  comp:'COMPETITOR', ac:'ACTIVE CUST.', vac:'VACANT', biz:'BUSINESS'
+};
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let map;
+let view = 'replay', playing = false, speed = 1;
+let animFrame = null, lastTick = null;
+let activeTab = 'stats';
+let activeReps = new Set();
+
+// Live data (populated from API)
+let ALL_EVENTS = [];
+let ALL_REPS   = [];
+let REP_COLORS = {};   // repName → {line, dot, dim}
+
+let markers   = {};
+let polylines = {};
+let pathPoints = {};
+let shownUpTo = 0;
+let currentTs = 0;
+let MIN_TS = 0, MAX_TS = 0;
+
+let dataLoaded = false;
+
+// ═══════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', async () => {
+  document.getElementById('tb-territory').textContent = TERRITORY_DISPLAY;
+
+  // Init map first (needs DOM)
+  initMap();
+
+  // Set today's date as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('date-picker').value = today;
+  document.getElementById('date-picker').max   = today;
+
+  setLabel('Fetching available dates…');
+  try {
+    await loadAvailableDates();
+  } catch(e) {
+    console.warn('available_dates failed:', e);
+  }
+
+  setLabel('Loading today\'s route data…');
+  await loadRouteData(today);
+
+  hideLoader();
+});
+
+function setLabel(txt) {
+  document.getElementById('loading-label').textContent = txt;
+}
+
+function hideLoader() {
+  const el = document.getElementById('loading');
+  el.classList.add('hide');
+  setTimeout(() => el.style.display = 'none', 500);
+}
+
+// ═══════════════════════════════════════════════════
+//  MAP INIT
+// ═══════════════════════════════════════════════════
+function initMap() {
+  // Default center — will be recentered once data loads
+  map = L.map('map', {
+    center: [32.0, -95.5],
+    zoom: 13,
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  L.control.zoom({ position:'bottomleft' }).addTo(map);
+
+  // Redraw canvas overlays on map move
+  map.on('moveend zoomend', () => {
+    if (view !== 'replay') redrawCanvas();
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  FETCH: AVAILABLE DATES
+// ═══════════════════════════════════════════════════
+async function loadAvailableDates() {
+  let url = SCRIPT_URL + '?action=available_dates';
+  if (RAW_TERRITORY) url += '&territory=' + encodeURIComponent(RAW_TERRITORY);
+
+  const res  = await fetch(url);
+  const json = await res.json();
+  const dates = json.dates || [];
+
+  const sel = document.getElementById('date-list');
+  if (!dates.length) {
+    sel.innerHTML = '<option value="">No dates with data</option>';
+    return;
+  }
+
+  sel.innerHTML = dates.map(d => {
+    const label = formatDateLabel(d);
+    return `<option value="${d}">${label}</option>`;
+  }).join('');
+
+  // Wire up quick-pick list
+  sel.addEventListener('change', () => {
+    if (sel.value) {
+      document.getElementById('date-picker').value = sel.value;
+      loadRouteData(sel.value);
+    }
+  });
+
+  // Wire up manual date picker
+  document.getElementById('date-picker').addEventListener('change', e => {
+    const v = e.target.value;
+    if (v) loadRouteData(v);
+  });
+}
+
+function formatDateLabel(isoDate) {
+  const d     = new Date(isoDate + 'T12:00:00');
+  const today = new Date(); today.setHours(12,0,0,0);
+  const yest  = new Date(today.getTime() - 86400000);
+  if (d.toDateString() === today.toDateString()) return `Today — ${isoDate}`;
+  if (d.toDateString() === yest.toDateString())  return `Yesterday — ${isoDate}`;
+  return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }) + ' — ' + isoDate;
+}
+
+// ═══════════════════════════════════════════════════
+//  FETCH: ROUTE DATA
+// ═══════════════════════════════════════════════════
+async function loadRouteData(dateStr) {
+  // Reset playback
+  stopPlayback();
+  resetMap();
+  dataLoaded = false;
+  setPlaybackEnabled(false);
+
+  // Show status
+  setDataStatus('loading', 'Fetching…');
+  renderPanel(); // shows loading state
+
+  let url = SCRIPT_URL + '?action=route_data&date=' + encodeURIComponent(dateStr);
+  if (RAW_TERRITORY) url += '&territory=' + encodeURIComponent(RAW_TERRITORY);
+
+  try {
+    const res  = await fetch(url);
+    const json = await res.json();
+
+    if (json.error) throw new Error(json.error);
+
+    const events = json.events || [];
+
+    if (!events.length) {
+      ALL_EVENTS = [];
+      ALL_REPS   = [];
+      REP_COLORS = {};
+      activeReps = new Set();
+      setDataStatus('error', 'No data for this date');
+      document.getElementById('tb-date-label').textContent = dateStr;
+      document.getElementById('tl-duration').textContent = 'no data';
+      document.getElementById('tl-time').textContent = '— : —';
+      document.getElementById('tl-start-label').textContent = '—';
+      document.getElementById('tl-end-label').textContent   = '—';
+      document.getElementById('tl-markers').innerHTML = '';
+      document.getElementById('tl-fill').style.width  = '0%';
+      document.getElementById('tl-thumb').style.left  = '0%';
+      document.getElementById('tl-counts').innerHTML  = '';
+      renderPanel();
+      return;
+    }
+
+    // ── Assign rep colours ──
+    const repSet = [...new Set(events.map(e => e.rep))].sort();
+    REP_COLORS = {};
+    repSet.forEach((rep, i) => {
+      REP_COLORS[rep] = PALETTE[i % PALETTE.length];
+    });
+
+    ALL_REPS   = repSet;
+    ALL_EVENTS = events.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+    activeReps = new Set(ALL_REPS);
+
+    MIN_TS    = new Date(ALL_EVENTS[0].timestamp).getTime();
+    MAX_TS    = new Date(ALL_EVENTS[ALL_EVENTS.length-1].timestamp).getTime();
+    currentTs = MIN_TS;
+    shownUpTo = 0;
+
+    // ── Init polylines and marker arrays per rep ──
+    // Remove old
+    Object.values(polylines).forEach(p => map.removeLayer(p));
+    polylines  = {};
+    pathPoints = {};
+    markers    = {};
+
+    ALL_REPS.forEach(rep => {
+      const c = REP_COLORS[rep];
+      polylines[rep]  = L.polyline([], { color:c.line, weight:2.5, opacity:.8 }).addTo(map);
+      pathPoints[rep] = [];
+      markers[rep]    = [];
+    });
+
+    // ── Build rep pills ──
+    buildRepPills();
+
+    // ── Timeline init ──
+    initTimeline();
+
+    // ── Center map on data ──
+    const lats = ALL_EVENTS.map(e => e.lat);
+    const lngs = ALL_EVENTS.map(e => e.lng);
+    const bounds = L.latLngBounds(
+      [Math.min(...lats), Math.min(...lngs)],
+      [Math.max(...lats), Math.max(...lngs)]
+    );
+    map.fitBounds(bounds, { padding:[40,40] });
+
+    // ── Update UI ──
+    const pretty = formatDateLabel(dateStr).replace(/ — .*/, '');
+    document.getElementById('tb-date-label').textContent = pretty;
+
+    // Sync the list select to this date
+    const sel = document.getElementById('date-list');
+    if ([...sel.options].some(o => o.value === dateStr)) sel.value = dateStr;
+
+    dataLoaded = true;
+    setPlaybackEnabled(true);
+    setDataStatus('loaded', `${events.length} stops · ${ALL_REPS.length} rep${ALL_REPS.length!==1?'s':''}`);
+    document.getElementById('export-btn').disabled = false;
+
+    renderPanel();
+    renderTlCounts();
+
+  } catch(err) {
+    console.error('Route data fetch failed:', err);
+    setDataStatus('error', 'Load failed — check connection');
+    document.getElementById('panel-body').innerHTML = `
+      <div class="no-data">
+        <div class="no-data-icon">⚠️</div>
+        <h3>Could not load route data</h3>
+        <p>${err.message || 'Network error. Check that the Apps Script is deployed and accessible.'}</p>
+      </div>`;
+  }
+}
+
+// ── Status chip ──
+function setDataStatus(state, text) {
+  const el = document.getElementById('data-status');
+  el.className = 'data-status ' + state;
+  el.innerHTML = state === 'loading'
+    ? `<span class="fetch-ring"></span>${text}`
+    : text;
+}
+
+// ── Playback controls enable/disable ──
+function setPlaybackEnabled(on) {
+  ['play-btn','btn-skipback','btn-skipfwd'].forEach(id => {
+    document.getElementById(id).disabled = !on;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  REP PILLS (DYNAMIC)
+// ═══════════════════════════════════════════════════
+function buildRepPills() {
+  const c = document.getElementById('rep-pills');
+  c.innerHTML = '';
+  ALL_REPS.forEach(rep => {
+    const col  = REP_COLORS[rep];
+    const pill = document.createElement('div');
+    pill.className = 'rep-pill active';
+    pill.style.color       = col.dot;
+    pill.style.background  = col.dim;
+    pill.style.borderColor = col.line;
+    pill.dataset.rep = rep;
+
+    // Show first name only for space
+    const firstName = rep.split(' ')[0];
+    pill.innerHTML = `<div class="rep-pill-dot" style="background:${col.line}"></div>${firstName}`;
+    pill.title = rep;
+    pill.addEventListener('click', () => toggleRep(rep, pill));
+    c.appendChild(pill);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  TIMELINE INIT
+// ═══════════════════════════════════════════════════
+function initTimeline() {
+  const start  = new Date(MIN_TS), end = new Date(MAX_TS);
+  document.getElementById('tl-start-label').textContent = fmtTime12(start);
+  document.getElementById('tl-end-label').textContent   = fmtTime12(end);
+
+  const durMs = MAX_TS - MIN_TS;
+  const durH  = Math.floor(durMs / 3600000);
+  const durM  = Math.floor((durMs % 3600000) / 60000);
+  document.getElementById('tl-duration').textContent = durH > 0
+    ? `of ${durH}h ${durM}m`
+    : `of ${durM}m`;
+
+  document.getElementById('tl-time').textContent = fmtTime12(start);
+
+  // Tick markers for sales
+  const mCont = document.getElementById('tl-markers');
+  mCont.innerHTML = '';
+  ALL_EVENTS.forEach(ev => {
+    if (ev.disposition === 'sold' || ev.disposition === 'mega') {
+      const pct = (new Date(ev.timestamp).getTime() - MIN_TS) / (MAX_TS - MIN_TS) * 100;
+      const m   = document.createElement('div');
+      m.className = 'tl-marker';
+      m.style.left       = pct + '%';
+      m.style.background = ev.disposition === 'mega' ? '#a78bfa' : '#2dd4bf';
+      m.title = ev.street;
+      mCont.appendChild(m);
+    }
+  });
+
+  // Reset fill/thumb
+  document.getElementById('tl-fill').style.width = '0%';
+  document.getElementById('tl-thumb').style.left = '0%';
+
+  // Track click / drag
+  const track = document.getElementById('tl-track');
+  track.onclick = null;
+  track.onmousedown = null;
+  track.addEventListener('click', seekTo);
+  track.addEventListener('mousedown', () => {
+    document.addEventListener('mousemove', seekTo);
+    document.addEventListener('mouseup', () => {
+      document.removeEventListener('mousemove', seekTo);
+    }, { once: true });
+  });
+}
+
+function seekTo(e) {
+  if (!dataLoaded) return;
+  const track = document.getElementById('tl-track');
+  const rect  = track.getBoundingClientRect();
+  const pct   = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  currentTs   = MIN_TS + pct * (MAX_TS - MIN_TS);
+  rebuildToTime(currentTs);
+  updateTimeDisplay();
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════════
+//  PLAYBACK ENGINE
+// ═══════════════════════════════════════════════════
+function togglePlay() {
+  if (!dataLoaded) return;
+  playing = !playing;
+  document.getElementById('play-btn').textContent = playing ? '⏸' : '▶';
+  if (playing) {
+    if (currentTs >= MAX_TS) { currentTs = MIN_TS; resetMap(); }
+    lastTick  = performance.now();
+    animFrame = requestAnimationFrame(tick);
+  } else {
+    cancelAnimationFrame(animFrame);
+  }
+}
+
+function stopPlayback() {
+  playing = false;
+  cancelAnimationFrame(animFrame);
+  const btn = document.getElementById('play-btn');
+  if (btn) btn.textContent = '▶';
+}
+
+function tick(now) {
+  if (!playing) return;
+  const dt = now - lastTick;
+  lastTick = now;
+  const msPerRealMs = speed * 60000; // at 1×: 1 real second = 1 field minute
+  currentTs += dt * msPerRealMs / 1000;
+  if (currentTs > MAX_TS) {
+    currentTs = MAX_TS;
+    playing   = false;
+    document.getElementById('play-btn').textContent = '▶';
+  }
+  updateToTime(currentTs);
+  updateTimeDisplay();
+  updateProgress();
+  animFrame = requestAnimationFrame(tick);
+}
+
+function updateToTime(ts) {
+  while (shownUpTo < ALL_EVENTS.length) {
+    const ev = ALL_EVENTS[shownUpTo];
+    if (new Date(ev.timestamp).getTime() > ts) break;
+    if (activeReps.has(ev.rep)) addEventToMap(ev, shownUpTo);
+    shownUpTo++;
+  }
+}
+
+function rebuildToTime(ts) {
+  resetMap();
+  for (let i = 0; i < ALL_EVENTS.length; i++) {
+    const ev = ALL_EVENTS[i];
+    if (new Date(ev.timestamp).getTime() > ts) break;
+    if (activeReps.has(ev.rep)) addEventToMap(ev, i);
+    shownUpTo = i + 1;
+  }
+}
+
+function resetMap() {
+  ALL_REPS.forEach(rep => {
+    if (markers[rep]) markers[rep].forEach(m => map.removeLayer(m));
+    if (markers[rep])   markers[rep]   = [];
+    if (polylines[rep]) polylines[rep].setLatLngs([]);
+    if (pathPoints[rep]) pathPoints[rep] = [];
+  });
+  shownUpTo = 0;
+  renderTlCounts();
+}
+
+function addEventToMap(ev, idx) {
+  const dc = DISP_COLOR[ev.disposition] || '#4d6080';
+
+  // Update polyline
+  pathPoints[ev.rep].push([ev.lat, ev.lng]);
+  polylines[ev.rep].setLatLngs(pathPoints[ev.rep]);
+
+  // Create dot marker
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="cmarker ${ev.disposition}" style="animation:fade-in .3s cubic-bezier(.175,.885,.32,1.275) forwards"></div>`,
+    iconSize: [12,12],
+    iconAnchor: [6,6]
+  });
+
+  const noteHtml = ev.note
+    ? `<div style="font-size:10px;color:var(--t2);margin-top:5px;font-style:italic">"${ev.note}"</div>`
+    : '';
+
+  const marker = L.marker([ev.lat, ev.lng], { icon })
+    .bindPopup(`
+      <div class="popup-street">${ev.street}</div>
+      <div class="popup-meta">${fmtTime12(new Date(ev.timestamp))} · ${ev.rep}</div>
+      <span class="popup-tag" style="background:${dc}22;color:${dc};border:1px solid ${dc}44">${DISP_LABEL[ev.disposition] || ev.disposition.toUpperCase()}</span>
+      ${noteHtml}
+    `, { maxWidth: 220 })
+    .addTo(map);
+
+  markers[ev.rep].push(marker);
+
+  renderTlCounts();
+  if (activeTab === 'events') renderPanel();
+}
+
+function skipBack() { if (!dataLoaded) return; currentTs = MIN_TS; resetMap(); updateTimeDisplay(); updateProgress(); }
+function skipFwd()  { if (!dataLoaded) return; currentTs = MAX_TS; rebuildToTime(MAX_TS); updateTimeDisplay(); updateProgress(); }
+
+function setSpeed(s) {
+  speed = s;
+  [1,8,32,128].forEach(x => document.getElementById('sp-'+x).classList.toggle('active', x===s));
+}
+
+// ═══════════════════════════════════════════════════
+//  TIME DISPLAY
+// ═══════════════════════════════════════════════════
+function updateTimeDisplay() {
+  document.getElementById('tl-time').textContent = fmtTime12(new Date(currentTs));
+}
+function updateProgress() {
+  if (!MIN_TS || MIN_TS === MAX_TS) return;
+  const pct = ((currentTs - MIN_TS) / (MAX_TS - MIN_TS) * 100).toFixed(2);
+  document.getElementById('tl-fill').style.width = pct + '%';
+  document.getElementById('tl-thumb').style.left = pct + '%';
+}
+
+function fmtTime12(d) {
+  let h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ap}`;
+}
+
+// ═══════════════════════════════════════════════════
+//  REP TOGGLE
+// ═══════════════════════════════════════════════════
+function toggleRep(rep, pill) {
+  if (activeReps.has(rep) && activeReps.size === 1) return;
+  if (activeReps.has(rep)) {
+    activeReps.delete(rep);
+    pill.classList.remove('active');
+    pill.style.background  = 'var(--s2)';
+    pill.style.borderColor = 'var(--border-s)';
+    if (markers[rep]) markers[rep].forEach(m => map.removeLayer(m));
+    if (polylines[rep]) polylines[rep].setLatLngs([]);
+  } else {
+    activeReps.add(rep);
+    const col = REP_COLORS[rep];
+    pill.classList.add('active');
+    pill.style.background  = col.dim;
+    pill.style.borderColor = col.line;
+    rebuildToTime(currentTs);
+  }
+  renderPanel();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW SWITCHING
+// ═══════════════════════════════════════════════════
+function setView(v) {
+  view = v;
+  const map_vt = { replay:'replay', heatmap:'heat', coverage:'cov' };
+  ['replay','heat','cov'].forEach(x => document.getElementById('vt-'+x).classList.remove('active'));
+  document.getElementById('vt-' + map_vt[v]).classList.add('active');
+
+  const hc = document.getElementById('heatmap-canvas');
+  if (v === 'replay') {
+    hc.style.display = 'none';
+    ALL_REPS.forEach(r => polylines[r] && polylines[r].setStyle({ opacity:.8 }));
+  } else {
+    hc.style.display = 'block';
+    redrawCanvas();
+    ALL_REPS.forEach(r => polylines[r] && polylines[r].setStyle({ opacity: v==='heatmap' ? .1 : .3 }));
+  }
+}
+
+function redrawCanvas() {
+  if (view === 'heatmap') drawHeatmap();
+  else if (view === 'coverage') drawCoverage();
+}
+
+// ═══════════════════════════════════════════════════
+//  CANVAS OVERLAYS
+// ═══════════════════════════════════════════════════
+function canvasSetup() {
+  const canvas = document.getElementById('heatmap-canvas');
+  const mapEl  = document.getElementById('map');
+  const rect   = mapEl.getBoundingClientRect();
+  canvas.width  = rect.width;
+  canvas.height = rect.height;
+  return canvas.getContext('2d');
+}
+
+function drawHeatmap() {
+  const ctx = canvasSetup();
+  const canvas = document.getElementById('heatmap-canvas');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ALL_EVENTS.forEach(ev => {
+    const px = map.latLngToContainerPoint([ev.lat, ev.lng]);
+    const dc = DISP_COLOR[ev.disposition] || '#4d6080';
+    const isSale = ev.disposition === 'sold' || ev.disposition === 'mega';
+    const r    = isSale ? 30 : 18;
+    const a    = isSale ? .22 : .1;
+    const grad = ctx.createRadialGradient(px.x, px.y, 0, px.x, px.y, r);
+    grad.addColorStop(0, hexToRgba(dc, a));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(px.x, px.y, r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function drawCoverage() {
+  const ctx = canvasSetup();
+  const canvas = document.getElementById('heatmap-canvas');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ALL_REPS.forEach(rep => {
+    if (!activeReps.has(rep)) return;
+    const col = REP_COLORS[rep];
+    ALL_EVENTS.filter(e => e.rep === rep).forEach(ev => {
+      const px   = map.latLngToContainerPoint([ev.lat, ev.lng]);
+      const grad = ctx.createRadialGradient(px.x, px.y, 0, px.x, px.y, 24);
+      grad.addColorStop(0, hexToRgba(col.line, .18));
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(px.x, px.y, 24, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ═══════════════════════════════════════════════════
+//  PANEL TABS & RENDERING
+// ═══════════════════════════════════════════════════
+function setTab(t) {
+  activeTab = t;
+  ['stats','events','compare'].forEach(x =>
+    document.getElementById('tab-'+x).classList.toggle('active', x===t)
+  );
+  renderPanel();
+}
+
+function renderPanel() {
+  const body = document.getElementById('panel-body');
+  if (!dataLoaded && ALL_EVENTS.length === 0) {
+    body.innerHTML = `<div class="no-data">
+      <div class="no-data-icon">📭</div>
+      <h3>No route data</h3>
+      <p>No knocked addresses with GPS coordinates found for this date and territory.</p>
+      <p style="margin-top:8px;font-size:10px;color:var(--muted)">Make sure reps are using the field app and addresses have lat/lng values populated.</p>
+    </div>`;
+    return;
+  }
+  if (activeTab === 'stats')   body.innerHTML = renderStats();
+  if (activeTab === 'events')  body.innerHTML = renderEvents();
+  if (activeTab === 'compare') body.innerHTML = renderCompare();
+}
+
+// ── Stats helpers ──
+function calcRepStats(rep) {
+  const evs   = ALL_EVENTS.filter(e => e.rep === rep && new Date(e.timestamp).getTime() <= currentTs);
+  const sold  = evs.filter(e => e.disposition==='sold'||e.disposition==='mega').length;
+  const doors = evs.length;
+  const rate  = doors ? ((sold/doors)*100).toFixed(1) : '0.0';
+
+  let miles = 0;
+  for (let i = 1; i < evs.length; i++) {
+    miles += haversine(evs[i-1].lat, evs[i-1].lng, evs[i].lat, evs[i].lng);
+  }
+  const first  = evs.length ? new Date(evs[0].timestamp) : null;
+  const last   = evs.length ? new Date(evs[evs.length-1].timestamp) : null;
+  const diffH  = first && last ? ((last-first)/3600000).toFixed(1) : 0;
+
+  return { rep, sold, doors, rate, miles:miles.toFixed(1), hours:diffH, evs };
+}
+
+function haversine(lat1,lng1,lat2,lng2) {
+  const R=3958.8, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function renderStats() {
+  const active   = ALL_REPS.filter(r => activeReps.has(r));
+  const combined = active.map(calcRepStats);
+  const totDoors = combined.reduce((s,x) => s+x.doors, 0);
+  const totSold  = combined.reduce((s,x) => s+x.sold,  0);
+  const totRate  = totDoors ? ((totSold/totDoors)*100).toFixed(1) : '0.0';
+  const totMiles = combined.reduce((s,x) => s+parseFloat(x.miles), 0).toFixed(1);
+
+  const dispCounts = {};
+  ALL_EVENTS
+    .filter(e => activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs)
+    .forEach(e => { dispCounts[e.disposition] = (dispCounts[e.disposition]||0)+1; });
+
+  return `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" style="color:var(--gold-t)">${totDoors}</div><div class="stat-label">Doors Knocked</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--gig)">${totSold}</div><div class="stat-label">Sales</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--mega)">${totRate}%</div><div class="stat-label">Close Rate</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--warn)">${totMiles}</div><div class="stat-label">Miles Walked</div></div>
+    </div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:8px">Disposition Breakdown</div>
+    <div class="mini-bars">
+      ${Object.entries(DISP_COLOR)
+          .filter(([k]) => dispCounts[k])
+          .map(([disp,col]) => {
+            const n = dispCounts[disp]||0;
+            const pct = totDoors ? Math.round(n/totDoors*100) : 0;
+            return `<div class="mb-row">
+              <div class="mb-dot" style="background:${col}"></div>
+              <div class="mb-label">${DISP_LABEL[disp]||disp}</div>
+              <div class="mb-track"><div class="mb-fill" style="width:${pct}%;background:${col}"></div></div>
+              <div class="mb-val">${n}</div>
+            </div>`;
+          }).join('')}
+    </div>
+    <div style="height:1px;background:var(--border);margin:12px 0"></div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:8px">Rep Performance</div>
+    ${combined.map(s => {
+      const col = REP_COLORS[s.rep];
+      return `<div class="rep-stat-row">
+        <div class="rep-color-bar" style="background:${col.line}"></div>
+        <div style="flex:1">
+          <div class="rep-stat-name">${s.rep}</div>
+          <div class="rep-stat-nums">${s.sold} sales · ${s.doors} doors · ${s.rate}% rate · ${s.miles} mi</div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+function renderEvents() {
+  const shown = ALL_EVENTS.filter(e =>
+    activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs
+  );
+  if (!shown.length) return `<div style="text-align:center;color:var(--muted);font-size:12px;padding:24px 0">No events yet — press ▶ to replay</div>`;
+
+  return `<div class="event-list">
+    ${[...shown].reverse().map(ev => {
+      const dc  = DISP_COLOR[ev.disposition] || '#4d6080';
+      const col = REP_COLORS[ev.rep] || { dot:'#8fa5c9' };
+      const idx = ALL_EVENTS.indexOf(ev);
+      return `<div class="ev-row" onclick="focusEvent(${idx})">
+        <div class="ev-dot" style="background:${dc};color:${dc}"></div>
+        <div class="ev-body">
+          <div class="ev-street">${ev.street}</div>
+          <div class="ev-meta">${fmtTime12(new Date(ev.timestamp))} · <span style="color:${col.dot}">${ev.rep}</span></div>
+        </div>
+        <div class="ev-tag" style="background:${dc}22;color:${dc};border:1px solid ${dc}44">${DISP_LABEL[ev.disposition]||ev.disposition}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderCompare() {
+  if (!ALL_REPS.length) return `<div class="no-data"><div class="no-data-icon">👥</div><h3>No reps</h3><p>Load a date with field activity first.</p></div>`;
+  const allStats = ALL_REPS.map(calcRepStats);
+  const maxDoors = Math.max(...allStats.map(s => s.doors), 1);
+  const maxSold  = Math.max(...allStats.map(s => s.sold),  1);
+
+  return `
+    <div style="font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.5">${[...activeReps].length} of ${ALL_REPS.length} rep${ALL_REPS.length!==1?'s':''} visible. Toggle using pills above.</div>
+    ${allStats.map(s => {
+      const col    = REP_COLORS[s.rep];
+      const pctD   = (s.doors/maxDoors*100).toFixed(0);
+      const pctS   = (s.sold /maxSold *100).toFixed(0);
+      const dimmed = !activeReps.has(s.rep);
+      return `<div style="margin-bottom:18px;padding:14px;background:var(--s2);border:1px solid var(--border-s);border-radius:10px;border-left:3px solid ${col.line};opacity:${dimmed?.4:1};transition:opacity .2s">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:800">${s.rep}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:${col.dot}">${s.rate}%</div>
+        </div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace">Doors</div>
+        <div style="height:5px;background:rgba(255,255,255,.05);border-radius:3px;margin-bottom:10px"><div style="height:100%;border-radius:3px;background:${col.line};width:${pctD}%;transition:width 1s"></div></div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-family:'IBM Plex Mono',monospace">Sales</div>
+        <div style="height:5px;background:rgba(255,255,255,.05);border-radius:3px;margin-bottom:10px"><div style="height:100%;border-radius:3px;background:${col.dot};width:${pctS}%;transition:width 1s"></div></div>
+        <div style="display:flex;gap:12px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
+          <span>${s.doors} doors</span><span>${s.sold} sales</span><span>${s.miles} mi</span><span>${s.hours}h</span>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ── Timeline door counts ──
+function renderTlCounts() {
+  const disp = {};
+  ALL_EVENTS
+    .filter(e => activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs)
+    .forEach(e => { disp[e.disposition] = (disp[e.disposition]||0)+1; });
+
+  const items = [
+    { key:'sold', label:'Sold', col:DISP_COLOR.sold },
+    { key:'mega', label:'Mega', col:DISP_COLOR.mega },
+    { key:'nh',   label:'NH',   col:DISP_COLOR.nh   },
+    { key:'ni',   label:'NI',   col:DISP_COLOR.ni   },
+    { key:'cb',   label:'CB',   col:DISP_COLOR.cb   },
+  ];
+  document.getElementById('tl-counts').innerHTML = items
+    .filter(it => disp[it.key])
+    .map(it => `
+      <div class="tl-count">
+        <div class="tl-count-dot" style="background:${it.col}"></div>
+        <span><strong>${disp[it.key]}</strong> ${it.label}</span>
+      </div>`).join('');
+}
+
+function focusEvent(idx) {
+  const ev = ALL_EVENTS[idx];
+  if (!ev) return;
+  map.panTo([ev.lat, ev.lng], { animate:true, duration:.5 });
+  const m = markers[ev.rep] && markers[ev.rep].find(mk => {
+    const ll = mk.getLatLng();
+    return Math.abs(ll.lat-ev.lat)<.0001 && Math.abs(ll.lng-ev.lng)<.0001;
+  });
+  if (m) m.openPopup();
+}
+
+// ═══════════════════════════════════════════════════
+//  EXPORT CSV
+// ═══════════════════════════════════════════════════
+function exportData() {
+  if (!ALL_EVENTS.length) return;
+  const rows = ['timestamp,rep,territory,street,disposition,note,lat,lng'];
+  ALL_EVENTS.forEach(ev => {
+    rows.push([
+      ev.timestamp,
+      `"${ev.rep}"`,
+      `"${ev.territory||''}"`,
+      `"${ev.street.replace(/"/g,'""')}"`,
+      ev.disposition,
+      `"${(ev.note||'').replace(/"/g,'""')}"`,
+      ev.lat,
+      ev.lng
+    ].join(','));
+  });
+  const blob = new Blob([rows.join('\n')], { type:'text/csv' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `fieldos-route-${document.getElementById('date-picker').value || 'today'}.csv`;
+  a.click();
+}
+</script>
+</body>
+</html>

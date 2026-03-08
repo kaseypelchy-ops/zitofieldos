@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldOS — Billing Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b13;--surface:#0c1220;--s2:#111a2c;--s3:#162033;
+  --border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);
+  --gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-t:#f0c96a;
+  --gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--warn:#fb923c;
+  --text:#e8eeff;--t2:#8fa5c9;--muted:#4d6080;
+  --r:12px;--r-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,165,58,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(212,165,58,.02) 1px,transparent 1px);background-size:52px 52px}
+
+/* ── NAV ──────────────────────────────────────────── */
+#topbar{position:fixed;top:0;left:0;right:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(7,11,19,.9);border-bottom:1px solid var(--border-s);backdrop-filter:blur(16px);z-index:100;box-shadow:0 1px 0 rgba(212,165,58,.1)}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#07090f;box-shadow:0 3px 10px rgba(212,165,58,.3)}
+.logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn-sm{background:none;border:1px solid var(--border-s);border-radius:9px;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .18s}
+.btn-sm:hover{border-color:var(--gold);color:var(--gold-t)}
+
+/* ── LAYOUT ───────────────────────────────────────── */
+.page{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:82px 24px 60px;display:flex;flex-direction:column;gap:20px;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PAGE HEADER ──────────────────────────────────── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:4px}
+.page-title{font-size:24px;font-weight:800;letter-spacing:-.3px}
+.page-sub{font-size:13px;color:var(--t2);margin-top:4px}
+.breadcrumb{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.breadcrumb a{color:var(--t2);cursor:pointer;transition:color .15s}
+.breadcrumb a:hover{color:var(--gold-t)}
+.bc-sep{color:var(--muted);font-size:10px}
+
+/* ── CARDS ────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);overflow:hidden;position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35}
+.card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:800}
+.card-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+.card-body{padding:22px}
+
+/* ── PLAN BOX ─────────────────────────────────────── */
+.plan-box{background:linear-gradient(140deg,#0d1a30,#0a1220);border:1px solid rgba(212,165,58,.25);border-radius:var(--r-lg);padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;overflow:hidden;margin-bottom:0}
+.plan-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.plan-name{font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.2px}
+.plan-feats{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:16px}
+.plan-actions{display:flex;gap:8px;flex-wrap:wrap}
+.plan-price-big{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;color:var(--gold-t);line-height:1}
+.plan-price-big span{font-size:14px;color:var(--muted);font-weight:400}
+.plan-next{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:5px}
+.status-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 11px;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;margin-top:8px}
+.status-chip.active{background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);color:#99f6e4}
+.status-chip.trial{background:var(--gold-dim);border:1px solid rgba(212,165,58,.3);color:var(--gold-t)}
+.status-chip.failed{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);color:#fed7aa}
+.status-chip.cancelled{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);color:#fda4af}
+.status-chip-dot{width:6px;height:6px;border-radius:50%}
+.active .status-chip-dot{background:var(--gig);box-shadow:0 0 6px var(--gig);animation:pulse 2s infinite}
+.trial .status-chip-dot{background:var(--gold)}
+.failed .status-chip-dot{background:var(--warn)}
+.cancelled .status-chip-dot{background:var(--danger)}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px var(--gig)}50%{box-shadow:0 0 10px var(--gig)}}
+
+/* ── USAGE BARS ───────────────────────────────────── */
+.usage-grid{display:flex;flex-direction:column;gap:16px}
+.usage-item{}
+.usage-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.usage-name{font-size:13px;font-weight:700}
+.usage-nums{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.usage-track{height:7px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden}
+.usage-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+/* ── INVOICE TABLE ────────────────────────────────── */
+.inv-table{width:100%}
+.inv-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 60px;padding:10px 22px;border-bottom:1px solid var(--border)}
+.inv-hcell{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.inv-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 60px;padding:13px 22px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center;transition:background .1s}
+.inv-row:last-child{border-bottom:none}
+.inv-row:hover{background:rgba(255,255,255,.02)}
+.inv-cell{font-size:12px;color:var(--t2)}
+.inv-cell.bold{font-weight:700;color:var(--text);font-family:'IBM Plex Mono',monospace}
+.inv-badge{display:inline-flex;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.inv-badge.paid{background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);color:#99f6e4}
+.inv-badge.failed{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);color:#fda4af}
+.inv-dl{background:none;border:1px solid var(--border-s);border-radius:7px;color:var(--muted);cursor:pointer;font-size:12px;padding:5px 9px;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+.inv-dl:hover{border-color:var(--gold);color:var(--gold-t)}
+
+/* ── PAYMENT METHOD ───────────────────────────────── */
+.pm-row{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:var(--s2);border:1px solid var(--border-s);border-radius:var(--r)}
+.pm-card{display:flex;align-items:center;gap:12px}
+.pm-icon{width:40px;height:28px;background:linear-gradient(135deg,#1a1f35,#252b45);border:1px solid rgba(255,255,255,.1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.pm-info-brand{font-size:13px;font-weight:700;text-transform:capitalize}
+.pm-info-last{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+.pm-expiry{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+
+/* ── UPGRADE GRID ─────────────────────────────────── */
+.upgrade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.upgrade-card{background:var(--s2);border:1px solid var(--border-s);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .18s;position:relative}
+.upgrade-card:hover{border-color:rgba(212,165,58,.35);background:var(--s3)}
+.upgrade-card.current{border-color:var(--gold);background:var(--gold-dim)}
+.upgrade-card.current::before{content:'Current';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:#07090f;font-size:8px;font-weight:800;padding:2px 10px;border-radius:0 0 8px 8px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.uc-name{font-size:13px;font-weight:800;margin-bottom:4px}
+.uc-price{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--gold-t);margin-bottom:8px}
+.uc-price span{font-size:11px;color:var(--muted);font-weight:400}
+.uc-feats{font-size:11px;color:var(--muted);line-height:1.6}
+
+/* ── DANGER ZONE ──────────────────────────────────── */
+.danger-zone{background:rgba(244,63,94,.04);border:1px solid rgba(244,63,94,.18);border-radius:var(--r-lg);padding:22px}
+.danger-zone h3{font-size:13px;font-weight:800;color:var(--danger);margin-bottom:6px}
+.danger-zone p{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:14px}
+.btn-danger{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:var(--danger);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;cursor:pointer;transition:all .2s}
+.btn-danger:hover{background:rgba(244,63,94,.18);border-color:var(--danger)}
+
+/* ── MODAL ────────────────────────────────────────── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:20px}
+#modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);padding:32px;max-width:440px;width:100%;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:6px;letter-spacing:-.2px}
+.modal-sub{font-size:13px;color:var(--t2);margin-bottom:22px;line-height:1.5}
+.modal-close{position:absolute;top:12px;right:12px;background:var(--s2);border:1px solid var(--border-s);border-radius:7px;color:var(--muted);cursor:pointer;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{color:var(--danger);border-color:rgba(244,63,94,.4)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-modal-cancel{flex:1;background:var(--s2);border:1px solid var(--border-s);border-radius:9px;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:11px;cursor:pointer;transition:all .15s}
+.btn-modal-cancel:hover{color:var(--text)}
+.btn-modal-danger{flex:1;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.35);border-radius:9px;color:var(--danger);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;padding:11px;cursor:pointer;transition:all .2s}
+.btn-modal-danger:hover{background:rgba(244,63,94,.2)}
+.btn-modal-gold{flex:2;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;padding:11px;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(212,165,58,.25)}
+.btn-modal-gold:hover{filter:brightness(1.08)}
+
+/* ── ALERT BANNER ─────────────────────────────────── */
+.alert{border-radius:var(--r);padding:12px 16px;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.alert.warn{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.25);color:#fed7aa}
+.alert.info{background:var(--gold-dim);border:1px solid rgba(212,165,58,.25);color:var(--gold-t)}
+.alert-icon{font-size:16px;flex-shrink:0}
+
+@media(max-width:680px){
+  .upgrade-grid{grid-template-columns:1fr}
+  .inv-head,.inv-row{grid-template-columns:2fr 1fr 1fr 60px}
+  .inv-hcell:nth-child(4),.inv-cell:nth-child(4){display:none}
+  .plan-box{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="bg-fixed"><div class="bg-grid"></div></div>
+
+<nav id="topbar">
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div><div>FieldOS</div><div class="logo-sub">BILLING PORTAL</div></div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-sm" onclick="goToAdmin()">← Admin Dashboard</button>
+    <button class="btn-sm" onclick="openStripePortal()" id="btn-stripe-portal" style="display:none">Manage in Stripe ↗</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div>
+    <div class="breadcrumb">
+      <a onclick="goToAdmin()">Admin</a>
+      <span class="bc-sep">›</span>
+      <span>Billing</span>
+    </div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Billing & Subscription</div>
+        <div class="page-sub" id="ws-sub">Loading workspace…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert area -->
+  <div id="alert-area"></div>
+
+  <!-- Current plan -->
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Current Plan</div><div class="card-sub">subscription details</div></div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="plan-box" id="plan-box" style="margin:20px 20px 20px">
+        <div>
+          <div class="plan-name" id="pb-name">Loading…</div>
+          <div class="plan-feats" id="pb-feats">—</div>
+          <div class="plan-actions">
+            <button class="btn-sm" onclick="openUpgradeModal()">Change Plan</button>
+            <button class="btn-sm" onclick="openStripePortal()">Update Card</button>
+          </div>
+          <div class="status-chip trial" id="status-chip" style="margin-top:14px">
+            <div class="status-chip-dot"></div>
+            <span id="status-chip-label">Loading</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="plan-price-big" id="pb-price">—</div>
+          <div class="plan-next" id="pb-next">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Usage -->
+  <div class="card">
+    <div class="card-head"><div><div class="card-title">Usage</div><div class="card-sub">current billing period</div></div></div>
+    <div class="card-body">
+      <div class="usage-grid" id="usage-grid"></div>
+    </div>
+  </div>
+
+  <!-- Payment method -->
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Payment Method</div></div>
+      <button class="btn-sm" onclick="openStripePortal()">Update</button>
+    </div>
+    <div class="card-body" style="padding:16px 22px">
+      <div class="pm-row" id="pm-row">
+        <div class="pm-card">
+          <div class="pm-icon">💳</div>
+          <div>
+            <div class="pm-info-brand" id="pm-brand">Visa</div>
+            <div class="pm-info-last" id="pm-last">•••• •••• •••• 4242</div>
+          </div>
+        </div>
+        <div class="pm-expiry" id="pm-expiry">Expires 12/27</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice history -->
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Invoice History</div></div>
+      <button class="btn-sm" onclick="openStripePortal()">View All in Stripe</button>
+    </div>
+    <div class="inv-table">
+      <div class="inv-head">
+        <div class="inv-hcell">Description</div>
+        <div class="inv-hcell">Date</div>
+        <div class="inv-hcell">Amount</div>
+        <div class="inv-hcell">Status</div>
+        <div class="inv-hcell"></div>
+      </div>
+      <div id="invoice-rows"></div>
+    </div>
+  </div>
+
+  <!-- Upgrade options -->
+  <div class="card" id="upgrade-section">
+    <div class="card-head"><div><div class="card-title">Available Plans</div><div class="card-sub">upgrade or downgrade any time</div></div></div>
+    <div class="card-body">
+      <div class="upgrade-grid" id="upgrade-grid"></div>
+    </div>
+  </div>
+
+  <!-- Danger zone -->
+  <div class="danger-zone">
+    <h3>⚠️ Cancel Subscription</h3>
+    <p>Cancelling will keep your workspace active until the end of your current billing period. After that, your workspace will be suspended but your data will be preserved for 90 days.</p>
+    <button class="btn-danger" onclick="openCancelModal()">Cancel Subscription</button>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const BILLING_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUh6M8XO8MVmxdiUxil5kHLqi4LRtavootsxApa9Q9b3qliZmlKrZ4WRgJfBHg7lzv/exec';
+const params  = new URLSearchParams(window.location.search);
+const WS_ID   = params.get('ws') || '';
+
+// Mock billing data (replace with live fetch in production)
+const MOCK_STATUS = {
+  wsId:          WS_ID || 'zito-telecom-ab12cd',
+  plan:          'growth',
+  billingStatus: 'active',
+  inTrial:       false,
+  trialDaysLeft: 0,
+  hasPayment:    true,
+  stripeSubId:   'sub_abc123',
+  live: {
+    stripeStatus:     'active',
+    currentPeriodEnd: Math.floor(Date.now()/1000) + 86400*28,
+    cancelAtPeriodEnd: false,
+    amount:           149,
+    currency:         'usd',
+    interval:         'month'
+  }
+};
+
+const PLAN_DETAILS = {
+  starter:    { name:'Starter',    price:'$49',  cycle:'/mo', feats:'1 territory · up to 5 reps · map + dispositions · basic reporting', seats:5,  ai:10  },
+  growth:     { name:'Growth',     price:'$149', cycle:'/mo', feats:'Unlimited territories · 25 reps · AI analysis · manager dashboard · priority support', seats:25, ai:50  },
+  enterprise: { name:'Enterprise', price:'$299', cycle:'/mo', feats:'Unlimited reps · SSO · white-label · CRM integration · dedicated CSM', seats:null, ai:null }
+};
+
+const MOCK_INVOICES = [
+  { desc:'Growth Plan – March 2026',   date:'Mar 1, 2026',  amount:'$149.00', status:'paid' },
+  { desc:'Growth Plan – February 2026',date:'Feb 1, 2026',  amount:'$149.00', status:'paid' },
+  { desc:'Growth Plan – January 2026', date:'Jan 1, 2026',  amount:'$149.00', status:'paid' },
+  { desc:'Growth Plan – December 2025',date:'Dec 1, 2025',  amount:'$149.00', status:'paid' },
+];
+
+let billingData = null;
+
+async function boot() {
+  // In production: fetch from billing script
+  // try {
+  //   const res  = await fetch(`${BILLING_SCRIPT_URL}?action=billing_status&ws=${WS_ID}`);
+  //   const json = await res.json();
+  //   billingData = json.data;
+  // } catch(e) { billingData = MOCK_STATUS; }
+  billingData = MOCK_STATUS;
+
+  renderPage();
+}
+
+function renderPage() {
+  const d = billingData;
+  const planKey = d.plan || 'growth';
+  const plan  = PLAN_DETAILS[planKey] || PLAN_DETAILS.growth;
+  const live  = d.live || {};
+  const status = d.billingStatus;
+
+  // WS subtitle
+  document.getElementById('ws-sub').textContent = 'Workspace: ' + (d.wsId || WS_ID);
+
+  // Alert for payment issues
+  const alertArea = document.getElementById('alert-area');
+  if (status === 'payment_failed') {
+    alertArea.innerHTML = `<div class="alert warn"><div class="alert-icon">⚠️</div><div>Your last payment failed. <strong>Update your payment method</strong> to avoid service interruption.</div></div>`;
+  } else if (d.inTrial && d.trialDaysLeft <= 3) {
+    alertArea.innerHTML = `<div class="alert info"><div class="alert-icon">⏳</div><div>Your free trial ends in <strong>${d.trialDaysLeft} day${d.trialDaysLeft===1?'':'s'}</strong>. Add a payment method to continue without interruption.</div></div>`;
+  }
+
+  // Plan box
+  document.getElementById('pb-name').textContent = plan.name + ' Plan';
+  document.getElementById('pb-feats').textContent = plan.feats;
+  const priceStr = live.amount ? `$${live.amount}` : plan.price;
+  const cycleStr = live.interval ? `/${live.interval}` : plan.cycle;
+  document.getElementById('pb-price').innerHTML = priceStr + `<span>${cycleStr}</span>`;
+
+  // Next bill
+  if (live.currentPeriodEnd) {
+    const nextDate = new Date(live.currentPeriodEnd * 1000).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    document.getElementById('pb-next').textContent = live.cancelAtPeriodEnd
+      ? `Cancels on ${nextDate}`
+      : `Next billing: ${nextDate}`;
+  } else if (d.inTrial) {
+    document.getElementById('pb-next').textContent = `Trial ends in ${d.trialDaysLeft} days`;
+  }
+
+  // Status chip
+  const chip = document.getElementById('status-chip');
+  const chipLbl = document.getElementById('status-chip-label');
+  const chipMap = {
+    active:         ['active', '● ACTIVE'],
+    trial:          ['trial',  '● FREE TRIAL'],
+    payment_failed: ['failed', '● PAYMENT FAILED'],
+    cancelled:      ['cancelled','● CANCELLED'],
+    suspended:      ['cancelled','● SUSPENDED']
+  };
+  const [chipCls, chipTxt] = chipMap[status] || chipMap.active;
+  chip.className = 'status-chip ' + chipCls;
+  chipLbl.textContent = chipTxt;
+
+  // Show Stripe portal button if subscription exists
+  if (d.hasPayment) document.getElementById('btn-stripe-portal').style.display = '';
+
+  // Usage bars
+  const usageGrid = document.getElementById('usage-grid');
+  const usages = [
+    { name:'Rep Seats',         used:5,  total:plan.seats,  color:'linear-gradient(90deg,var(--gold),var(--gold-t))' },
+    { name:'Territories',       used:3,  total:null,        color:'linear-gradient(90deg,var(--gig),#5eead4)' },
+    { name:'AI Analysis Runs',  used:14, total:plan.ai,     color:'linear-gradient(90deg,var(--mega),#c4b5fd)' },
+    { name:'Doors Knocked',     used:4281,total:null,       color:'linear-gradient(90deg,#6366f1,#818cf8)' },
+  ];
+  usageGrid.innerHTML = usages.map(u => {
+    const pct = u.total ? Math.round((u.used/u.total)*100) : null;
+    const fillColor = pct > 90 ? 'linear-gradient(90deg,var(--danger),#fb7185)' : pct > 70 ? 'linear-gradient(90deg,var(--warn),#fbbf24)' : u.color;
+    return `
+      <div class="usage-item">
+        <div class="usage-row">
+          <div class="usage-name">${u.name}</div>
+          <div class="usage-nums">${u.used.toLocaleString()}${u.total ? ' / ' + u.total : ' total'}</div>
+        </div>
+        ${u.total ? `
+          <div class="usage-track">
+            <div class="usage-fill" style="width:0%;background:${fillColor}" data-width="${pct}%"></div>
+          </div>` : ''}
+      </div>`;
+  }).join('');
+
+  // Animate bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.usage-fill[data-width]').forEach(b => {
+      setTimeout(() => b.style.width = b.dataset.width, 100);
+    });
+  });
+
+  // Invoices
+  document.getElementById('invoice-rows').innerHTML = MOCK_INVOICES.map(inv => `
+    <div class="inv-row">
+      <div class="inv-cell bold">${inv.desc}</div>
+      <div class="inv-cell">${inv.date}</div>
+      <div class="inv-cell" style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--text)">${inv.amount}</div>
+      <div class="inv-cell"><span class="inv-badge ${inv.status}">${inv.status.toUpperCase()}</span></div>
+      <div class="inv-cell"><button class="inv-dl" onclick="downloadInvoice('${inv.date}')">PDF</button></div>
+    </div>
+  `).join('');
+
+  // Upgrade grid
+  const currentPlan = planKey;
+  document.getElementById('upgrade-grid').innerHTML = Object.entries(PLAN_DETAILS).map(([key, p]) => `
+    <div class="upgrade-card${key === currentPlan ? ' current' : ''}" onclick="selectUpgrade('${key}')">
+      <div class="uc-name">${p.name}</div>
+      <div class="uc-price">${p.price}<span>${p.cycle}</span></div>
+      <div class="uc-feats">${p.feats}</div>
+    </div>
+  `).join('');
+}
+
+// ── MODALS ─────────────────────────────────────────────────
+function openUpgradeModal() {
+  const mc = document.getElementById('modal-content');
+  mc.innerHTML = `
+    <div class="modal-title">Change Plan</div>
+    <div class="modal-sub">Changes take effect immediately. You'll be charged or credited the prorated difference.</div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="modal-plan-list">
+      ${Object.entries(PLAN_DETAILS).map(([key, p]) => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s2);border:1px solid var(--border-s);border-radius:10px;cursor:pointer;transition:all .15s" onclick="confirmUpgrade('${key}')" onmouseover="this.style.borderColor='rgba(212,165,58,.4)'" onmouseout="this.style.borderColor='var(--border-s)'">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:800">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${p.feats}</div>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:var(--gold-t);flex-shrink:0">${p.price}<span style="font-size:10px;color:var(--muted)">${p.cycle}</span></div>
+        </div>`).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function openCancelModal() {
+  const mc = document.getElementById('modal-content');
+  mc.innerHTML = `
+    <div class="modal-title">Cancel Subscription?</div>
+    <div class="modal-sub">Your workspace will stay active until the end of your current billing period. After that, your team will lose access but your data will be preserved for 90 days.</div>
+    <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:10px;padding:14px;font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:4px">
+      <div>✗ Reps will lose field app access</div>
+      <div>✗ Manager dashboard will be disabled</div>
+      <div>✓ Your Google Sheet data remains intact</div>
+      <div>✓ You can reactivate any time</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Keep Subscription</button>
+      <button class="btn-modal-danger" onclick="confirmCancel()">Yes, Cancel</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function confirmUpgrade(planKey) {
+  const p = PLAN_DETAILS[planKey];
+  closeModal();
+  setTimeout(() => {
+    // In production: call Stripe to update subscription
+    alert(`Plan change to ${p.name} would be processed via Stripe. Prorated difference applied automatically.`);
+  }, 200);
+}
+
+function confirmCancel() {
+  closeModal();
+  setTimeout(() => {
+    alert('Cancellation scheduled. Your workspace stays active until end of billing period.');
+    // In production: call Stripe portal or API to cancel at period end
+  }, 200);
+}
+
+function selectUpgrade(key) {
+  openUpgradeModal();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function openStripePortal() {
+  // In production: fetch portal URL and redirect
+  // fetch(`${BILLING_SCRIPT_URL}?action=create_portal&ws=${WS_ID}`)
+  //   .then(r => r.json())
+  //   .then(j => window.location.href = j.data.portalUrl)
+  alert('In production this opens the Stripe Customer Portal — update card, download invoices, cancel subscription.');
+}
+
+function downloadInvoice(date) {
+  alert(`Downloading invoice for ${date}. In production this fetches the PDF from Stripe.`);
+}
+
+function goToAdmin() {
+  window.location.href = 'admin.html?ws=' + WS_ID;
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+boot();
+</script>
+</body>
+</html>

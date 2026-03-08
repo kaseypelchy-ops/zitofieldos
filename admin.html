@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldOS — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b13;--surface:#0c1220;--surface2:#111a2c;--surface3:#162033;
+  --border:rgba(255,255,255,0.07);--border-s:rgba(255,255,255,0.13);
+  --gold:#d4a53a;--gold-dim:rgba(212,165,58,0.12);--gold-text:#f0c96a;
+  --gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--warn:#fb923c;
+  --text:#e8eeff;--text2:#8fa5c9;--muted:#4d6080;
+  --sidebar:240px;--topbar:58px;
+  --r:12px;--r-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;-webkit-font-smoothing:antialiased}
+
+/* ── SIDEBAR ────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar);height:100vh;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--border-s);
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:4px 0 24px rgba(0,0,0,.4);
+}
+.sb-logo{padding:18px 20px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.sb-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#07090f;flex-shrink:0;box-shadow:0 3px 12px rgba(212,165,58,.3)}
+.sb-logo-text{font-size:14px;font-weight:800;letter-spacing:-.1px}
+.sb-logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+
+.sb-ws{padding:12px 14px;border-bottom:1px solid var(--border)}
+.sb-ws-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.sb-ws-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-ws-plan{display:inline-flex;align-items:center;gap:4px;background:var(--gold-dim);border:1px solid rgba(212,165,58,.25);border-radius:20px;padding:2px 9px;font-size:9px;font-weight:700;color:var(--gold-text);font-family:'IBM Plex Mono',monospace;margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+
+.sb-nav{flex:1;overflow-y:auto;padding:10px 10px}
+.sb-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;padding:14px 8px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:all .15s;color:var(--text2);font-size:13px;font-weight:600;margin-bottom:1px}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.sb-item.active{background:var(--gold-dim);color:var(--gold-text);border:1px solid rgba(212,165,58,.2)}
+.sb-item-icon{font-size:15px;flex-shrink:0;width:20px;text-align:center}
+.sb-badge{margin-left:auto;background:var(--warn);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;font-family:'IBM Plex Mono',monospace}
+
+.sb-footer{padding:12px 14px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#b8891e,var(--gold));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#07090f;flex-shrink:0}
+.sb-user-name{font-size:12px;font-weight:700;color:var(--text)}
+.sb-user-role{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.sb-signout{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;transition:color .15s}
+.sb-signout:hover{color:var(--danger)}
+
+/* ── MAIN ───────────────────────────────────────────── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* Topbar */
+#topbar{height:var(--topbar);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,19,.9);border-bottom:1px solid var(--border-s);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(212,165,58,.1)}
+.topbar-title{font-size:18px;font-weight:800;letter-spacing:-.2px}
+.topbar-sub{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:1px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.btn-sm{background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-sm:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
+.btn-sm.primary{background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border-color:transparent;box-shadow:0 3px 12px rgba(212,165,58,.3)}
+.btn-sm.primary:hover{filter:brightness(1.08)}
+
+/* Content area */
+#content{flex:1;overflow-y:auto;padding:24px}
+#content::-webkit-scrollbar{width:4px}
+#content::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:2px}
+
+/* ── PANEL SYSTEM ───────────────────────────────────── */
+.panel{display:none;flex-direction:column;gap:18px;animation:fade-in .3s ease}
+.panel.active{display:flex}
+@keyframes fade-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── STAT CARDS ─────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.gold::after{background:linear-gradient(90deg,var(--gold),var(--gold-text))}
+.stat-card.teal::after{background:var(--gig)}
+.stat-card.purple::after{background:var(--mega)}
+.stat-card.red::after{background:var(--danger)}
+.stat-val{font-size:28px;font-weight:800;font-family:'IBM Plex Mono',monospace;letter-spacing:-.5px}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'IBM Plex Mono',monospace;margin-top:5px}
+.stat-delta{font-size:11px;margin-top:8px;display:flex;align-items:center;gap:4px;font-weight:600}
+.stat-delta.up{color:var(--gig)}
+.stat-delta.down{color:var(--danger)}
+.stat-delta.neutral{color:var(--muted)}
+
+/* ── SECTION CARD ───────────────────────────────────── */
+.sec-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);overflow:hidden}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.sec-title{font-size:14px;font-weight:800;letter-spacing:-.1px}
+.sec-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+
+/* ── REP TABLE ──────────────────────────────────────── */
+.rep-table{width:100%}
+.rt-head{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 80px;gap:0;padding:10px 20px;border-bottom:1px solid var(--border)}
+.rt-hcell{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.rt-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 80px;gap:0;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s;align-items:center}
+.rt-row:last-child{border-bottom:none}
+.rt-row:hover{background:rgba(255,255,255,.02)}
+.rep-info{display:flex;align-items:center;gap:10px}
+.rep-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.rep-av.online{background:linear-gradient(135deg,rgba(212,165,58,.3),rgba(45,212,191,.2));color:var(--text);border:1.5px solid rgba(212,165,58,.3)}
+.rep-av.offline{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border-s)}
+.rep-name{font-size:13px;font-weight:700;color:var(--text)}
+.rep-email{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:1px}
+.rt-cell{font-size:12px;color:var(--text2)}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px}
+.status-badge.online{background:rgba(45,212,191,.1);color:#99f6e4;border:1px solid rgba(45,212,191,.25)}
+.status-badge.offline{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border-s)}
+.status-dot{width:6px;height:6px;border-radius:50%}
+.online .status-dot{background:var(--gig);box-shadow:0 0 6px var(--gig);animation:pulse 2s infinite}
+.offline .status-dot{background:var(--muted)}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px var(--gig)}50%{box-shadow:0 0 10px var(--gig)}}
+.rt-actions{display:flex;gap:6px;justify-content:flex-end}
+.rt-btn{background:none;border:1px solid var(--border-s);border-radius:7px;color:var(--muted);font-size:11px;padding:5px 9px;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+.rt-btn:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
+.rt-btn.danger:hover{border-color:rgba(244,63,94,.4);color:var(--danger)}
+
+/* ── INVITE BOX ─────────────────────────────────────── */
+.invite-zone{padding:20px;display:flex;flex-direction:column;gap:14px}
+.invite-link-box{background:var(--surface2);border:1px solid rgba(212,165,58,.2);border-radius:var(--r);padding:16px 18px}
+.inv-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:8px}
+.inv-row{display:flex;gap:8px;align-items:center}
+.inv-link{flex:1;background:var(--bg);border:1px solid var(--border-s);border-radius:8px;padding:10px 13px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-copy{background:var(--gold-dim);border:1px solid rgba(212,165,58,.35);border-radius:8px;color:var(--gold-text);font-size:11px;font-weight:700;padding:9px 14px;cursor:pointer;white-space:nowrap;transition:all .18s;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-copy:hover{background:rgba(212,165,58,.22)}
+.btn-copy.copied{background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.4);color:#99f6e4}
+.inv-meta{display:flex;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.inv-meta-item{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.inv-meta-item strong{color:var(--text);font-weight:700}
+
+/* ── TERRITORY CARDS ────────────────────────────────── */
+.terr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px}
+.terr-card{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
+.terr-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.terr-name{font-size:14px;font-weight:800;margin-bottom:4px}
+.terr-region{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:12px}
+.terr-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.terr-stat{background:var(--bg);border-radius:8px;padding:8px 10px}
+.terr-stat-val{font-size:16px;font-weight:800;font-family:'IBM Plex Mono',monospace}
+.terr-stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-family:'IBM Plex Mono',monospace}
+.terr-actions{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.terr-btn{flex:1;background:none;border:1px solid var(--border-s);border-radius:8px;color:var(--muted);font-size:11px;font-weight:700;padding:7px;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+.terr-btn:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
+.add-terr-card{border:1px dashed rgba(212,165,58,.25);background:rgba(212,165,58,.03);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;min-height:140px;transition:all .2s}
+.add-terr-card:hover{border-color:var(--gold);background:var(--gold-dim)}
+.add-terr-icon{font-size:28px;color:var(--gold);opacity:.6}
+.add-terr-label{font-size:13px;font-weight:700;color:var(--text2)}
+
+/* ── BILLING ────────────────────────────────────────── */
+.billing-wrap{padding:20px;display:flex;flex-direction:column;gap:16px}
+.plan-box{background:linear-gradient(140deg,#0d1a30,#0a1220);border:1px solid rgba(212,165,58,.3);border-radius:var(--r-lg);padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;overflow:hidden}
+.plan-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.plan-box-left h2{font-size:22px;font-weight:800;margin-bottom:4px}
+.plan-box-left p{font-size:12px;color:var(--text2);line-height:1.5}
+.plan-price-big{font-size:38px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--gold-text)}
+.plan-price-big span{font-size:14px;color:var(--muted);font-weight:400}
+.plan-next-bill{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+
+.usage-bar-wrap{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:16px}
+.usage-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.usage-name{font-size:13px;font-weight:700}
+.usage-nums{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.usage-track{height:6px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.usage-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-text));border-radius:4px;transition:width .5s}
+.usage-fill.warn{background:linear-gradient(90deg,var(--warn),#fbbf24)}
+.usage-fill.full{background:linear-gradient(90deg,var(--danger),#fb7185)}
+
+.invoice-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.invoice-row:last-child{border-bottom:none}
+.invoice-date{color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.invoice-amt{font-weight:700;font-family:'IBM Plex Mono',monospace}
+.invoice-badge{font-size:9px;padding:2px 8px;border-radius:10px}
+.invoice-badge.paid{background:rgba(45,212,191,.1);color:#99f6e4;border:1px solid rgba(45,212,191,.25)}
+.invoice-dl{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:color .15s}
+.invoice-dl:hover{color:var(--gold-text)}
+
+/* ── SETTINGS ───────────────────────────────────────── */
+.settings-wrap{padding:20px;display:flex;flex-direction:column;gap:16px}
+.setting-section{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:20px}
+.setting-section h3{font-size:13px;font-weight:800;margin-bottom:4px}
+.setting-section p{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.setting-field{margin-bottom:14px}
+.setting-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.setting-field input,.setting-field select{width:100%;background:var(--bg);border:1px solid var(--border-s);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.setting-field input:focus,.setting-field select:focus{border-color:var(--gold)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.setting-row:last-child{border-bottom:none;padding-bottom:0}
+.setting-row-info h4{font-size:13px;font-weight:700;margin-bottom:2px}
+.setting-row-info p{font-size:11px;color:var(--muted);line-height:1.4}
+/* Toggle switch */
+.toggle{position:relative;width:42px;height:24px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.08);border:1px solid var(--border-s);border-radius:999px;transition:all .2s}
+.toggle input:checked+.toggle-track{background:rgba(45,212,191,.3);border-color:rgba(45,212,191,.5)}
+.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:left .2s}
+.toggle input:checked~.toggle-knob{left:20px;background:var(--gig)}
+
+/* ── DANGER ZONE ────────────────────────────────────── */
+.danger-zone{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);padding:20px}
+.danger-zone h3{font-size:13px;font-weight:800;color:var(--danger);margin-bottom:4px}
+.danger-zone p{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.btn-danger{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:var(--danger);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;cursor:pointer;transition:all .2s}
+.btn-danger:hover{background:rgba(244,63,94,.2);border-color:var(--danger)}
+
+/* ── MODAL ──────────────────────────────────────────── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+#modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);padding:32px;width:100%;max-width:460px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.modal-title{font-size:19px;font-weight:800;margin-bottom:6px;letter-spacing:-.2px}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:22px;line-height:1.5}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--surface2);border:1px solid var(--border-s);border-radius:7px;color:var(--muted);cursor:pointer;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{color:var(--danger);border-color:rgba(244,63,94,.4)}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.modal-field input,.modal-field select{width:100%;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;padding:11px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,58,.1)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-modal-cancel{flex:1;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:11px;cursor:pointer;transition:all .18s}
+.btn-modal-cancel:hover{color:var(--text);border-color:var(--border-s)}
+.btn-modal-confirm{flex:2;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;padding:11px;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(212,165,58,.25)}
+.btn-modal-confirm:hover{filter:brightness(1.08)}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:900px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .terr-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  #sidebar{display:none}
+  .rt-head,.rt-row{grid-template-columns:2fr 1fr 80px}
+  .rt-cell:nth-child(3),.rt-cell:nth-child(4),.rt-hcell:nth-child(3),.rt-hcell:nth-child(4){display:none}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">F</div>
+    <div>
+      <div class="sb-logo-text">FieldOS</div>
+      <div class="sb-logo-sub">ADMIN CONSOLE</div>
+    </div>
+  </div>
+
+  <div class="sb-ws">
+    <div class="sb-ws-label">Workspace</div>
+    <div class="sb-ws-name" id="ws-name-display">Zito Telecom</div>
+    <div class="sb-ws-plan">Growth Plan</div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section">Main</div>
+    <div class="sb-item active" data-panel="overview"><span class="sb-item-icon">📊</span>Overview</div>
+    <div class="sb-item" data-panel="reps"><span class="sb-item-icon">👥</span>Reps &amp; Seats<span class="sb-badge" id="badge-reps"></span></div>
+    <div class="sb-item" data-panel="territories"><span class="sb-item-icon">🗺️</span>Territories</div>
+    <div class="sb-item" data-panel="invites"><span class="sb-item-icon">📨</span>Invite Center</div>
+
+    <div class="sb-section">Analytics</div>
+    <div class="sb-item" data-panel="analytics"><span class="sb-item-icon">📈</span>Performance</div>
+    <div class="sb-item" onclick="goToFieldApp()"><span class="sb-item-icon">🗺️</span>Field App ↗</div>
+    <div class="sb-item" onclick="goToRouteReplay()"><span class="sb-item-icon">▶️</span>Route Replay ↗</div>
+
+    <div class="sb-section">Account</div>
+    <div class="sb-item" data-panel="billing"><span class="sb-item-icon">💳</span>Billing</div>
+    <div class="sb-item" data-panel="settings"><span class="sb-item-icon">⚙️</span>Settings</div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-avatar-init">JD</div>
+      <div>
+        <div class="sb-user-name" id="sb-admin-name">Jordan Davis</div>
+        <div class="sb-user-role">Workspace Admin</div>
+      </div>
+      <button class="sb-signout" title="Sign out">⎋</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-sub" id="topbar-sub">workspace dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-sm" onclick="openModal('invite')">+ Invite Rep</button>
+      <button class="btn-sm" onclick="openModal('territory')">+ Territory</button>
+      <button class="btn-sm primary" onclick="goToFieldApp()">🗺 Open Field App</button>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+      <div class="stat-grid">
+        <div class="stat-card gold">
+          <div class="stat-val" id="stat-reps">—</div>
+          <div class="stat-label">Active Reps</div>
+          <div class="stat-delta up" id="stat-reps-d">↑ 2 this week</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-val" id="stat-sales">—</div>
+          <div class="stat-label">Sales This Month</div>
+          <div class="stat-delta up" id="stat-sales-d">↑ 18% vs last month</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-val" id="stat-doors">—</div>
+          <div class="stat-label">Doors Knocked</div>
+          <div class="stat-delta neutral" id="stat-doors-d">past 30 days</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-val" id="stat-rate">—</div>
+          <div class="stat-label">Close Rate</div>
+          <div class="stat-delta up" id="stat-rate-d">↑ 1.2% vs avg</div>
+        </div>
+      </div>
+
+      <!-- Activity feed + quick actions -->
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px">
+        <div class="sec-card">
+          <div class="sec-head">
+            <div>
+              <div class="sec-title">Recent Activity</div>
+              <div class="sec-sub">live field updates</div>
+            </div>
+          </div>
+          <div id="activity-feed" style="padding:4px 0"></div>
+        </div>
+
+        <div class="sec-card">
+          <div class="sec-head"><div><div class="sec-title">Quick Stats</div><div class="sec-sub">today</div></div></div>
+          <div id="quick-stats" style="padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPS -->
+    <div class="panel" id="panel-reps">
+      <div class="sec-card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-title">Team Roster</div>
+            <div class="sec-sub" id="seats-label">— / — seats used</div>
+          </div>
+          <button class="btn-sm primary" onclick="openModal('invite')">+ Invite Rep</button>
+        </div>
+        <div class="rep-table">
+          <div class="rt-head">
+            <div class="rt-hcell">Rep</div>
+            <div class="rt-hcell">Territory</div>
+            <div class="rt-hcell">Status</div>
+            <div class="rt-hcell">Sales</div>
+            <div class="rt-hcell">Last Active</div>
+            <div class="rt-hcell"></div>
+          </div>
+          <div id="rep-rows"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERRITORIES -->
+    <div class="panel" id="panel-territories">
+      <div class="sec-card">
+        <div class="sec-head">
+          <div><div class="sec-title">Territories</div><div class="sec-sub">geographic coverage zones</div></div>
+          <button class="btn-sm primary" onclick="openModal('territory')">+ Add Territory</button>
+        </div>
+        <div class="terr-grid" id="terr-grid"></div>
+      </div>
+    </div>
+
+    <!-- INVITE CENTER -->
+    <div class="panel" id="panel-invites">
+      <div class="sec-card">
+        <div class="sec-head">
+          <div><div class="sec-title">Invite Center</div><div class="sec-sub">share access with your team</div></div>
+          <button class="btn-sm" onclick="regenerateToken()">↺ Regenerate Link</button>
+        </div>
+        <div class="invite-zone">
+          <div class="invite-link-box">
+            <div class="inv-label">Workspace Invite Link</div>
+            <div class="inv-row">
+              <div class="inv-link" id="inv-link-display">Loading…</div>
+              <button class="btn-copy" id="inv-copy-btn">Copy</button>
+            </div>
+            <div class="inv-meta">
+              <div class="inv-meta-item">Uses: <strong id="inv-uses">0</strong></div>
+              <div class="inv-meta-item">Pending: <strong id="inv-pending">0</strong></div>
+              <div class="inv-meta-item">Expires: <strong>Never</strong></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:10px">Send Email Invites</div>
+            <div style="display:flex;gap:8px;margin-bottom:10px">
+              <input type="email" id="inv-email-input" placeholder="rep@company.com" style="flex:1;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none">
+              <button class="btn-sm primary" onclick="sendEmailInvite()" style="padding:10px 18px">Send Invite</button>
+            </div>
+            <div id="invite-email-list" style="display:flex;flex-direction:column;gap:6px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS (placeholder) -->
+    <div class="panel" id="panel-analytics">
+      <div class="sec-card" style="padding:60px;text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">📈</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Full Analytics Available</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Open the Field App's Manager Dashboard for live analytics, leaderboards, and territory intelligence.</div>
+        <button class="btn-sm primary" onclick="goToFieldApp()" style="display:inline-block;padding:12px 28px;font-size:14px">Open Manager Dashboard →</button>
+      </div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="panel" id="panel-billing">
+      <div class="sec-card">
+        <div class="sec-head"><div><div class="sec-title">Current Plan</div><div class="sec-sub">billing &amp; usage</div></div></div>
+        <div class="billing-wrap">
+          <div class="plan-box">
+            <div class="plan-box-left">
+              <h2>Growth Plan</h2>
+              <p>Unlimited territories · Up to 25 reps · AI analysis · Manager dashboard · Priority support</p>
+              <div style="display:flex;gap:8px;margin-top:16px">
+                <button class="btn-sm">Upgrade to Enterprise</button>
+                <button class="btn-sm">View All Plans</button>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="plan-price-big">$149<span>/mo</span></div>
+              <div class="plan-next-bill">Next billing: <strong id="next-bill-date">—</strong></div>
+              <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);border-radius:20px;padding:3px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:#99f6e4;font-weight:700">
+                <div style="width:6px;height:6px;border-radius:50%;background:var(--gig)"></div> ACTIVE
+              </div>
+            </div>
+          </div>
+
+          <div class="usage-bar-wrap">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:14px">Usage This Period</div>
+            <div id="usage-bars"></div>
+          </div>
+
+          <div class="sec-card">
+            <div class="sec-head"><div><div class="sec-title">Invoice History</div></div></div>
+            <div id="invoice-list" style="padding:4px 20px 8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="panel-settings">
+      <div class="sec-card">
+        <div class="sec-head"><div><div class="sec-title">Workspace Settings</div></div></div>
+        <div class="settings-wrap">
+
+          <div class="setting-section">
+            <h3>Company Profile</h3>
+            <p>This information appears in reports and rep-facing interfaces.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="setting-field"><label>Company Name</label><input type="text" id="set-company" value="Zito Telecom"></div>
+              <div class="setting-field"><label>Workspace Slug</label><input type="text" id="set-slug" value="zito-telecom-ab12cd"></div>
+              <div class="setting-field"><label>Admin Email</label><input type="email" id="set-email" value="admin@zitotelecom.com"></div>
+              <div class="setting-field"><label>Industry</label>
+                <select><option>Telecom / ISP</option><option>Utilities</option><option>Cable / Fiber</option></select>
+              </div>
+            </div>
+            <button class="btn-sm primary" style="margin-top:4px">Save Changes</button>
+          </div>
+
+          <div class="setting-section">
+            <h3>Notifications</h3>
+            <p>Control what events trigger email or in-app alerts.</p>
+            <div style="display:flex;flex-direction:column;gap:0">
+              ${[
+                ['New sale recorded','Get alerted every time a rep logs a sale'],
+                ['Rep goes offline','Notify when a rep\'s status changes to offline'],
+                ['Low seat availability','Alert when 90% of seats are used'],
+                ['Weekly performance digest','Summary email every Monday morning'],
+                ['Territory coverage milestone','When a territory hits 50% / 100% coverage']
+              ].map(([n,d],i) => `
+                <div class="setting-row">
+                  <div class="setting-row-info"><h4>${n}</h4><p>${d}</p></div>
+                  <label class="toggle"><input type="checkbox"${i<3?' checked':''}><div class="toggle-track"></div><div class="toggle-knob"></div></label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <h3>Security</h3>
+            <p>Access controls and session management.</p>
+            <div style="display:flex;flex-direction:column;gap:0">
+              ${[
+                ['Require email verification for new reps','Reps must verify email before accessing field app'],
+                ['Auto-expire inactive sessions','Sign out reps after 12 hours of inactivity'],
+                ['Log all disposition changes','Maintain audit trail of every status update'],
+              ].map(([n,d],i) => `
+                <div class="setting-row">
+                  <div class="setting-row-info"><h4>${n}</h4><p>${d}</p></div>
+                  <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-knob"></div></label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="danger-zone">
+            <h3>⚠️ Danger Zone</h3>
+            <p>Deleting your workspace is permanent and cannot be undone. All rep data, territories, and sales history will be lost.</p>
+            <button class="btn-danger">Delete Workspace</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────
+// ▶ zito.gs — your real backend
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
+const params = new URLSearchParams(window.location.search);
+const WS_ID  = params.get('ws') || 'zito-telecom-ab12cd';
+const WORKSPACE = { name:'Zito Media', plan:'Growth', adminName:'Manager', adminEmail:'' };
+const INVITE_TOKEN = params.get('token') || 'invite';
+
+// ── LIVE DATA — loaded from zito.gs ─────────────────
+let REPS        = [];   // from action=repstatus
+let TERRITORIES = [];   // from action=workspace_info
+let STATS       = {};   // from action=dailystats
+
+async function loadDashboardData() {
+  try {
+    // Load rep live status
+    const repRes = await fetch(SCRIPT_URL + '?action=repstatus&_t=' + Date.now());
+    const repJson = await repRes.json();
+    if (repJson.reps) {
+      REPS = repJson.reps.map((r,i) => ({
+        id:        'r' + i,
+        name:      r.name,
+        email:     '',
+        territory: '',
+        status:    r.status || 'offline',
+        sales:     r.totalSales || 0,
+        megaSales: r.megaSales  || 0,
+        gigSales:  r.gigSales   || 0,
+        doors:     r.doorsWorked || 0,
+        lastSeen:  r.lastSeen ? timeSince(r.lastSeen) : '—'
+      }));
+    }
+  } catch(e) { console.warn('Rep status load failed:', e); }
+
+  try {
+    // Load territory list + stats
+    const wsRes  = await fetch(SCRIPT_URL + '?action=workspace_info&_t=' + Date.now());
+    const wsJson = await wsRes.json();
+    if (wsJson.territories) {
+      TERRITORIES = wsJson.territories.map(name => ({
+        name, region:'', addresses:0, reps:0, sales:0, pct:0
+      }));
+    }
+    if (wsJson.company) WORKSPACE.name = wsJson.company;
+  } catch(e) { console.warn('Workspace info load failed:', e); }
+
+  try {
+    // Enrich territories with daily stats
+    const statRes  = await fetch(SCRIPT_URL + '?action=dailystats&days=1&_t=' + Date.now());
+    const statJson = await statRes.json();
+    if (statJson.rows) {
+      statJson.rows.forEach(function(row) {
+        const t = TERRITORIES.find(x => x.name === row.territory);
+        if (t) {
+          t.sales    = row.totalSales   || 0;
+          t.addresses= row.totalHomes   || 0;
+          t.pct      = row.totalHomes > 0
+            ? Math.round((row.worked / row.totalHomes) * 100) : 0;
+        }
+        STATS = row; // keep latest for summary
+      });
+    }
+  } catch(e) { console.warn('Stats load failed:', e); }
+
+  // Render everything with real data
+  document.querySelector('#sb-admin-name').textContent   = WORKSPACE.adminName;
+  document.querySelector('#sb-avatar-init').textContent  = initials(WORKSPACE.adminName);
+  document.querySelector('#ws-name-display').textContent = WORKSPACE.name;
+  document.querySelector('#next-bill-date').textContent  = nextBillDate();
+
+  fillOverview();
+  fillReps();
+  fillTerritories();
+  fillInvites();
+  fillBilling();
+}
+
+function timeSince(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)  return 'Now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h/24) + 'd ago';
+}
+
+// Init immediately, then auto-refresh every 90 seconds
+loadDashboardData();
+setInterval(loadDashboardData, 90000);
+
+// Nav
+document.querySelectorAll('.sb-item[data-panel]').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    item.classList.add('active');
+    const pid = 'panel-' + item.dataset.panel;
+    document.getElementById(pid).classList.add('active');
+    document.querySelector('#topbar-title').textContent = item.textContent.trim().replace('↗','').trim();
+    document.querySelector('#topbar-sub').textContent = item.dataset.panel + ' management';
+  });
+});
+
+// ── OVERVIEW ─────────────────────────────────────────
+function fillOverview() {
+  const online     = REPS.filter(r => r.status === 'online').length;
+  const totalSales = REPS.reduce((a,r) => a + r.sales, 0);
+  const totalDoors = REPS.reduce((a,r) => a + (r.doors || 0), 0);
+  const closeRate  = totalDoors > 0 ? ((totalSales / totalDoors) * 100).toFixed(1) + '%' : '—';
+
+  document.querySelector('#stat-reps').textContent  = online;
+  document.querySelector('#stat-sales').textContent = totalSales;
+  document.querySelector('#stat-doors').textContent = totalDoors > 0 ? totalDoors.toLocaleString() : '—';
+  document.querySelector('#stat-rate').textContent  = closeRate;
+  document.querySelector('#badge-reps').textContent = online > 0 ? online + ' live' : '';
+
+  // Activity feed: online reps sorted by last seen
+  const feed = document.querySelector('#activity-feed');
+  const onlineReps = [...REPS].filter(r => r.status === 'online')
+    .sort((a,b) => b.sales - a.sales);
+  if (onlineReps.length === 0) {
+    feed.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No reps currently online</div>';
+  } else {
+    feed.innerHTML = onlineReps.map(r => `
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:1px solid rgba(255,255,255,.04)">
+        <div style="font-size:16px;flex-shrink:0;margin-top:1px">🟢</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;color:var(--text);line-height:1.4">
+            <strong>${r.name}</strong> — ${r.sales} sales · ${r.doors} doors knocked
+          </div>
+          <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px">Active · ${r.lastSeen}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Quick stats panel
+  const bestRep = [...REPS].sort((a,b) => b.sales - a.sales)[0];
+  const avgCov  = TERRITORIES.length > 0
+    ? Math.round(TERRITORIES.reduce((a,t) => a + t.pct, 0) / TERRITORIES.length) + '%'
+    : '—';
+  const qs = document.querySelector('#quick-stats');
+  qs.innerHTML = '';
+  [
+    ['Online Now',    online + ' rep' + (online !== 1 ? 's' : ''), 'var(--gig)'],
+    ['Sales Today',   totalSales + ' total', 'var(--gold-text)'],
+    ['Doors Today',   totalDoors > 0 ? totalDoors.toLocaleString() : '—', 'var(--text2)'],
+    ['Close Rate',    closeRate, 'var(--gig)'],
+    ['Best Rep',      bestRep ? bestRep.name.split(' ')[0] + ' — ' + bestRep.sales + ' sales' : '—', 'var(--mega)'],
+    ['Avg Coverage',  avgCov, 'var(--text2)'],
+  ].forEach(([l,v,c]) => {
+    qs.innerHTML += `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+        <span style="font-size:12px;color:var(--muted)">${l}</span>
+        <span style="font-size:12px;font-weight:700;color:${c}">${v}</span>
+      </div>`;
+  });
+}
+
+// ── REPS ─────────────────────────────────────────────
+function fillReps() {
+  const online = REPS.filter(r=>r.status==='online').length;
+  document.querySelector('#seats-label').textContent = `${REPS.length} reps · ${online} online now`;
+  document.querySelector('#rep-rows').innerHTML = REPS.length === 0
+    ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);font-size:12px">No reps found — add reps to the Reps tab in your Google Sheet</td></tr>'
+    : REPS.map(r => `
+    <div class="rt-row">
+      <div class="rep-info">
+        <div class="rep-av ${r.status}">${initials(r.name)}</div>
+        <div><div class="rep-name">${r.name}</div><div class="rep-email">${r.email}</div></div>
+      </div>
+      <div class="rt-cell" style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${r.territory}</div>
+      <div class="rt-cell">
+        <div class="status-badge ${r.status}">
+          <div class="status-dot"></div>${r.status}
+        </div>
+      </div>
+      <div class="rt-cell" style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--gold-text)">${r.sales}</div>
+      <div class="rt-cell" style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${r.lastSeen}</div>
+      <div class="rt-actions">
+        <button class="rt-btn" onclick="viewRep('${r.id}')">View</button>
+        <button class="rt-btn danger" onclick="deactivateRep('${r.id}')">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── TERRITORIES ──────────────────────────────────────
+function fillTerritories() {
+  const g = document.querySelector('#terr-grid');
+  g.innerHTML = TERRITORIES.map(t => `
+    <div class="terr-card">
+      <div class="terr-name">${t.name}</div>
+      <div class="terr-region">${t.region}</div>
+      <div class="terr-stats">
+        <div class="terr-stat"><div class="terr-stat-val">${t.reps}</div><div class="terr-stat-lbl">Reps</div></div>
+        <div class="terr-stat"><div class="terr-stat-val">${t.sales}</div><div class="terr-stat-lbl">Sales</div></div>
+        <div class="terr-stat"><div class="terr-stat-val">${t.addresses.toLocaleString()}</div><div class="terr-stat-lbl">Addresses</div></div>
+        <div class="terr-stat"><div class="terr-stat-val" style="color:${t.pct>40?'var(--gig)':t.pct>15?'var(--warn)':'var(--muted)'}">${t.pct}%</div><div class="terr-stat-lbl">Coverage</div></div>
+      </div>
+      <div class="terr-actions">
+        <button class="terr-btn">Edit</button>
+        <button class="terr-btn" onclick="goToRouteReplay('${t.name}')">▶ Route Replay</button>
+        <button class="terr-btn" onclick="window.location.href='index.html'">Open Field App</button>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="terr-card add-terr-card" onclick="openModal('territory')">
+      <div class="add-terr-icon">＋</div>
+      <div class="add-terr-label">Add Territory</div>
+    </div>
+  `;
+}
+
+// ── INVITES ──────────────────────────────────────────
+function fillInvites() {
+  const link = `${window.location.origin}/rep-invite.html?ws=${WS_ID}&token=${INVITE_TOKEN}`;
+  const linkEl = document.querySelector('#inv-link-display');
+  if(linkEl) linkEl.textContent = link;
+  document.querySelector('#inv-uses').textContent    = REPS.length;
+  document.querySelector('#inv-pending').textContent = INVITES.length;
+
+  const btn = document.querySelector('#inv-copy-btn');
+  if(btn) btn.addEventListener('click', function() {
+    navigator.clipboard.writeText(link).then(() => {
+      this.textContent = '✓ Copied!'; this.classList.add('copied');
+      setTimeout(() => { this.textContent = 'Copy'; this.classList.remove('copied'); }, 2500);
+    });
+  });
+  renderInviteEmails();
+}
+
+function renderInviteEmails() {
+  const el = document.querySelector('#invite-email-list');
+  if(!el) return;
+  el.innerHTML = INVITES.map(e => `
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid rgba(251,146,60,.2);border-radius:9px;padding:9px 13px;font-size:12px">
+      <span style="color:var(--text2)">${e}</span>
+      <span style="font-size:10px;color:var(--warn);font-family:'IBM Plex Mono',monospace;font-weight:700">PENDING</span>
+    </div>
+  `).join('');
+}
+
+function sendEmailInvite() {
+  const inp = document.querySelector('#inv-email-input');
+  const v = inp.value.trim();
+  if(v && v.includes('@') && !INVITES.includes(v)) {
+    INVITES.push(v); inp.value = '';
+    document.querySelector('#inv-pending').textContent = INVITES.length;
+    renderInviteEmails();
+  }
+}
+
+function regenerateToken() {
+  alert('Invite link regenerated. Old link is now invalid.');
+}
+
+// ── BILLING ──────────────────────────────────────────
+function fillBilling() {
+  const ub = document.querySelector('#usage-bars');
+  if(!ub) return;
+  const items = [
+    { name:'Rep Seats', used:5, total:25 },
+    { name:'Territories', used:3, total:null },
+    { name:'AI Analysis Runs', used:14, total:50 },
+  ];
+  ub.innerHTML = items.map(it => {
+    const pct = it.total ? Math.round((it.used/it.total)*100) : null;
+    const cls = pct > 90 ? 'full' : pct > 70 ? 'warn' : '';
+    return `
+      <div style="margin-bottom:14px">
+        <div class="usage-row">
+          <div class="usage-name">${it.name}</div>
+          <div class="usage-nums">${it.used}${it.total?' / '+it.total:' used'}</div>
+        </div>
+        ${it.total ? `<div class="usage-track"><div class="usage-fill ${cls}" style="width:${pct}%"></div></div>` : ''}
+      </div>`;
+  }).join('');
+
+  const il = document.querySelector('#invoice-list');
+  if(!il) return;
+  const months = ['Feb 2026','Jan 2026','Dec 2025','Nov 2025'];
+  il.innerHTML = months.map(m => `
+    <div class="invoice-row">
+      <div class="invoice-date">${m}</div>
+      <div style="color:var(--text2);font-size:12px">Growth Plan</div>
+      <div class="invoice-badge paid">Paid</div>
+      <div class="invoice-amt">$149.00</div>
+      <button class="invoice-dl" title="Download PDF">⬇</button>
+    </div>
+  `).join('');
+}
+
+// ── MODALS ───────────────────────────────────────────
+function openModal(type) {
+  const mc = document.querySelector('#modal-content');
+  if(type === 'invite') {
+    mc.innerHTML = `
+      <div class="modal-title">Invite a Rep</div>
+      <div class="modal-sub">They'll receive an email with their workspace invite link and setup instructions.</div>
+      <div class="modal-field"><label>Full Name</label><input type="text" id="m-name" placeholder="Alex Johnson"></div>
+      <div class="modal-field"><label>Work Email</label><input type="email" id="m-email" placeholder="alex@company.com"></div>
+      <div class="modal-field"><label>Assign Territory</label>
+        <select id="m-terr">${TERRITORIES.map(t=>`<option>${t.name}</option>`).join('')}</select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-modal-confirm" onclick="sendInvite()">Send Invite →</button>
+      </div>`;
+  } else if(type === 'territory') {
+    mc.innerHTML = `
+      <div class="modal-title">Add Territory</div>
+      <div class="modal-sub">Create a new coverage zone. Upload your KML file to populate addresses automatically.</div>
+      <div class="modal-field"><label>Territory Name</label><input type="text" id="m-tname" placeholder="Nacogdoches, TX"></div>
+      <div class="modal-field"><label>Region / State</label><input type="text" id="m-tregion" placeholder="East Texas"></div>
+      <div class="modal-field"><label>KML File <span style="color:var(--muted);font-size:9px">OPTIONAL — upload after setup</span></label>
+        <input type="file" accept=".kml" style="background:var(--surface2);border:1px dashed rgba(212,165,58,.3);padding:14px;border-radius:9px;color:var(--text2);cursor:pointer">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-modal-confirm" onclick="addTerritory()">Create Territory →</button>
+      </div>`;
+  }
+  document.querySelector('#modal-overlay').classList.add('open');
+}
+
+function closeModal() { document.querySelector('#modal-overlay').classList.remove('open'); }
+
+function sendInvite() {
+  const name  = document.querySelector('#m-name').value.trim();
+  const email = document.querySelector('#m-email').value.trim();
+  if(!name || !email) { alert('Please fill in all fields.'); return; }
+  INVITES.push(email);
+  closeModal();
+  alert(`Invite sent to ${email}!`);
+}
+
+function addTerritory() {
+  const name   = document.querySelector('#m-tname').value.trim();
+  const region = document.querySelector('#m-tregion').value.trim();
+  if(!name) { alert('Territory name required.'); return; }
+  TERRITORIES.push({ name, region:region||'Unknown', addresses:0, reps:0, sales:0, pct:0 });
+  fillTerritories();
+  closeModal();
+}
+
+function deactivateRep(id) {
+  if(confirm('Deactivate this rep? They will lose access to the field app.')) {
+    alert('Rep deactivated. Seat freed.');
+  }
+}
+function viewRep(id) { alert('Rep profile — coming soon in next update.'); }
+function goToFieldApp() { window.location.href = 'index.html'; }
+function goToRouteReplay(territory) {
+  const terr = territory || (TERRITORIES[0] && TERRITORIES[0].name) || '';
+  window.location.href = 'route-replay.html' + (terr ? '?territory=' + encodeURIComponent(terr) : '');
+}
+
+// ── HELPERS ──────────────────────────────────────────
+function initials(name) { return name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
+function nextBillDate() {
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+
+// Close modal on overlay click
+document.querySelector('#modal-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

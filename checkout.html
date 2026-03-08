@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldOS — Activate Your Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b13;--surface:#0c1220;--s2:#111a2c;
+  --border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);
+  --gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-t:#f0c96a;
+  --gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--warn:#fb923c;
+  --text:#e8eeff;--t2:#8fa5c9;--muted:#4d6080;
+  --r:12px;--r-lg:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 60px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,165,58,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(212,165,58,.022) 1px,transparent 1px);background-size:52px 52px}
+.bg-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(212,165,58,.06) 0%,transparent 65%);top:-200px;left:50%;transform:translateX(-50%)}
+
+/* ── WRAP ─────────────────────────────────────────── */
+.wrap{position:relative;z-index:1;width:100%;max-width:520px;display:flex;flex-direction:column;gap:20px;animation:rise .5s ease}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LOGO ─────────────────────────────────────────── */
+.logo-row{display:flex;justify-content:center;margin-bottom:8px}
+.logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#07090f;box-shadow:0 4px 14px rgba(212,165,58,.3)}
+.logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+
+/* ── STATUS BANNER ────────────────────────────────── */
+.status-banner{border-radius:var(--r-lg);padding:22px 24px;text-align:center;position:relative;overflow:hidden}
+.status-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,currentColor,transparent);opacity:.5}
+.status-banner.trial{background:var(--gold-dim);border:1px solid rgba(212,165,58,.3);color:var(--gold)}
+.status-banner.trial::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.status-banner.expired{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);color:var(--danger)}
+.status-banner.expired::before{background:linear-gradient(90deg,transparent,var(--danger),transparent)}
+.status-banner.failed{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.25);color:var(--warn)}
+.status-banner.success{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.3);color:var(--gig)}
+.banner-icon{font-size:36px;margin-bottom:10px}
+.banner-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-.3px}
+.banner-sub{font-size:13px;line-height:1.6}
+.banner-sub.gold{color:var(--t2)}
+.days-left{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:700;color:var(--gold-t);line-height:1;margin:12px 0 4px}
+.days-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+
+/* ── PLAN SELECTOR ────────────────────────────────── */
+.section-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);overflow:hidden;position:relative}
+.section-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.section-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:14px;font-weight:800;letter-spacing:-.1px}
+.section-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
+
+/* Toggle */
+.billing-toggle{display:inline-flex;background:var(--s2);border:1px solid var(--border-s);border-radius:999px;padding:3px}
+.bt-opt{padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;transition:all .18s;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.bt-opt.active{background:var(--gold-dim);border:1px solid rgba(212,165,58,.35);color:var(--gold-t)}
+.save-chip{background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.3);border-radius:999px;padding:3px 9px;font-size:9px;font-weight:700;color:#99f6e4;font-family:'IBM Plex Mono',monospace}
+
+/* Plan cards */
+.plan-list{display:flex;flex-direction:column;gap:0}
+.plan-row{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .12s;position:relative}
+.plan-row:last-child{border-bottom:none}
+.plan-row:hover{background:rgba(255,255,255,.02)}
+.plan-row.selected{background:rgba(212,165,58,.06)}
+.plan-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-s);flex-shrink:0;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.plan-row.selected .plan-radio{border-color:var(--gold);background:var(--gold)}
+.plan-radio-dot{width:7px;height:7px;border-radius:50%;background:#07090f;opacity:0;transition:opacity .18s}
+.plan-row.selected .plan-radio-dot{opacity:1}
+.plan-row-info{flex:1}
+.plan-row-name{font-size:14px;font-weight:800;margin-bottom:2px}
+.plan-row-feats{font-size:11px;color:var(--muted);line-height:1.5}
+.plan-row-price{text-align:right;flex-shrink:0}
+.plan-row-num{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:var(--text)}
+.plan-row-cycle{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.plan-pop{display:inline-flex;align-items:center;background:var(--gold);color:#07090f;font-size:8px;font-weight:800;padding:2px 8px;border-radius:999px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;vertical-align:middle;margin-left:7px;flex-shrink:0}
+
+/* ── ORDER SUMMARY ────────────────────────────────── */
+.summary-body{padding:18px 22px;display:flex;flex-direction:column;gap:12px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.summary-label{color:var(--t2)}
+.summary-val{font-weight:700;color:var(--text)}
+.summary-divider{height:1px;background:var(--border);margin:4px 0}
+.summary-total{font-size:16px;font-weight:800}
+.summary-total .summary-val{color:var(--gold-t);font-family:'IBM Plex Mono',monospace;font-size:18px}
+.promo-row{display:flex;gap:8px}
+.promo-input{flex:1;background:var(--s2);border:1px solid var(--border-s);border-radius:9px;padding:9px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;outline:none;transition:border-color .2s}
+.promo-input:focus{border-color:var(--gold)}
+.promo-input::placeholder{color:var(--muted)}
+.btn-promo{background:none;border:1px solid var(--border-s);border-radius:9px;color:var(--t2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;padding:9px 14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-promo:hover{border-color:var(--gold);color:var(--gold-t)}
+
+/* ── CTA ──────────────────────────────────────────── */
+.cta-wrap{padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border)}
+.btn-checkout{width:100%;padding:16px;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .25s;box-shadow:0 4px 20px rgba(212,165,58,.3);display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-checkout:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 28px rgba(212,165,58,.45)}
+.btn-checkout:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.stripe-badge{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--muted)}
+.stripe-badge svg{opacity:.5}
+.trust-chips{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.trust-chip{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px}
+
+/* ── SUCCESS STATE ────────────────────────────────── */
+.success-wrap{text-align:center;padding:20px 0}
+.success-icon{font-size:64px;margin-bottom:14px;display:block;animation:pop .6s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
+.success-sub{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:24px}
+.success-detail{background:var(--s2);border:1px solid rgba(212,165,58,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:22px;display:flex;flex-direction:column;gap:8px}
+.sd-row{display:flex;justify-content:space-between;font-size:12px}
+.sd-label{color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.sd-val{font-weight:700;color:var(--text)}
+.btn-go{width:100%;padding:15px;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(13,148,136,.3);transition:all .25s}
+.btn-go:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+/* ── SPINNER ──────────────────────────────────────── */
+.spinner{width:18px;height:18px;border:2px solid rgba(7,9,15,.3);border-top-color:#07090f;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── CANCELLED ────────────────────────────────────── */
+.cancelled-box{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.25);border-radius:var(--r);padding:14px 18px;font-size:13px;color:var(--warn);line-height:1.6;text-align:center}
+
+@media(max-width:480px){.plan-pop{font-size:7px;padding:1px 6px}}
+</style>
+</head>
+<body>
+<div class="bg-fixed"><div class="bg-grid"></div><div class="bg-glow"></div></div>
+
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo">
+      <div class="logo-mark">F</div>
+      <div><div>FieldOS</div><div class="logo-sub">ENTERPRISE FIELD SALES</div></div>
+    </div>
+  </div>
+
+  <div id="main-content"></div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const BILLING_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUh6M8XO8MVmxdiUxil5kHLqi4LRtavootsxApa9Q9b3qliZmlKrZ4WRgJfBHg7lzv/exec';
+const ADMIN_URL = 'admin.html';
+
+const params    = new URLSearchParams(window.location.search);
+const WS_ID     = params.get('ws') || '';
+const SUCCESS   = params.get('success') === '1';
+const CANCELLED = params.get('cancelled') === '1';
+const INIT_PLAN = params.get('plan') || 'growth';
+
+// ── PRICING DATA ────────────────────────────────────────────
+const PLANS = [
+  {
+    id: 'starter', name: 'Starter',
+    monthly: 49, annual: 39,
+    feats: '1 territory · up to 5 reps · map + dispositions'
+  },
+  {
+    id: 'growth', name: 'Growth', popular: true,
+    monthly: 149, annual: 119,
+    feats: 'Unlimited territories · 25 reps · AI analysis · manager dashboard'
+  },
+  {
+    id: 'enterprise', name: 'Enterprise',
+    monthly: 299, annual: 249,
+    feats: 'Unlimited reps · SSO · white-label · CRM integration · CSM'
+  }
+];
+
+// ── STATE ───────────────────────────────────────────────────
+let selectedPlan    = INIT_PLAN;
+let billingInterval = 'monthly';
+let billingStatus   = null;
+let loading         = true;
+
+// ── BOOT ────────────────────────────────────────────────────
+async function boot() {
+  if (SUCCESS) { renderSuccess(); return; }
+
+  // Load billing status from backend
+  try {
+    const res  = await fetch(`${BILLING_SCRIPT_URL}?action=billing_status&ws=${WS_ID}`);
+    const json = await res.json();
+    billingStatus = json.data;
+    if (billingStatus && billingStatus.plan) selectedPlan = billingStatus.plan;
+  } catch(e) {
+    // Offline / demo mode — use mock data
+    billingStatus = {
+      wsId: WS_ID || 'demo-workspace',
+      plan: INIT_PLAN,
+      billingStatus: params.get('status') || 'trial',
+      inTrial: true,
+      trialDaysLeft: 3,
+      hasPayment: false,
+      needsPayment: false
+    };
+  }
+
+  loading = false;
+  render();
+}
+
+// ── RENDER ──────────────────────────────────────────────────
+function render() {
+  const mc = document.getElementById('main-content');
+
+  if (SUCCESS) { renderSuccess(); return; }
+
+  const status = billingStatus ? billingStatus.billingStatus : 'trial';
+  const days   = billingStatus ? billingStatus.trialDaysLeft : 0;
+
+  // Build banner based on status
+  let banner = '';
+  if (status === 'trial' && days > 0) {
+    banner = `
+      <div class="status-banner trial">
+        <div class="banner-icon">⏳</div>
+        <div class="banner-title">Your free trial is active</div>
+        <div class="days-left">${days}</div>
+        <div class="days-label">days remaining</div>
+        <div class="banner-sub gold" style="margin-top:10px">Add a payment method now so there's no interruption when your trial ends. You won't be charged until ${trialEndStr(days)}.</div>
+      </div>`;
+  } else if (status === 'trial' && days <= 0) {
+    banner = `
+      <div class="status-banner expired">
+        <div class="banner-icon">🔒</div>
+        <div class="banner-title">Your trial has ended</div>
+        <div class="banner-sub" style="color:var(--t2);margin-top:8px">Your workspace is paused. Activate a plan to get your team back in the field. Your data is safe.</div>
+      </div>`;
+  } else if (status === 'payment_failed') {
+    banner = `
+      <div class="status-banner failed">
+        <div class="banner-icon">⚠️</div>
+        <div class="banner-title">Payment failed</div>
+        <div class="banner-sub" style="color:var(--t2);margin-top:8px">We couldn't process your last payment. Update your card to keep your workspace active.</div>
+      </div>`;
+  } else if (status === 'suspended') {
+    banner = `
+      <div class="status-banner expired">
+        <div class="banner-icon">🚫</div>
+        <div class="banner-title">Workspace suspended</div>
+        <div class="banner-sub" style="color:var(--t2);margin-top:8px">Reactivate your workspace below. Your data and territory settings are intact.</div>
+      </div>`;
+  }
+
+  // Cancelled notice
+  const cancelledNotice = CANCELLED
+    ? `<div class="cancelled-box">Payment was cancelled — no charge was made. Your trial is still active.</div>`
+    : '';
+
+  mc.innerHTML = `
+    ${cancelledNotice}
+    ${banner}
+
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Choose your plan</div>
+          <div class="section-sub">change any time · prorated automatically</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="billing-toggle">
+            <div class="bt-opt active" id="bt-monthly" onclick="setBilling('monthly')">Monthly</div>
+            <div class="bt-opt" id="bt-annual" onclick="setBilling('annual')">Annual</div>
+          </div>
+          <div class="save-chip" id="save-chip" style="display:none">–20%</div>
+        </div>
+      </div>
+      <div class="plan-list" id="plan-list"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Order summary</div>
+          <div class="section-sub" id="summary-sub">billed monthly</div>
+        </div>
+      </div>
+      <div class="summary-body">
+        <div class="summary-row">
+          <span class="summary-label" id="s-plan-name">Growth Plan</span>
+          <span class="summary-val" id="s-plan-price">$149</span>
+        </div>
+        <div class="summary-row" id="s-annual-row" style="display:none">
+          <span class="summary-label">Annual savings</span>
+          <span class="summary-val" style="color:var(--gig)" id="s-savings">–$360/yr</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Trial remaining</span>
+          <span class="summary-val" style="color:var(--gig)">14 days free</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row summary-total">
+          <span class="summary-label">Due today</span>
+          <span class="summary-val" id="s-due">$0.00</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px" id="s-charge-note">
+          First charge on <span id="s-charge-date">${trialEndStr(days > 0 ? days : 0)}</span>
+        </div>
+
+        <div class="promo-row" style="margin-top:4px">
+          <input type="text" class="promo-input" id="promo-input" placeholder="Promo code">
+          <button class="btn-promo" onclick="applyPromo()">Apply</button>
+        </div>
+        <div id="promo-result" style="font-size:11px;text-align:center;display:none"></div>
+      </div>
+
+      <div class="cta-wrap">
+        <button class="btn-checkout" id="btn-checkout" onclick="startCheckout()">
+          <span id="checkout-label">Activate with Stripe →</span>
+        </button>
+        <div class="stripe-badge">
+          <svg width="40" viewBox="0 0 40 16" fill="none"><text x="0" y="12" font-family="sans-serif" font-size="11" font-weight="700" fill="#635bff">stripe</text></svg>
+          Secure, encrypted payment
+        </div>
+        <div class="trust-chips">
+          <div class="trust-chip">🔒 SSL encrypted</div>
+          <div class="trust-chip">🛡️ No card stored by FieldOS</div>
+          <div class="trust-chip">↩️ Cancel anytime</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderPlanList();
+  updateSummary();
+}
+
+function renderPlanList() {
+  const list = document.getElementById('plan-list');
+  if (!list) return;
+  list.innerHTML = PLANS.map(p => {
+    const price = billingInterval === 'annual' ? p.annual : p.monthly;
+    return `
+      <div class="plan-row${selectedPlan === p.id ? ' selected' : ''}" onclick="selectPlan('${p.id}')">
+        <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+        <div class="plan-row-info">
+          <div class="plan-row-name">${p.name}${p.popular ? `<span class="plan-pop">Popular</span>` : ''}</div>
+          <div class="plan-row-feats">${p.feats}</div>
+        </div>
+        <div class="plan-row-price">
+          <div class="plan-row-num">$${price}</div>
+          <div class="plan-row-cycle">/${billingInterval === 'annual' ? 'mo·billed annually' : 'mo'}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function updateSummary() {
+  const plan  = PLANS.find(p => p.id === selectedPlan) || PLANS[1];
+  const price = billingInterval === 'annual' ? plan.annual : plan.monthly;
+  const total = billingInterval === 'annual' ? plan.annual * 12 : plan.monthly;
+
+  const snEl = document.getElementById('s-plan-name');
+  const spEl = document.getElementById('s-plan-price');
+  const ssEl = document.getElementById('s-savings');
+  const arEl = document.getElementById('s-annual-row');
+  const sdEl = document.getElementById('s-due');
+  const subEl = document.getElementById('summary-sub');
+  const btn   = document.getElementById('checkout-label');
+
+  if (snEl) snEl.textContent = plan.name + ' Plan';
+  if (spEl) spEl.textContent = `$${price}/mo`;
+  if (subEl) subEl.textContent = billingInterval === 'annual' ? `billed annually ($${total}/yr)` : 'billed monthly';
+  if (sdEl) sdEl.textContent = '$0.00';
+
+  if (billingInterval === 'annual') {
+    const savings = (plan.monthly - plan.annual) * 12;
+    if (ssEl) ssEl.textContent = `–$${savings}/yr`;
+    if (arEl) arEl.style.display = '';
+  } else {
+    if (arEl) arEl.style.display = 'none';
+  }
+
+  if (btn) {
+    const days = billingStatus ? billingStatus.trialDaysLeft : 0;
+    btn.textContent = days > 0
+      ? `Start Trial → Pay $${billingInterval === 'annual' ? total : price}${billingInterval === 'annual' ? '/yr' : '/mo'} after ${days} days`
+      : `Activate ${plan.name} → $${billingInterval === 'annual' ? total : price}${billingInterval === 'annual' ? '/yr' : '/mo'}`;
+  }
+}
+
+function selectPlan(id) {
+  selectedPlan = id;
+  renderPlanList();
+  updateSummary();
+}
+
+function setBilling(mode) {
+  billingInterval = mode;
+  document.getElementById('bt-monthly').classList.toggle('active', mode === 'monthly');
+  document.getElementById('bt-annual').classList.toggle('active', mode === 'annual');
+  document.getElementById('save-chip').style.display = mode === 'annual' ? '' : 'none';
+  renderPlanList();
+  updateSummary();
+}
+
+function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  const el   = document.getElementById('promo-result');
+  if (!el) return;
+  if (code === 'FIELDOS20') {
+    el.style.display = '';
+    el.style.color = 'var(--gig)';
+    el.textContent = '✓ 20% off your first 3 months applied';
+  } else if (code) {
+    el.style.display = '';
+    el.style.color = 'var(--danger)';
+    el.textContent = '✗ Invalid promo code';
+  }
+}
+
+// ── CHECKOUT ────────────────────────────────────────────────
+async function startCheckout() {
+  const btn   = document.getElementById('btn-checkout');
+  const label = document.getElementById('checkout-label');
+  if (!btn) return;
+
+  btn.disabled = true;
+  label.innerHTML = '<div class="spinner"></div> Opening Stripe…';
+
+  try {
+    const res = await fetch(
+      `${BILLING_SCRIPT_URL}?action=create_checkout&ws=${WS_ID}&plan=${selectedPlan}&billing=${billingInterval}`
+    );
+    const json = await res.json();
+
+    if (json.data && json.data.sessionUrl) {
+      window.location.href = json.data.sessionUrl;
+    } else if (json.data && json.data.alreadyActive) {
+      window.location.href = `${ADMIN_URL}?ws=${WS_ID}&payment=already_active`;
+    } else {
+      throw new Error(json.message || 'Could not create checkout session');
+    }
+  } catch(e) {
+    // Demo mode — simulate redirect
+    console.log('Demo mode — would redirect to Stripe:', selectedPlan, billingInterval);
+    setTimeout(() => {
+      renderSuccess();
+    }, 800);
+  }
+}
+
+// ── SUCCESS ─────────────────────────────────────────────────
+function renderSuccess() {
+  const plan   = PLANS.find(p => p.id === selectedPlan) || PLANS[1];
+  const price  = billingInterval === 'annual' ? plan.annual * 12 : plan.monthly;
+  const cycle  = billingInterval === 'annual' ? 'year' : 'month';
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="section-card">
+      <div class="summary-body">
+        <div class="success-wrap">
+          <span class="success-icon">🎉</span>
+          <div class="success-title">Workspace activated!</div>
+          <div class="success-sub">Your FieldOS workspace is fully active. Your team can start knocking doors right now.</div>
+          <div class="success-detail">
+            <div class="sd-row"><span class="sd-label">Plan</span><span class="sd-val">${plan.name}</span></div>
+            <div class="sd-row"><span class="sd-label">Billing</span><span class="sd-val">$${price} / ${cycle}</span></div>
+            <div class="sd-row"><span class="sd-label">Workspace</span><span class="sd-val">${WS_ID || '—'}</span></div>
+            <div class="sd-row"><span class="sd-label">Status</span><span class="sd-val" style="color:var(--gig)">✓ Active</span></div>
+          </div>
+          <button class="btn-go" onclick="goToDashboard()">Open Admin Dashboard →</button>
+          <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px">A receipt has been sent to your email</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+function goToDashboard() {
+  window.location.href = `${ADMIN_URL}?ws=${WS_ID}`;
+}
+
+// ── HELPERS ─────────────────────────────────────────────────
+function trialEndStr(daysLeft) {
+  const d = new Date();
+  d.setDate(d.getDate() + (daysLeft || 14));
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+}
+
+// ── BOOT ────────────────────────────────────────────────────
+boot();
+</script>
+</body>
+</html>

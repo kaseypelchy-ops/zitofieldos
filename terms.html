@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — FieldOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b13;--surface:#0c1220;--s2:#111a2c;--border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);--gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-t:#f0c96a;--gig:#2dd4bf;--danger:#f43f5e;--text:#e8eeff;--t2:#8fa5c9;--muted:#4d6080;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.7}
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,165,58,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(212,165,58,.018) 1px,transparent 1px);background-size:52px 52px}
+#topbar{position:fixed;top:0;left:0;right:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(7,11,19,.92);border-bottom:1px solid var(--border-s);backdrop-filter:blur(16px);z-index:100;box-shadow:0 1px 0 rgba(212,165,58,.08)}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;text-decoration:none;color:var(--text)}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#07090f;box-shadow:0 3px 10px rgba(212,165,58,.3)}
+.logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+.topbar-links{display:flex;gap:16px;font-size:12px}
+.topbar-links a{color:var(--t2);text-decoration:none;transition:color .15s}
+.topbar-links a:hover{color:var(--gold-t)}
+.topbar-links a.active{color:var(--gold-t);font-weight:700}
+.page-wrap{position:relative;z-index:1;display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1100px;margin:0 auto;padding:80px 24px 80px;min-height:100vh}
+.toc{position:sticky;top:80px;height:fit-content;padding:20px 0 20px 0;padding-right:32px}
+.toc-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:14px}
+.toc-list{display:flex;flex-direction:column;gap:2px}
+.toc-item{font-size:12px;color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;transition:all .15s;border-left:2px solid transparent;line-height:1.4}
+.toc-item:hover{color:var(--t2);background:rgba(255,255,255,.03)}
+.toc-item.active{color:var(--gold-t);border-left-color:var(--gold);background:var(--gold-dim)}
+.content{min-width:0}
+.doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border-s)}
+.doc-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--gold);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.doc-eyebrow::before{content:'';width:20px;height:1px;background:var(--gold)}
+.doc-title{font-size:36px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+.doc-meta{display:flex;gap:20px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;flex-wrap:wrap}
+.doc-intro{margin-top:20px;font-size:14px;color:var(--t2);line-height:1.8;padding:18px 22px;background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.18);border-radius:var(--r)}
+.doc-section{margin-bottom:52px;scroll-margin-top:80px}
+.section-num{font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
+.section-title{font-size:20px;font-weight:800;letter-spacing:-.2px;margin-bottom:16px;color:var(--text)}
+.section-body{font-size:14px;color:var(--t2);line-height:1.85}
+.section-body p{margin-bottom:14px}
+.section-body p:last-child{margin-bottom:0}
+.section-body strong{color:var(--text);font-weight:700}
+.section-body a{color:var(--gold-t);text-decoration:underline}
+.doc-list{margin:10px 0 14px 0;display:flex;flex-direction:column;gap:6px}
+.doc-list li{font-size:14px;color:var(--t2);line-height:1.7;display:flex;align-items:flex-start;gap:10px;list-style:none}
+.doc-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:9px}
+.info-box{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t2);line-height:1.7;position:relative;overflow:hidden}
+.info-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.info-box.danger::before{background:var(--danger)}
+.info-box.teal::before{background:var(--gig)}
+.info-box strong{color:var(--text)}
+.doc-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+.doc-table th{text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:1px solid var(--border-s);background:var(--s2)}
+.doc-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--t2);vertical-align:top;line-height:1.6}
+.doc-table tr:last-child td{border-bottom:none}
+.doc-table tr:hover td{background:rgba(255,255,255,.015)}
+.contact-box{background:var(--surface);border:1px solid rgba(212,165,58,.25);border-radius:var(--r);padding:20px 24px;margin-top:16px;position:relative;overflow:hidden}
+.contact-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.contact-box h4{font-size:14px;font-weight:800;margin-bottom:8px}
+.contact-box p{font-size:13px;color:var(--t2);line-height:1.7}
+.contact-box a{color:var(--gold-t)}
+.caps-warning{font-size:13px;font-weight:700;color:var(--text);line-height:1.7;background:var(--s2);border:1px solid var(--border-s);border-radius:var(--r);padding:16px 20px;margin:14px 0}
+@media(max-width:800px){.page-wrap{grid-template-columns:1fr;padding:74px 20px 60px}.toc{display:none}.doc-title{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="bg-fixed"><div class="bg-grid"></div></div>
+
+<nav id="topbar">
+  <a class="logo" href="landing.html">
+    <div class="logo-mark">F</div>
+    <div><div>FieldOS</div><div class="logo-sub">ENTERPRISE FIELD SALES</div></div>
+  </a>
+  <div class="topbar-links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html" class="active">Terms of Service</a>
+    <a href="landing.html#pricing">Pricing</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <aside class="toc">
+    <div class="toc-label">On this page</div>
+    <div class="toc-list">
+      <a class="toc-item active" href="#acceptance">Acceptance of Terms</a>
+      <a class="toc-item" href="#definitions">Definitions</a>
+      <a class="toc-item" href="#account">Account & Workspace</a>
+      <a class="toc-item" href="#subscriptions">Subscriptions & Billing</a>
+      <a class="toc-item" href="#trial">Free Trial</a>
+      <a class="toc-item" href="#refunds">Refund Policy</a>
+      <a class="toc-item" href="#acceptable-use">Acceptable Use</a>
+      <a class="toc-item" href="#your-data">Your Data</a>
+      <a class="toc-item" href="#ip">Intellectual Property</a>
+      <a class="toc-item" href="#availability">Service Availability</a>
+      <a class="toc-item" href="#disclaimers">Disclaimers</a>
+      <a class="toc-item" href="#liability">Limitation of Liability</a>
+      <a class="toc-item" href="#indemnification">Indemnification</a>
+      <a class="toc-item" href="#termination">Termination</a>
+      <a class="toc-item" href="#disputes">Disputes</a>
+      <a class="toc-item" href="#general">General</a>
+      <a class="toc-item" href="#contact">Contact</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <div class="doc-header">
+      <div class="doc-eyebrow">Legal</div>
+      <h1 class="doc-title">Terms of Service</h1>
+      <div class="doc-meta">
+        <span>📅 Effective: January 1, 2026</span>
+        <span>🔄 Last updated: March 7, 2026</span>
+        <span>📍 Governing law: State of Texas, United States</span>
+      </div>
+      <div class="doc-intro">
+        ⚠️ <strong style="color:var(--text)">Please read these Terms carefully before using FieldOS.</strong> By creating a workspace, inviting users, or using any part of our platform, you agree to be bound by these Terms of Service. If you are agreeing on behalf of a company or other legal entity, you represent that you have the authority to bind that entity.
+      </div>
+    </div>
+
+    <!-- 1. ACCEPTANCE -->
+    <div class="doc-section" id="acceptance">
+      <div class="section-num">01</div>
+      <h2 class="section-title">Acceptance of Terms</h2>
+      <div class="section-body">
+        <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("Customer," "you," or "your") and FieldOS ("FieldOS," "we," "us," or "our") governing your access to and use of the FieldOS platform, including our field sales application, admin dashboard, analytics tools, and all related services (collectively, the "Service").</p>
+        <p>By accessing or using the Service, you confirm that you are at least 18 years of age, have the legal authority to enter into this agreement, and agree to be bound by these Terms and our <a href="privacy.html">Privacy Policy</a>, which is incorporated herein by reference.</p>
+        <p>If you do not agree to these Terms, you may not use the Service.</p>
+      </div>
+    </div>
+
+    <!-- 2. DEFINITIONS -->
+    <div class="doc-section" id="definitions">
+      <div class="section-num">02</div>
+      <h2 class="section-title">Definitions</h2>
+      <div class="section-body">
+        <ul class="doc-list">
+          <li><strong>"Workspace"</strong> means an isolated instance of the FieldOS platform provisioned for a single company, associated with a dedicated Google Sheet data store.</li>
+          <li><strong>"Workspace Administrator" or "Admin"</strong> means the individual who creates a Workspace and holds administrative control, including the ability to add/remove Reps and manage billing.</li>
+          <li><strong>"Rep"</strong> means a field sales representative added to a Workspace by an Admin who uses the FieldOS field app.</li>
+          <li><strong>"Customer Data"</strong> means all data submitted to, stored in, or generated by the Service through your use, including territory data, door dispositions, sales records, customer contact information, and schedule bookings.</li>
+          <li><strong>"Subscription"</strong> means paid access to the Service under a chosen plan on a monthly or annual billing cycle.</li>
+          <li><strong>"Trial"</strong> means a free 14-day period of access to the Service prior to requiring a paid Subscription.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. ACCOUNT -->
+    <div class="doc-section" id="account">
+      <div class="section-num">03</div>
+      <h2 class="section-title">Account &amp; Workspace</h2>
+      <div class="section-body">
+        <p><strong>Registration.</strong> To use the Service, a Workspace Administrator must create a Workspace by providing accurate and complete information. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your Workspace.</p>
+        <p><strong>Accuracy.</strong> You agree to provide accurate, current, and complete information during registration and to update that information as necessary to keep it accurate.</p>
+        <p><strong>One account per entity.</strong> Each company or legal entity may create one active Workspace per plan tier. Creating duplicate Workspaces to circumvent plan limits is prohibited.</p>
+        <p><strong>Rep accounts.</strong> The Workspace Administrator is responsible for the actions of all Reps added to their Workspace. You are responsible for ensuring Reps comply with these Terms. You must promptly remove Rep access when a Rep is no longer authorized to use the Service (e.g., upon employment termination).</p>
+        <p><strong>Notification of breach.</strong> You must immediately notify us at <a href="mailto:security@fieldos.io">security@fieldos.io</a> of any unauthorized use of your account or any other security breach.</p>
+      </div>
+    </div>
+
+    <!-- 4. SUBSCRIPTIONS -->
+    <div class="doc-section" id="subscriptions">
+      <div class="section-num">04</div>
+      <h2 class="section-title">Subscriptions &amp; Billing</h2>
+      <div class="section-body">
+        <p><strong>Plans and pricing.</strong> FieldOS offers three subscription tiers — Starter, Growth, and Enterprise — at the rates displayed on our <a href="landing.html#pricing">pricing page</a>. Prices are in US dollars and exclusive of applicable taxes unless stated otherwise.</p>
+
+        <table class="doc-table">
+          <thead><tr><th>Plan</th><th>Monthly</th><th>Annual (per month)</th><th>Rep Seats</th></tr></thead>
+          <tbody>
+            <tr><td>Starter</td><td>$49</td><td>$39</td><td>5 reps</td></tr>
+            <tr><td>Growth</td><td>$149</td><td>$119</td><td>25 reps</td></tr>
+            <tr><td>Enterprise</td><td>Custom</td><td>Custom</td><td>Unlimited</td></tr>
+          </tbody>
+        </table>
+
+        <p><strong>Billing cycle.</strong> Subscriptions are billed in advance on a monthly or annual basis. Billing begins at the end of your free trial or immediately if you choose to activate a paid plan during the trial. All charges are processed by Stripe.</p>
+        <p><strong>Automatic renewal.</strong> Subscriptions automatically renew at the end of each billing period. Annual subscriptions renew for another 12-month term. You may cancel auto-renewal at any time through the Billing Portal or by contacting us.</p>
+        <p><strong>Price changes.</strong> We reserve the right to change our pricing with at least <strong>30 days' advance notice</strong> by email to the Workspace Administrator. Your continued use after the effective date constitutes acceptance of the new pricing. If you do not accept the new pricing, you may cancel before the effective date.</p>
+        <p><strong>Taxes.</strong> You are responsible for all taxes, levies, or duties imposed by taxing authorities on your purchase, excluding taxes on our net income. Stripe may collect applicable sales tax based on your billing address.</p>
+        <p><strong>Failed payments.</strong> If a payment fails, we will notify you by email and provide a 3-day grace period to update your payment method. If payment is not resolved within the grace period, we reserve the right to suspend your Workspace. Your data will be preserved for 90 days during suspension.</p>
+      </div>
+    </div>
+
+    <!-- 5. TRIAL -->
+    <div class="doc-section" id="trial">
+      <div class="section-num">05</div>
+      <h2 class="section-title">Free Trial</h2>
+      <div class="section-body">
+        <p>New Workspaces receive a <strong>14-day free trial</strong> with full access to all features of the selected plan tier. No credit card is required to start a trial.</p>
+        <ul class="doc-list">
+          <li>One free trial per company. Creating multiple Workspaces to extend trial access is prohibited.</li>
+          <li>At the end of the trial, you must enter a payment method to continue using the Service. If no payment is added, the Workspace will be paused — data is preserved but access is suspended.</li>
+          <li>We reserve the right to modify, shorten, or discontinue the free trial offer at any time for new signups without affecting existing trials.</li>
+          <li>Trial data is subject to the same deletion policy as cancelled subscriptions: 90 days after trial expiry if no subscription is activated.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 6. REFUNDS -->
+    <div class="doc-section" id="refunds">
+      <div class="section-num">06</div>
+      <h2 class="section-title">Refund Policy</h2>
+      <div class="section-body">
+        <div class="info-box danger">
+          <strong>General policy:</strong> All subscription fees are non-refundable except as expressly stated below or required by applicable law.
+        </div>
+        <p><strong>Monthly subscriptions:</strong> No refunds are provided for partial months. If you cancel a monthly subscription, you retain access through the end of the current billing period.</p>
+        <p><strong>Annual subscriptions:</strong> If you cancel an annual subscription, you retain access through the end of the 12-month period you paid for. We do not provide prorated refunds for unused months on annual plans, except:</p>
+        <ul class="doc-list">
+          <li>If you cancel within the first <strong>7 days</strong> of your first annual payment (not applicable to renewals), you may request a full refund by contacting <a href="mailto:billing@fieldos.io">billing@fieldos.io</a></li>
+          <li>If the Service experiences downtime exceeding 99.9% availability in a given month (excluding scheduled maintenance), we will credit your account for that month upon request</li>
+        </ul>
+        <p><strong>Refund requests</strong> must be submitted to <a href="mailto:billing@fieldos.io">billing@fieldos.io</a> with your Workspace ID and the reason for the request. We will respond within 5 business days.</p>
+        <p><strong>Chargebacks.</strong> If you initiate a chargeback without first contacting us to resolve the issue, we reserve the right to suspend your Workspace pending resolution and to dispute the chargeback.</p>
+      </div>
+    </div>
+
+    <!-- 7. ACCEPTABLE USE -->
+    <div class="doc-section" id="acceptable-use">
+      <div class="section-num">07</div>
+      <h2 class="section-title">Acceptable Use</h2>
+      <div class="section-body">
+        <p>You agree to use the Service only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+        <ul class="doc-list">
+          <li>Use the Service to engage in any illegal activity, including violating trespassing laws, Do Not Knock ordinances, or consumer protection regulations in your jurisdiction</li>
+          <li>Use GPS tracking or location features to monitor individuals without their knowledge or consent in violation of applicable privacy laws</li>
+          <li>Collect, store, or process personal data in violation of applicable data protection laws, including CCPA, GDPR, or TCPA</li>
+          <li>Attempt to reverse engineer, decompile, or extract source code from the Service</li>
+          <li>Create multiple Workspaces to circumvent plan limitations or avoid payment</li>
+          <li>Resell, sublicense, or make the Service available to third parties outside your organization without our written consent</li>
+          <li>Use the Service to transmit malware, spam, or any harmful content</li>
+          <li>Interfere with or disrupt the integrity or performance of the Service</li>
+          <li>Attempt to gain unauthorized access to any part of the Service or its related systems</li>
+          <li>Use automated scripts, bots, or scrapers to access or interact with the Service</li>
+        </ul>
+        <p>Violation of this section may result in immediate suspension or termination of your Workspace without refund.</p>
+        <div class="info-box">
+          <strong>Compliance responsibility:</strong> You are solely responsible for ensuring your use of FieldOS complies with all applicable laws in your jurisdiction, including but not limited to laws governing door-to-door sales, solicitation permits, consumer privacy, and GPS/location tracking of employees.
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. YOUR DATA -->
+    <div class="doc-section" id="your-data">
+      <div class="section-num">08</div>
+      <h2 class="section-title">Your Data</h2>
+      <div class="section-body">
+        <p><strong>Ownership.</strong> You retain full ownership of all Customer Data you submit to the Service. These Terms do not grant FieldOS any ownership rights in your Customer Data.</p>
+        <p><strong>License to operate.</strong> By using the Service, you grant FieldOS a limited, non-exclusive, worldwide license to access, process, store, and display your Customer Data solely as necessary to provide and improve the Service for you. This license terminates when you delete your data or close your Workspace.</p>
+        <p><strong>Your responsibilities.</strong> You are responsible for the accuracy, quality, and legality of Customer Data and the means by which you acquired it. You represent that you have all necessary rights and permissions to provide Customer Data to the Service, including any personal information belonging to your customers or employees.</p>
+        <p><strong>Backups.</strong> While your data is stored in a dedicated Google Sheet that benefits from Google's redundancy, FieldOS does not provide a formal backup service. You are responsible for maintaining your own backups of Customer Data. We strongly recommend periodically downloading a copy of your Google Sheet.</p>
+        <p><strong>Data portability.</strong> You may export your Customer Data at any time directly from your Google Sheet, which remains accessible to Workspace Administrators. We will not hold your data hostage — even if your subscription lapses, you retain access to your Google Sheet for 90 days.</p>
+      </div>
+    </div>
+
+    <!-- 9. IP -->
+    <div class="doc-section" id="ip">
+      <div class="section-num">09</div>
+      <h2 class="section-title">Intellectual Property</h2>
+      <div class="section-body">
+        <p><strong>FieldOS IP.</strong> The Service, including its design, code, features, trademarks, and content (excluding Customer Data), is and remains the exclusive property of FieldOS and its licensors. These Terms do not grant you any rights to use our trademarks, trade names, service marks, or logos without our prior written consent.</p>
+        <p><strong>Feedback.</strong> If you provide suggestions, ideas, or feedback about the Service, you grant FieldOS a perpetual, irrevocable, royalty-free license to use and incorporate that feedback into the Service without obligation to you.</p>
+        <p><strong>White-label customers.</strong> Enterprise customers with white-label agreements may display the Service under their own branding pursuant to a separate agreement. The underlying Service technology remains FieldOS intellectual property.</p>
+      </div>
+    </div>
+
+    <!-- 10. AVAILABILITY -->
+    <div class="doc-section" id="availability">
+      <div class="section-num">10</div>
+      <h2 class="section-title">Service Availability</h2>
+      <div class="section-body">
+        <p>We target <strong>99.9% monthly uptime</strong> for the Service, excluding scheduled maintenance windows, which we will announce at least 24 hours in advance when possible.</p>
+        <p>However, we do not guarantee that the Service will be uninterrupted, timely, secure, or error-free. The Service is provided over the internet and through third-party infrastructure (Google Apps Script, Google Sheets) which may experience outages outside our control.</p>
+        <p>FieldOS field app functionality (map display, door logging) is designed to work offline and sync when connectivity is restored. However, we make no guarantees about offline functionality on all devices or browsers.</p>
+        <p>We reserve the right to modify, suspend, or discontinue the Service (or any part thereof) with or without notice, though we will make commercially reasonable efforts to provide 30 days' notice for major changes.</p>
+      </div>
+    </div>
+
+    <!-- 11. DISCLAIMERS -->
+    <div class="doc-section" id="disclaimers">
+      <div class="section-num">11</div>
+      <h2 class="section-title">Disclaimers</h2>
+      <div class="section-body">
+        <div class="caps-warning">THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.</div>
+        <p>We do not warrant that:</p>
+        <ul class="doc-list">
+          <li>The Service will meet your specific requirements or expectations</li>
+          <li>The Service will be error-free or that defects will be corrected</li>
+          <li>GPS location data will be accurate at all times</li>
+          <li>AI-generated territory recommendations will be accurate or commercially viable</li>
+          <li>Data synced to Google Sheets will be error-free or complete</li>
+        </ul>
+        <p>Any advice or information obtained from FieldOS or through the Service, whether oral or written, creates no warranty not expressly stated in these Terms.</p>
+      </div>
+    </div>
+
+    <!-- 12. LIABILITY -->
+    <div class="doc-section" id="liability">
+      <div class="section-num">12</div>
+      <h2 class="section-title">Limitation of Liability</h2>
+      <div class="section-body">
+        <div class="caps-warning">TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL FIELDOS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS INTERRUPTION, EVEN IF FIELDOS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</div>
+        <p>Our total aggregate liability to you for any claims arising out of or related to these Terms or the Service shall not exceed the greater of: (a) the total amount you paid to FieldOS in the twelve months immediately preceding the event giving rise to the claim, or (b) one hundred US dollars ($100).</p>
+        <p>These limitations apply regardless of the legal theory on which a claim is based, whether in contract, tort (including negligence), strict liability, or otherwise. Some jurisdictions do not allow the exclusion of certain warranties or limitation of liability — in such cases, our liability is limited to the greatest extent permitted by law.</p>
+      </div>
+    </div>
+
+    <!-- 13. INDEMNIFICATION -->
+    <div class="doc-section" id="indemnification">
+      <div class="section-num">13</div>
+      <h2 class="section-title">Indemnification</h2>
+      <div class="section-body">
+        <p>You agree to defend, indemnify, and hold harmless FieldOS and its officers, directors, employees, and agents from and against any claims, liabilities, damages, judgments, awards, losses, costs, or expenses (including reasonable attorneys' fees) arising out of or relating to:</p>
+        <ul class="doc-list">
+          <li>Your violation of these Terms</li>
+          <li>Your Customer Data or your use of the Service</li>
+          <li>Your violation of any third-party rights, including privacy rights</li>
+          <li>Your violation of any applicable laws or regulations governing door-to-door sales, solicitation, or location tracking</li>
+          <li>Any claims by your employees, contractors, or Reps related to their use of the Service</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 14. TERMINATION -->
+    <div class="doc-section" id="termination">
+      <div class="section-num">14</div>
+      <h2 class="section-title">Termination</h2>
+      <div class="section-body">
+        <p><strong>By you.</strong> You may cancel your subscription at any time through the Billing Portal or by contacting <a href="mailto:billing@fieldos.io">billing@fieldos.io</a>. Cancellation takes effect at the end of the current billing period. No refunds are provided for unused time on monthly plans.</p>
+        <p><strong>By us.</strong> We may suspend or terminate your Workspace immediately and without notice if:</p>
+        <ul class="doc-list">
+          <li>You materially breach these Terms and fail to cure the breach within 7 days of notice</li>
+          <li>You engage in fraudulent activity or abuse of the Service</li>
+          <li>You fail to pay any amounts due after the grace period</li>
+          <li>We are required to do so by law or court order</li>
+          <li>Continuing to provide the Service creates legal risk or liability for FieldOS</li>
+        </ul>
+        <p><strong>Effect of termination.</strong> Upon termination, your right to access the Service immediately ceases. Customer Data will be retained for 90 days following termination, after which it will be permanently deleted. You are responsible for exporting any data you wish to retain before or within this 90-day window.</p>
+        <p>Sections that by their nature should survive termination will survive, including Sections 8 (Your Data), 9 (Intellectual Property), 11 (Disclaimers), 12 (Limitation of Liability), 13 (Indemnification), and 15 (Disputes).</p>
+      </div>
+    </div>
+
+    <!-- 15. DISPUTES -->
+    <div class="doc-section" id="disputes">
+      <div class="section-num">15</div>
+      <h2 class="section-title">Disputes &amp; Governing Law</h2>
+      <div class="section-body">
+        <p><strong>Governing law.</strong> These Terms are governed by and construed in accordance with the laws of the State of Texas, United States, without regard to conflict of law principles.</p>
+        <p><strong>Informal resolution.</strong> Before initiating formal legal proceedings, you agree to first contact us at <a href="mailto:legal@fieldos.io">legal@fieldos.io</a> to attempt to resolve the dispute informally. We will make good-faith efforts to resolve the matter within 30 days.</p>
+        <p><strong>Binding arbitration.</strong> If informal resolution fails, any dispute arising out of or relating to these Terms or the Service shall be resolved by binding arbitration administered by the American Arbitration Association (AAA) under its Commercial Arbitration Rules. The arbitration shall be conducted in English, in Texas, or remotely if agreed. The arbitrator's award is final and binding.</p>
+        <p><strong>Class action waiver.</strong> You agree to bring disputes only in your individual capacity and not as a plaintiff or class member in any purported class or representative proceeding.</p>
+        <p><strong>Exceptions.</strong> Either party may seek injunctive or equitable relief in a court of competent jurisdiction to protect intellectual property rights or prevent irreparable harm.</p>
+      </div>
+    </div>
+
+    <!-- 16. GENERAL -->
+    <div class="doc-section" id="general">
+      <div class="section-num">16</div>
+      <h2 class="section-title">General Provisions</h2>
+      <div class="section-body">
+        <p><strong>Entire agreement.</strong> These Terms, together with our Privacy Policy and any order forms or addenda, constitute the entire agreement between you and FieldOS and supersede all prior agreements and understandings.</p>
+        <p><strong>Amendments.</strong> We may amend these Terms at any time by posting the revised version on our website and notifying you by email at least 14 days before the effective date. Your continued use after the effective date constitutes acceptance.</p>
+        <p><strong>Severability.</strong> If any provision of these Terms is found to be unenforceable, that provision will be modified to the minimum extent necessary to make it enforceable, and the remaining provisions will remain in full force.</p>
+        <p><strong>Waiver.</strong> Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.</p>
+        <p><strong>Assignment.</strong> You may not assign your rights or obligations under these Terms without our prior written consent. We may assign our rights and obligations without restriction, including in connection with a merger, acquisition, or sale of assets.</p>
+        <p><strong>Force majeure.</strong> Neither party will be liable for delays or failures in performance resulting from circumstances beyond their reasonable control, including natural disasters, acts of government, or internet infrastructure failures.</p>
+        <p><strong>Notices.</strong> Legal notices to FieldOS must be sent to <a href="mailto:legal@fieldos.io">legal@fieldos.io</a>. We will send notices to the Workspace Administrator email address on file.</p>
+      </div>
+    </div>
+
+    <!-- 17. CONTACT -->
+    <div class="doc-section" id="contact">
+      <div class="section-num">17</div>
+      <h2 class="section-title">Contact</h2>
+      <div class="section-body">
+        <p>If you have questions about these Terms, please contact us:</p>
+        <div class="contact-box">
+          <h4>FieldOS Legal</h4>
+          <p>
+            📧 Legal inquiries: <a href="mailto:legal@fieldos.io">legal@fieldos.io</a><br>
+            📧 Billing disputes: <a href="mailto:billing@fieldos.io">billing@fieldos.io</a><br>
+            📧 General support: <a href="mailto:support@fieldos.io">support@fieldos.io</a><br><br>
+            We aim to respond to all legal inquiries within <strong>5 business days</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const sections = document.querySelectorAll('.doc-section');
+const tocItems = document.querySelectorAll('.toc-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocItems.forEach(t => t.classList.remove('active'));
+      const match = document.querySelector(`.toc-item[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin:'-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

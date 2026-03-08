@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — FieldOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b13;--surface:#0c1220;--s2:#111a2c;--border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);--gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-t:#f0c96a;--gig:#2dd4bf;--text:#e8eeff;--t2:#8fa5c9;--muted:#4d6080;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.7}
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,165,58,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(212,165,58,.018) 1px,transparent 1px);background-size:52px 52px}
+
+/* NAV */
+#topbar{position:fixed;top:0;left:0;right:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(7,11,19,.92);border-bottom:1px solid var(--border-s);backdrop-filter:blur(16px);z-index:100;box-shadow:0 1px 0 rgba(212,165,58,.08)}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;text-decoration:none;color:var(--text)}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#07090f;box-shadow:0 3px 10px rgba(212,165,58,.3)}
+.logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+.topbar-links{display:flex;gap:16px;font-size:12px}
+.topbar-links a{color:var(--t2);text-decoration:none;transition:color .15s}
+.topbar-links a:hover{color:var(--gold-t)}
+.topbar-links a.active{color:var(--gold-t);font-weight:700}
+
+/* LAYOUT */
+.page-wrap{position:relative;z-index:1;display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1100px;margin:0 auto;padding:80px 24px 80px;min-height:100vh}
+
+/* SIDEBAR TOC */
+.toc{position:sticky;top:80px;height:fit-content;padding:20px 0 20px 0;padding-right:32px}
+.toc-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:14px}
+.toc-list{display:flex;flex-direction:column;gap:2px}
+.toc-item{font-size:12px;color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;transition:all .15s;border-left:2px solid transparent;line-height:1.4}
+.toc-item:hover{color:var(--t2);background:rgba(255,255,255,.03)}
+.toc-item.active{color:var(--gold-t);border-left-color:var(--gold);background:var(--gold-dim)}
+
+/* CONTENT */
+.content{min-width:0}
+.doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border-s)}
+.doc-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:var(--gold);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.doc-eyebrow::before{content:'';width:20px;height:1px;background:var(--gold)}
+.doc-title{font-size:36px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px}
+.doc-meta{display:flex;gap:20px;font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;flex-wrap:wrap}
+.doc-meta span{display:flex;align-items:center;gap:5px}
+.doc-intro{margin-top:20px;font-size:14px;color:var(--t2);line-height:1.8;padding:18px 22px;background:var(--gold-dim);border:1px solid rgba(212,165,58,.2);border-radius:var(--r)}
+
+/* SECTIONS */
+.doc-section{margin-bottom:52px;scroll-margin-top:80px}
+.section-num{font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
+.section-title{font-size:20px;font-weight:800;letter-spacing:-.2px;margin-bottom:16px;color:var(--text)}
+.section-body{font-size:14px;color:var(--t2);line-height:1.85}
+.section-body p{margin-bottom:14px}
+.section-body p:last-child{margin-bottom:0}
+.section-body strong{color:var(--text);font-weight:700}
+.section-body a{color:var(--gold-t);text-decoration:underline}
+
+/* LISTS */
+.doc-list{margin:10px 0 14px 0;display:flex;flex-direction:column;gap:6px}
+.doc-list li{font-size:14px;color:var(--t2);line-height:1.7;display:flex;align-items:flex-start;gap:10px;list-style:none}
+.doc-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:9px}
+
+/* INFO BOXES */
+.info-box{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t2);line-height:1.7;position:relative;overflow:hidden}
+.info-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.info-box.teal::before{background:var(--gig)}
+.info-box strong{color:var(--text)}
+
+/* TABLE */
+.doc-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+.doc-table th{text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-bottom:1px solid var(--border-s);background:var(--s2)}
+.doc-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--t2);vertical-align:top;line-height:1.6}
+.doc-table tr:last-child td{border-bottom:none}
+.doc-table tr:hover td{background:rgba(255,255,255,.015)}
+
+/* CONTACT BOX */
+.contact-box{background:var(--surface);border:1px solid rgba(212,165,58,.25);border-radius:var(--r);padding:20px 24px;margin-top:16px;position:relative;overflow:hidden}
+.contact-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.contact-box h4{font-size:14px;font-weight:800;margin-bottom:8px}
+.contact-box p{font-size:13px;color:var(--t2);line-height:1.7}
+.contact-box a{color:var(--gold-t)}
+
+/* RESPONSIVE */
+@media(max-width:800px){
+  .page-wrap{grid-template-columns:1fr;padding:74px 20px 60px}
+  .toc{display:none}
+  .doc-title{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div class="bg-fixed"><div class="bg-grid"></div></div>
+
+<nav id="topbar">
+  <a class="logo" href="landing.html">
+    <div class="logo-mark">F</div>
+    <div><div>FieldOS</div><div class="logo-sub">ENTERPRISE FIELD SALES</div></div>
+  </a>
+  <div class="topbar-links">
+    <a href="privacy.html" class="active">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="landing.html#pricing">Pricing</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- TABLE OF CONTENTS -->
+  <aside class="toc">
+    <div class="toc-label">On this page</div>
+    <div class="toc-list">
+      <a class="toc-item active" href="#overview">Overview</a>
+      <a class="toc-item" href="#information-we-collect">Information We Collect</a>
+      <a class="toc-item" href="#how-we-use">How We Use Information</a>
+      <a class="toc-item" href="#data-storage">Data Storage</a>
+      <a class="toc-item" href="#third-parties">Third-Party Services</a>
+      <a class="toc-item" href="#data-sharing">Data Sharing</a>
+      <a class="toc-item" href="#security">Security</a>
+      <a class="toc-item" href="#retention">Data Retention</a>
+      <a class="toc-item" href="#your-rights">Your Rights</a>
+      <a class="toc-item" href="#cookies">Cookies</a>
+      <a class="toc-item" href="#children">Children's Privacy</a>
+      <a class="toc-item" href="#changes">Changes to Policy</a>
+      <a class="toc-item" href="#contact">Contact Us</a>
+    </div>
+  </aside>
+
+  <!-- DOCUMENT CONTENT -->
+  <main class="content">
+
+    <div class="doc-header">
+      <div class="doc-eyebrow">Legal</div>
+      <h1 class="doc-title">Privacy Policy</h1>
+      <div class="doc-meta">
+        <span>📅 Effective: January 1, 2026</span>
+        <span>🔄 Last updated: March 7, 2026</span>
+        <span>📍 Applies to: fieldos.io and all FieldOS services</span>
+      </div>
+      <div class="doc-intro">
+        This Privacy Policy explains how FieldOS ("we," "us," or "our") collects, uses, stores, and protects information when you use our field sales platform, including our web application, admin dashboard, and related services. By using FieldOS, you agree to the practices described in this policy. If you do not agree, please discontinue use of our services.
+      </div>
+    </div>
+
+    <!-- 1. OVERVIEW -->
+    <div class="doc-section" id="overview">
+      <div class="section-num">01</div>
+      <h2 class="section-title">Overview</h2>
+      <div class="section-body">
+        <p>FieldOS is a software-as-a-service platform built for door-to-door field sales teams. We provide territory mapping, door disposition tracking, sales logging, schedule management, and team analytics tools to businesses ("Workspace Administrators") and their employees or contractors ("Reps").</p>
+        <p>FieldOS operates on a <strong>workspace isolation model</strong>. Each customer company ("workspace") has its own dedicated Google Sheet as a data store. Your data is not commingled with data from other companies. We do not sell your data, use your sales data for advertising, or share it with other FieldOS customers.</p>
+        <div class="info-box">
+          <strong>Key principle:</strong> Your company's field sales data belongs to you. We are a processor of that data on your behalf, not the data controller who owns it. You can export or delete your data at any time.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. INFORMATION WE COLLECT -->
+    <div class="doc-section" id="information-we-collect">
+      <div class="section-num">02</div>
+      <h2 class="section-title">Information We Collect</h2>
+      <div class="section-body">
+        <p>We collect information in three ways: information you provide directly, information collected automatically as you use the service, and information from third-party services you connect.</p>
+
+        <p><strong>Information you provide directly:</strong></p>
+        <ul class="doc-list">
+          <li>Workspace setup: company name, industry vertical, team size</li>
+          <li>Account information: name, work email address, phone number, job title</li>
+          <li>Billing information: collected and processed exclusively by Stripe; FieldOS never stores full credit card numbers</li>
+          <li>Territory data: geographic boundaries, street addresses, KML files you upload</li>
+          <li>Field activity: door dispositions, sale records, schedule bookings, chat messages</li>
+          <li>Customer information: names, phone numbers, and addresses of your customers that you enter when logging sales</li>
+        </ul>
+
+        <p><strong>Information collected automatically:</strong></p>
+        <ul class="doc-list">
+          <li>GPS location data when Reps use the field app (only while the app is in active use; not background-tracked)</li>
+          <li>Device type, browser type, and operating system</li>
+          <li>IP address and general geographic region</li>
+          <li>Usage patterns: which features are used, session duration, error logs</li>
+          <li>Timestamps on all actions (when dispositions are logged, when sales are recorded)</li>
+        </ul>
+
+        <p><strong>Information from third-party services:</strong></p>
+        <ul class="doc-list">
+          <li>Google: when you connect a Google account for calendar or scheduling features, we receive basic profile information (name, email) and access to the specific Google Sheet created for your workspace</li>
+          <li>Stripe: payment status, subscription tier, and billing history (never raw card data)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3. HOW WE USE INFORMATION -->
+    <div class="doc-section" id="how-we-use">
+      <div class="section-num">03</div>
+      <h2 class="section-title">How We Use Information</h2>
+      <div class="section-body">
+        <table class="doc-table">
+          <thead>
+            <tr><th>Purpose</th><th>Data Used</th><th>Legal Basis</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Provide and operate the platform</td><td>All account and activity data</td><td>Contract performance</td></tr>
+            <tr><td>Process payments and manage subscriptions</td><td>Email, billing status, plan selection</td><td>Contract performance</td></tr>
+            <tr><td>Display territory maps and rep locations to managers</td><td>GPS coordinates, rep identity</td><td>Legitimate interest / consent</td></tr>
+            <tr><td>Generate analytics and AI-powered territory recommendations</td><td>Aggregated disposition and sales data</td><td>Legitimate interest</td></tr>
+            <tr><td>Send transactional emails (receipts, trial reminders, payment failures)</td><td>Email address, billing events</td><td>Contract performance</td></tr>
+            <tr><td>Detect fraud and prevent abuse</td><td>IP address, usage patterns</td><td>Legitimate interest</td></tr>
+            <tr><td>Improve our product</td><td>Anonymized, aggregated usage patterns</td><td>Legitimate interest</td></tr>
+            <tr><td>Comply with legal obligations</td><td>As required by applicable law</td><td>Legal obligation</td></tr>
+          </tbody>
+        </table>
+        <p>We do <strong>not</strong> use your data to train general AI models, sell to data brokers, or serve advertising of any kind.</p>
+      </div>
+    </div>
+
+    <!-- 4. DATA STORAGE -->
+    <div class="doc-section" id="data-storage">
+      <div class="section-num">04</div>
+      <h2 class="section-title">Data Storage</h2>
+      <div class="section-body">
+        <p>FieldOS uses <strong>Google Sheets as a primary data store</strong>. When a new workspace is created, we automatically generate a dedicated Google Sheet in our service account. This sheet contains all of your workspace's data: rep accounts, addresses, dispositions, sales records, schedules, and configuration.</p>
+        <div class="info-box teal">
+          <strong>You own your Google Sheet.</strong> Workspace Administrators can request a transfer of ownership of their workspace Sheet at any time, giving you direct access to all your data in a format you already know how to work with — no data export required.
+        </div>
+        <p>All Google Sheets data is stored in Google's infrastructure, which is subject to <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a> and their enterprise data processing agreements. Google does not use your Sheet data for advertising.</p>
+        <p>Additional operational data (workspace registry, subscription status) is stored in Google infrastructure within the United States. If you are located in the European Economic Area, data may be transferred to and processed in the United States. We rely on Standard Contractual Clauses for such transfers.</p>
+      </div>
+    </div>
+
+    <!-- 5. THIRD-PARTY SERVICES -->
+    <div class="doc-section" id="third-parties">
+      <div class="section-num">05</div>
+      <h2 class="section-title">Third-Party Services</h2>
+      <div class="section-body">
+        <p>FieldOS integrates with the following third-party services. Each operates under its own privacy policy.</p>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Service</th><th>Purpose</th><th>Data Shared</th><th>Their Privacy Policy</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Stripe</strong></td><td>Payment processing and subscription billing</td><td>Name, email, billing address, payment method</td><td><a href="https://stripe.com/privacy" target="_blank">stripe.com/privacy</a></td></tr>
+            <tr><td><strong>Google</strong></td><td>Data storage (Sheets), maps (Maps JavaScript API)</td><td>Workspace data stored in Google Sheets; GPS coordinates passed to Maps API for display only</td><td><a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></td></tr>
+            <tr><td><strong>Google Maps</strong></td><td>Territory map rendering, geocoding</td><td>Address data for geocoding; GPS coordinates for map display</td><td><a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a></td></tr>
+            <tr><td><strong>Anthropic (Claude)</strong></td><td>AI-powered territory analysis (optional feature)</td><td>Aggregated, anonymized disposition and sales data for analysis prompts. No personally identifiable information is included in AI requests.</td><td><a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a></td></tr>
+          </tbody>
+        </table>
+        <p>We do not use advertising networks, social media pixels, or cross-site tracking tools.</p>
+      </div>
+    </div>
+
+    <!-- 6. DATA SHARING -->
+    <div class="doc-section" id="data-sharing">
+      <div class="section-num">06</div>
+      <h2 class="section-title">Data Sharing</h2>
+      <div class="section-body">
+        <p>We do not sell, rent, or trade your personal information. We share data only in the following limited circumstances:</p>
+        <ul class="doc-list">
+          <li><strong>Within your workspace:</strong> Workspace Administrators can view all Rep activity, including GPS location (while active), dispositions logged, and sales records. Reps can only see data within their assigned territory.</li>
+          <li><strong>Service providers:</strong> Third-party services listed above, solely to operate the platform.</li>
+          <li><strong>Legal requirements:</strong> If required by law, court order, or to protect the rights and safety of FieldOS, our users, or the public, we may disclose information to law enforcement or government authorities.</li>
+          <li><strong>Business transfers:</strong> If FieldOS is acquired or merges with another company, your data may be transferred as part of that transaction. We will notify you by email before your data is subject to a materially different privacy policy.</li>
+          <li><strong>With your explicit consent:</strong> For any other purpose, only with your express permission.</li>
+        </ul>
+        <div class="info-box">
+          <strong>Workspace isolation:</strong> We never share one company's data with another company using FieldOS. Your competitors cannot access your territory data, rep lists, or sales records.
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. SECURITY -->
+    <div class="doc-section" id="security">
+      <div class="section-num">07</div>
+      <h2 class="section-title">Security</h2>
+      <div class="section-body">
+        <p>We implement reasonable technical and organizational measures to protect your data against unauthorized access, alteration, disclosure, or destruction:</p>
+        <ul class="doc-list">
+          <li>All data in transit is encrypted via HTTPS/TLS 1.2 or higher</li>
+          <li>Workspace data is isolated — each workspace has its own dedicated Google Sheet with access controls</li>
+          <li>Invite tokens and authentication are scoped per workspace and expire or can be regenerated by administrators</li>
+          <li>Stripe handles all payment data under their PCI-DSS Level 1 certification — we never process or store raw card numbers</li>
+          <li>Audit logs record disposition changes, login events, and administrative actions</li>
+          <li>Admin accounts can force-deactivate rep access at any time</li>
+        </ul>
+        <p>No method of transmission over the internet or electronic storage is 100% secure. If you believe your account has been compromised, contact us immediately at <a href="mailto:security@fieldos.io">security@fieldos.io</a>.</p>
+      </div>
+    </div>
+
+    <!-- 8. RETENTION -->
+    <div class="doc-section" id="retention">
+      <div class="section-num">08</div>
+      <h2 class="section-title">Data Retention</h2>
+      <div class="section-body">
+        <p>We retain your data for as long as your workspace is active. Here is how retention works at each stage:</p>
+        <table class="doc-table">
+          <thead><tr><th>Status</th><th>Data Retained</th><th>Duration</th></tr></thead>
+          <tbody>
+            <tr><td>Active workspace</td><td>All workspace data, rep accounts, sales history</td><td>Indefinitely while subscription is active</td></tr>
+            <tr><td>Free trial (expired, not converted)</td><td>All workspace data</td><td>90 days after trial expiry, then deleted</td></tr>
+            <tr><td>Subscription cancelled</td><td>All workspace data</td><td>90 days after cancellation date, then deleted</td></tr>
+            <tr><td>Workspace deleted by admin</td><td>Audit log only</td><td>30 days, then fully purged</td></tr>
+            <tr><td>Payment records</td><td>Invoice history (required by law)</td><td>7 years (tax/accounting requirement)</td></tr>
+          </tbody>
+        </table>
+        <p>You may request earlier deletion by contacting <a href="mailto:privacy@fieldos.io">privacy@fieldos.io</a>. We will process deletion requests within 30 days. Note that we may retain anonymized, aggregated data (e.g., "a telecom workspace in Texas had X sales in 2025") that cannot be linked back to your company.</p>
+      </div>
+    </div>
+
+    <!-- 9. YOUR RIGHTS -->
+    <div class="doc-section" id="your-rights">
+      <div class="section-num">09</div>
+      <h2 class="section-title">Your Rights</h2>
+      <div class="section-body">
+        <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+        <ul class="doc-list">
+          <li><strong>Access:</strong> Request a copy of the personal data we hold about you</li>
+          <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data</li>
+          <li><strong>Deletion:</strong> Request deletion of your personal data ("right to be forgotten")</li>
+          <li><strong>Portability:</strong> Request your data in a machine-readable format (CSV export)</li>
+          <li><strong>Restriction:</strong> Request that we limit how we use your data</li>
+          <li><strong>Objection:</strong> Object to processing based on legitimate interests</li>
+          <li><strong>Withdraw consent:</strong> Where processing is based on consent, withdraw it at any time</li>
+        </ul>
+        <p>Workspace Administrators can exercise most of these rights directly through the Admin Dashboard. For requests that require our involvement, contact <a href="mailto:privacy@fieldos.io">privacy@fieldos.io</a>. We will respond within 30 days. We may need to verify your identity before processing certain requests.</p>
+        <p>If you are in the European Economic Area and believe we have not addressed your concerns, you have the right to lodge a complaint with your local data protection authority.</p>
+      </div>
+    </div>
+
+    <!-- 10. COOKIES -->
+    <div class="doc-section" id="cookies">
+      <div class="section-num">10</div>
+      <h2 class="section-title">Cookies and Local Storage</h2>
+      <div class="section-body">
+        <p>FieldOS uses minimal cookies and browser storage, strictly necessary for the service to function:</p>
+        <table class="doc-table">
+          <thead><tr><th>Name / Type</th><th>Purpose</th><th>Duration</th></tr></thead>
+          <tbody>
+            <tr><td>fieldos_rep (localStorage)</td><td>Stores the signed-in rep's name, territory, and workspace ID so the field app loads correctly on return visits</td><td>Until manually cleared or rep logs out</td></tr>
+            <tr><td>Session cookies</td><td>Maintain admin session state during a browser session</td><td>Session (deleted when browser closes)</td></tr>
+            <tr><td>Google Maps cookie</td><td>Set by the Google Maps API for map functionality</td><td>Controlled by Google</td></tr>
+          </tbody>
+        </table>
+        <p>We do <strong>not</strong> use advertising cookies, cross-site tracking pixels, or analytics cookies that follow you across the web. We do not use Google Analytics or similar tracking services.</p>
+      </div>
+    </div>
+
+    <!-- 11. CHILDREN -->
+    <div class="doc-section" id="children">
+      <div class="section-num">11</div>
+      <h2 class="section-title">Children's Privacy</h2>
+      <div class="section-body">
+        <p>FieldOS is a business-to-business platform intended solely for use by companies and their adult employees. We do not knowingly collect personal information from anyone under the age of 18. If you become aware that a minor has provided us with personal information, please contact us at <a href="mailto:privacy@fieldos.io">privacy@fieldos.io</a> and we will take steps to delete that information.</p>
+      </div>
+    </div>
+
+    <!-- 12. CHANGES -->
+    <div class="doc-section" id="changes">
+      <div class="section-num">12</div>
+      <h2 class="section-title">Changes to This Policy</h2>
+      <div class="section-body">
+        <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make material changes, we will:</p>
+        <ul class="doc-list">
+          <li>Update the "Last updated" date at the top of this page</li>
+          <li>Send an email notification to the Workspace Administrator email address on file at least 14 days before the changes take effect</li>
+          <li>For significant changes, require re-acknowledgment before continued use of the service</li>
+        </ul>
+        <p>Your continued use of FieldOS after the effective date of updated terms constitutes acceptance of those terms.</p>
+      </div>
+    </div>
+
+    <!-- 13. CONTACT -->
+    <div class="doc-section" id="contact">
+      <div class="section-num">13</div>
+      <h2 class="section-title">Contact Us</h2>
+      <div class="section-body">
+        <p>If you have questions, concerns, or requests related to this Privacy Policy or your personal data, please contact us:</p>
+        <div class="contact-box">
+          <h4>FieldOS Privacy Team</h4>
+          <p>
+            📧 <a href="mailto:privacy@fieldos.io">privacy@fieldos.io</a><br>
+            📧 General: <a href="mailto:support@fieldos.io">support@fieldos.io</a><br>
+            📧 Security issues: <a href="mailto:security@fieldos.io">security@fieldos.io</a><br><br>
+            We aim to respond to all privacy-related inquiries within <strong>5 business days</strong> and to complete data requests within <strong>30 days</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Highlight active TOC item on scroll
+const sections = document.querySelectorAll('.doc-section');
+const tocItems = document.querySelectorAll('.toc-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocItems.forEach(t => t.classList.remove('active'));
+      const match = document.querySelector(`.toc-item[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin:'-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

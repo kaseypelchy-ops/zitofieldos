@@ -1,0 +1,28 @@
+// ── AUTH GUARD — paste this at the TOP of admin.html's <script> block ──
+(function() {
+  var session = localStorage.getItem('fieldos_manager');
+  if (!session) { window.location.replace('landing.html'); return; }
+  try {
+    var s = JSON.parse(session);
+    if (!s.loggedIn || !s.name) throw new Error('invalid');
+    // Session expires after 8 hours
+    if (Date.now() - s.loginTime > 8 * 60 * 60 * 1000) {
+      localStorage.removeItem('fieldos_manager');
+      window.location.replace('landing.html');
+      return;
+    }
+    // Make manager name available globally
+    window.MANAGER_NAME  = s.name;
+    window.MANAGER_EMAIL = s.email;
+  } catch(e) {
+    localStorage.removeItem('fieldos_manager');
+    window.location.replace('landing.html');
+  }
+})();
+
+// ── SIGN OUT function — wire to a "Sign Out" button in admin.html ──
+function signOut() {
+  localStorage.removeItem('fieldos_manager');
+  window.location.replace('landing.html');
+}
+// ── END AUTH GUARD ──

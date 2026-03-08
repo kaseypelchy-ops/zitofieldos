@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FieldOS — Join Your Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b13;--surface:#0c1220;--surface2:#111a2c;--border:rgba(255,255,255,.07);--border-s:rgba(255,255,255,.13);--gold:#d4a53a;--gold-dim:rgba(212,165,58,.12);--gold-text:#f0c96a;--gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--text:#e8eeff;--text2:#8fa5c9;--muted:#4d6080;--r:12px;--r-lg:20px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(212,165,58,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(212,165,58,.025) 1px,transparent 1px);background-size:52px 52px}
+.bg-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(212,165,58,.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%)}
+.wrap{position:relative;z-index:1;width:100%;max-width:480px;display:flex;flex-direction:column;gap:20px}
+.logo-row{display:flex;justify-content:center;margin-bottom:4px}
+.logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#07090f;box-shadow:0 4px 14px rgba(212,165,58,.3)}
+.logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+
+/* invite banner */
+.inv-banner{background:linear-gradient(140deg,#0d1a30,#0a1220);border:1px solid rgba(212,165,58,.25);border-radius:var(--r-lg);padding:24px 28px;text-align:center;position:relative;overflow:hidden}
+.inv-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.inv-company-logo{width:56px;height:56px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#07090f;margin:0 auto 14px;box-shadow:0 6px 20px rgba(212,165,58,.3)}
+.inv-from{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.inv-company{font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.inv-msg{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.inv-features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.inv-feat{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.inv-feat::before{content:'✓';color:var(--gig);font-weight:800}
+
+/* form card */
+.form-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);padding:32px;position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.fc-title{font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.2px}
+.fc-sub{font-size:12px;color:var(--text2);margin-bottom:24px;line-height:1.5}
+.field{margin-bottom:16px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:5px}
+input,select{width:100%;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;padding:11px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,58,.1)}
+input::placeholder{color:var(--muted)}
+select option{background:var(--surface2)}
+.btn-join{width:100%;padding:15px;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .25s;box-shadow:0 4px 20px rgba(212,165,58,.3);margin-top:8px}
+.btn-join:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 8px 28px rgba(212,165,58,.45)}
+.btn-join:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* success state */
+.success-wrap{text-align:center}
+.success-icon{font-size:72px;margin-bottom:16px;animation:pop .6s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-size:26px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
+.success-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+.success-ws{background:var(--surface2);border:1px solid rgba(212,165,58,.25);border-radius:var(--r);padding:14px 18px;margin-bottom:24px;display:flex;flex-direction:column;gap:6px}
+.success-ws-row{display:flex;justify-content:space-between;font-size:12px}
+.success-ws-label{color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.success-ws-val{font-weight:700;color:var(--text)}
+.btn-go{width:100%;padding:15px;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;border:none;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(13,148,136,.3);transition:all .25s}
+.btn-go:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.spinner{width:18px;height:18px;border:2px solid rgba(7,9,15,.3);border-top-color:#07090f;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-box{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.25);border-radius:var(--r);padding:12px 16px;font-size:12px;color:var(--danger);display:none}
+.err-box.show{display:block}
+.trust-row{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.trust-badge{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+@media(max-width:480px){.field-row{grid-template-columns:1fr}.form-card{padding:22px 18px}.inv-banner{padding:20px 18px}.inv-features{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+<div class="bg-layer"><div class="bg-grid"></div><div class="bg-glow"></div></div>
+
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo">
+      <div class="logo-mark">F</div>
+      <div><div>FieldOS</div><div class="logo-sub">ENTERPRISE FIELD SALES</div></div>
+    </div>
+  </div>
+
+  <div class="inv-banner" id="inv-banner">
+    <div class="inv-company-logo" id="inv-logo">Z</div>
+    <div class="inv-from">You've been invited to join</div>
+    <div class="inv-company" id="inv-company">Loading workspace…</div>
+    <div class="inv-msg" id="inv-msg">Your manager has set up FieldOS for your territory. Create your rep account to start knocking doors.</div>
+    <div class="inv-features">
+      <div class="inv-feat">GPS-guided territory map</div>
+      <div class="inv-feat">One-tap dispositions</div>
+      <div class="inv-feat">Instant sale logging</div>
+      <div class="inv-feat">Schedule booking</div>
+    </div>
+  </div>
+
+  <div class="form-card" id="form-card">
+    <div id="form-content">
+      <div class="fc-title">Create Your Rep Account</div>
+      <div class="fc-sub">Takes 30 seconds. You'll be knocking doors in minutes.</div>
+
+      <div class="err-box" id="err-box">Please fill in all required fields.</div>
+
+      <div class="field-row">
+        <div class="field"><label>First Name</label><input type="text" id="f-first" placeholder="Jordan" autofocus></div>
+        <div class="field"><label>Last Name</label><input type="text" id="f-last" placeholder="Smith"></div>
+      </div>
+      <div class="field"><label>Work Email</label><input type="email" id="f-email" placeholder="jordan@company.com"></div>
+      <div class="field"><label>Mobile Phone <span style="color:var(--muted);font-size:9px">for schedule reminders</span></label><input type="tel" id="f-phone" placeholder="+1 (555) 000-0000"></div>
+      <div class="field">
+        <label>Your Territory</label>
+        <select id="f-territory">
+          <option value="">Select your territory…</option>
+        </select>
+      </div>
+
+      <button class="btn-join" id="btn-join">Join Workspace →</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px">By joining you agree to the <a href="terms.html" style="color:var(--gold-text)">Terms of Service</a></p>
+    </div>
+  </div>
+
+  <div class="trust-row">
+    <div class="trust-badge">🔒 Encrypted</div>
+    <div class="trust-badge">🛡️ GDPR Compliant</div>
+    <div class="trust-badge">📱 Works offline</div>
+  </div>
+</div>
+
+<script>
+// ▶ Your real zito.gs Apps Script URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
+const params   = new URLSearchParams(window.location.search);
+const WS_ID    = params.get('ws') || '';
+const TOKEN    = params.get('token') || '';
+
+// Load real workspace info from zito.gs
+let WS_INFO = { company: 'Zito Media', territories: [], valid: true };
+
+async function initPage() {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=workspace_info&_t=' + Date.now());
+    const json = await res.json();
+    WS_INFO = { company: json.company || 'Zito Media', territories: json.territories || [], valid: true };
+  } catch(e) {
+    // Fallback if script unreachable — still show form
+    WS_INFO = { company: 'Zito Media', territories: ['Palestine, TX', 'Bryson City, NC'], valid: true };
+  }
+
+  document.querySelector('#inv-company').textContent = WS_INFO.company;
+  document.querySelector('#inv-logo').textContent    = WS_INFO.company.charAt(0).toUpperCase();
+  const sel = document.querySelector('#f-territory');
+  WS_INFO.territories.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t; sel.appendChild(o);
+  });
+  if (!WS_INFO.territories.length) {
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = 'Contact your manager for territory assignment';
+    sel.appendChild(o);
+  }
+}
+initPage();
+
+document.querySelector('#btn-join').addEventListener('click', async function() {
+  const first  = document.querySelector('#f-first').value.trim();
+  const last   = document.querySelector('#f-last').value.trim();
+  const email  = document.querySelector('#f-email').value.trim();
+  const terr   = document.querySelector('#f-territory').value;
+  const err    = document.querySelector('#err-box');
+
+  if(!first || !last || !email || !terr) {
+    err.textContent = 'Please fill in all required fields.';
+    err.classList.add('show'); return;
+  }
+  if(!email.includes('@')) {
+    err.textContent = 'Please enter a valid email address.';
+    err.classList.add('show'); return;
+  }
+  err.classList.remove('show');
+
+  this.disabled = true;
+  this.innerHTML = '<span class="spinner"></span>Setting up your account…';
+
+  try {
+    const phone = document.querySelector('#f-phone').value.trim();
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        type:      'join_workspace',
+        name:      `${first} ${last}`,
+        email:     email,
+        phone:     phone,
+        territory: terr
+      })
+    });
+  } catch(e) { /* no-cors means we can't read the response, that's ok */ }
+
+  // Store rep identity locally for auto-login
+  const repData = { name:`${first} ${last}`, email, territory:terr, joinedAt:new Date().toISOString() };
+  try { localStorage.setItem('zito_rep_name', `${first} ${last}`); } catch(x) {}
+  try { localStorage.setItem('fieldos_rep', JSON.stringify(repData)); } catch(x) {}
+
+  showSuccess({ first, last, email, territory:terr });
+});
+
+function showSuccess({ first, last, email, territory }) {
+  document.querySelector('#form-content').innerHTML = `
+    <div class="success-wrap">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Welcome aboard, ${first}!</div>
+      <div class="success-sub">Your FieldOS account is ready. You've been added to the <strong>${WS_INFO.company}</strong> workspace.</div>
+      <div class="success-ws">
+        <div class="success-ws-row"><span class="success-ws-label">Name</span><span class="success-ws-val">${first} ${last}</span></div>
+        <div class="success-ws-row"><span class="success-ws-label">Email</span><span class="success-ws-val">${email}</span></div>
+        <div class="success-ws-row"><span class="success-ws-label">Territory</span><span class="success-ws-val">${territory}</span></div>
+        <div class="success-ws-row"><span class="success-ws-label">Workspace</span><span class="success-ws-val">${WS_ID}</span></div>
+      </div>
+      <button class="btn-go" onclick="launchApp()">Launch Field App →</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px">Bookmark this page or add to your home screen for quick access</p>
+    </div>`;
+}
+
+function launchApp() {
+  const rep = JSON.parse(localStorage.getItem('fieldos_rep') || '{}');
+  // Pass rep name as URL param — app.js reads it and auto-fills the name field
+  const url = 'index.html?rep=' + encodeURIComponent(rep.name || '') +
+              '&territory=' + encodeURIComponent(rep.territory || '');
+  window.location.href = url;
+}
+</script>
+</body>
+</html>
