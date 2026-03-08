@@ -3,939 +3,1966 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FieldOS — Admin</title>
+<title>Zito FieldOS — Owner Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#070b13;--surface:#0c1220;--surface2:#111a2c;--surface3:#162033;
-  --border:rgba(255,255,255,0.07);--border-s:rgba(255,255,255,0.13);
-  --gold:#d4a53a;--gold-dim:rgba(212,165,58,0.12);--gold-text:#f0c96a;
-  --gig:#2dd4bf;--mega:#a78bfa;--danger:#f43f5e;--warn:#fb923c;
-  --text:#e8eeff;--text2:#8fa5c9;--muted:#4d6080;
-  --sidebar:240px;--topbar:58px;
-  --r:12px;--r-lg:18px;
+/* ══════════════════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════════════════ */
+:root {
+  --bg:       #07090f;
+  --surface:  #0c1220;
+  --s2:       #111a2c;
+  --s3:       #162033;
+  --border:   rgba(255,255,255,.07);
+  --border-s: rgba(255,255,255,.13);
+  --gold:     #d4a53a;
+  --gold-dim: rgba(212,165,58,.12);
+  --gold-t:   #f0c96a;
+  --gig:      #2dd4bf;
+  --mega:     #a78bfa;
+  --danger:   #f43f5e;
+  --warn:     #fb923c;
+  --blue:     #3b82f6;
+  --green:    #10b981;
+  --cyan:     #06b6d4;
+  --yellow:   #facc15;
+  --text:     #e8eeff;
+  --t2:       #8fa5c9;
+  --muted:    #4d6080;
+  --sidebar-w: 230px;
+  --top-h:     54px;
+  --kpi-h:     72px;
+  --tabs-h:    46px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;-webkit-font-smoothing:antialiased}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
 /* ── SIDEBAR ────────────────────────────────────────── */
-#sidebar{
-  width:var(--sidebar);height:100vh;flex-shrink:0;
-  background:var(--surface);border-right:1px solid var(--border-s);
-  display:flex;flex-direction:column;overflow:hidden;
-  box-shadow:4px 0 24px rgba(0,0,0,.4);
+#sidebar {
+  width: var(--sidebar-w);
+  height: 100vh;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-.sb-logo{padding:18px 20px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
-.sb-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#b8891e,var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#07090f;flex-shrink:0;box-shadow:0 3px 12px rgba(212,165,58,.3)}
-.sb-logo-text{font-size:14px;font-weight:800;letter-spacing:-.1px}
-.sb-logo-sub{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-top:1px}
+.sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-mark {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, #b8891e, var(--gold));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #07090f; flex-shrink: 0;
+}
+.sb-brand { font-size: 14px; font-weight: 800; letter-spacing: -.2px; line-height: 1.2; }
+.sb-sub   { font-size: 9px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase;
+  font-family: 'IBM Plex Mono', monospace; }
 
-.sb-ws{padding:12px 14px;border-bottom:1px solid var(--border)}
-.sb-ws-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
-.sb-ws-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-ws-plan{display:inline-flex;align-items:center;gap:4px;background:var(--gold-dim);border:1px solid rgba(212,165,58,.25);border-radius:20px;padding:2px 9px;font-size:9px;font-weight:700;color:var(--gold-text);font-family:'IBM Plex Mono',monospace;margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+.sb-profile {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #b8891e, var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 900; color: #07090f;
+  margin-bottom: 9px;
+  box-shadow: 0 0 0 3px rgba(212,165,58,.25);
+}
+.sb-name { font-size: 13px; font-weight: 800; color: var(--text); }
+.sb-role-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.sb-role { font-size: 10px; color: var(--t2); }
+.sb-owner-badge {
+  font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  background: linear-gradient(135deg, #b8891e, var(--gold));
+  color: #07090f;
+  padding: 2px 7px; border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
 
-.sb-nav{flex:1;overflow-y:auto;padding:10px 10px}
-.sb-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;padding:14px 8px 6px}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:all .15s;color:var(--text2);font-size:13px;font-weight:600;margin-bottom:1px}
-.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
-.sb-item.active{background:var(--gold-dim);color:var(--gold-text);border:1px solid rgba(212,165,58,.2)}
-.sb-item-icon{font-size:15px;flex-shrink:0;width:20px;text-align:center}
-.sb-badge{margin-left:auto;background:var(--warn);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;font-family:'IBM Plex Mono',monospace}
+.sb-section {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted);
+  padding: 10px 14px 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sb-nav { flex: 1; overflow-y: auto; padding: 6px 8px; }
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 9px;
+  cursor: pointer;
+  color: var(--t2); font-size: 12px; font-weight: 600;
+  margin-bottom: 1px;
+  border: 1px solid transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.sb-item:hover { background: rgba(255,255,255,.04); color: var(--text); }
+.sb-item.active {
+  background: var(--gold-dim);
+  color: var(--gold-t);
+  border-color: rgba(212,165,58,.2);
+}
+.sb-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
 
-.sb-footer{padding:12px 14px;border-top:1px solid var(--border)}
-.sb-user{display:flex;align-items:center;gap:10px}
-.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#b8891e,var(--gold));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#07090f;flex-shrink:0}
-.sb-user-name{font-size:12px;font-weight:700;color:var(--text)}
-.sb-user-role{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
-.sb-signout{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;transition:color .15s}
-.sb-signout:hover{color:var(--danger)}
+.sb-bottom {
+  padding: 10px 8px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.refresh-btn {
+  width: 100%; padding: 9px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(212,165,58,.25);
+  border-radius: 8px;
+  color: var(--gold-t); font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all .18s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.refresh-btn:hover { background: rgba(212,165,58,.2); }
+.refresh-btn.spinning .spin-icon { animation: spin .5s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.last-refresh {
+  text-align: center; font-size: 9px; color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-top: 6px;
+}
 
 /* ── MAIN ───────────────────────────────────────────── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-/* Topbar */
-#topbar{height:var(--topbar);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,19,.9);border-bottom:1px solid var(--border-s);backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(212,165,58,.1)}
-.topbar-title{font-size:18px;font-weight:800;letter-spacing:-.2px}
-.topbar-sub{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:1px}
-.topbar-actions{display:flex;align-items:center;gap:10px}
-.btn-sm{background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;transition:all .18s;white-space:nowrap}
-.btn-sm:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
-.btn-sm.primary{background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border-color:transparent;box-shadow:0 3px 12px rgba(212,165,58,.3)}
-.btn-sm.primary:hover{filter:brightness(1.08)}
-
-/* Content area */
-#content{flex:1;overflow-y:auto;padding:24px}
-#content::-webkit-scrollbar{width:4px}
-#content::-webkit-scrollbar-thumb{background:var(--border-s);border-radius:2px}
-
-/* ── PANEL SYSTEM ───────────────────────────────────── */
-.panel{display:none;flex-direction:column;gap:18px;animation:fade-in .3s ease}
-.panel.active{display:flex}
-@keyframes fade-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── STAT CARDS ─────────────────────────────────────── */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.stat-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
-.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat-card.gold::after{background:linear-gradient(90deg,var(--gold),var(--gold-text))}
-.stat-card.teal::after{background:var(--gig)}
-.stat-card.purple::after{background:var(--mega)}
-.stat-card.red::after{background:var(--danger)}
-.stat-val{font-size:28px;font-weight:800;font-family:'IBM Plex Mono',monospace;letter-spacing:-.5px}
-.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:'IBM Plex Mono',monospace;margin-top:5px}
-.stat-delta{font-size:11px;margin-top:8px;display:flex;align-items:center;gap:4px;font-weight:600}
-.stat-delta.up{color:var(--gig)}
-.stat-delta.down{color:var(--danger)}
-.stat-delta.neutral{color:var(--muted)}
-
-/* ── SECTION CARD ───────────────────────────────────── */
-.sec-card{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);overflow:hidden}
-.sec-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
-.sec-title{font-size:14px;font-weight:800;letter-spacing:-.1px}
-.sec-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
-
-/* ── REP TABLE ──────────────────────────────────────── */
-.rep-table{width:100%}
-.rt-head{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 80px;gap:0;padding:10px 20px;border-bottom:1px solid var(--border)}
-.rt-hcell{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
-.rt-row{display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 1fr 80px;gap:0;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s;align-items:center}
-.rt-row:last-child{border-bottom:none}
-.rt-row:hover{background:rgba(255,255,255,.02)}
-.rep-info{display:flex;align-items:center;gap:10px}
-.rep-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
-.rep-av.online{background:linear-gradient(135deg,rgba(212,165,58,.3),rgba(45,212,191,.2));color:var(--text);border:1.5px solid rgba(212,165,58,.3)}
-.rep-av.offline{background:var(--surface2);color:var(--muted);border:1.5px solid var(--border-s)}
-.rep-name{font-size:13px;font-weight:700;color:var(--text)}
-.rep-email{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:1px}
-.rt-cell{font-size:12px;color:var(--text2)}
-.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px}
-.status-badge.online{background:rgba(45,212,191,.1);color:#99f6e4;border:1px solid rgba(45,212,191,.25)}
-.status-badge.offline{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border-s)}
-.status-dot{width:6px;height:6px;border-radius:50%}
-.online .status-dot{background:var(--gig);box-shadow:0 0 6px var(--gig);animation:pulse 2s infinite}
-.offline .status-dot{background:var(--muted)}
-@keyframes pulse{0%,100%{box-shadow:0 0 4px var(--gig)}50%{box-shadow:0 0 10px var(--gig)}}
-.rt-actions{display:flex;gap:6px;justify-content:flex-end}
-.rt-btn{background:none;border:1px solid var(--border-s);border-radius:7px;color:var(--muted);font-size:11px;padding:5px 9px;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
-.rt-btn:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
-.rt-btn.danger:hover{border-color:rgba(244,63,94,.4);color:var(--danger)}
-
-/* ── INVITE BOX ─────────────────────────────────────── */
-.invite-zone{padding:20px;display:flex;flex-direction:column;gap:14px}
-.invite-link-box{background:var(--surface2);border:1px solid rgba(212,165,58,.2);border-radius:var(--r);padding:16px 18px}
-.inv-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:8px}
-.inv-row{display:flex;gap:8px;align-items:center}
-.inv-link{flex:1;background:var(--bg);border:1px solid var(--border-s);border-radius:8px;padding:10px 13px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-copy{background:var(--gold-dim);border:1px solid rgba(212,165,58,.35);border-radius:8px;color:var(--gold-text);font-size:11px;font-weight:700;padding:9px 14px;cursor:pointer;white-space:nowrap;transition:all .18s;font-family:'Plus Jakarta Sans',sans-serif}
-.btn-copy:hover{background:rgba(212,165,58,.22)}
-.btn-copy.copied{background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.4);color:#99f6e4}
-.inv-meta{display:flex;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.inv-meta-item{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
-.inv-meta-item strong{color:var(--text);font-weight:700}
-
-/* ── TERRITORY CARDS ────────────────────────────────── */
-.terr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px}
-.terr-card{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
-.terr-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
-.terr-name{font-size:14px;font-weight:800;margin-bottom:4px}
-.terr-region{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:12px}
-.terr-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.terr-stat{background:var(--bg);border-radius:8px;padding:8px 10px}
-.terr-stat-val{font-size:16px;font-weight:800;font-family:'IBM Plex Mono',monospace}
-.terr-stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-family:'IBM Plex Mono',monospace}
-.terr-actions{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-.terr-btn{flex:1;background:none;border:1px solid var(--border-s);border-radius:8px;color:var(--muted);font-size:11px;font-weight:700;padding:7px;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
-.terr-btn:hover{border-color:rgba(212,165,58,.4);color:var(--gold-text)}
-.add-terr-card{border:1px dashed rgba(212,165,58,.25);background:rgba(212,165,58,.03);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;min-height:140px;transition:all .2s}
-.add-terr-card:hover{border-color:var(--gold);background:var(--gold-dim)}
-.add-terr-icon{font-size:28px;color:var(--gold);opacity:.6}
-.add-terr-label{font-size:13px;font-weight:700;color:var(--text2)}
-
-/* ── BILLING ────────────────────────────────────────── */
-.billing-wrap{padding:20px;display:flex;flex-direction:column;gap:16px}
-.plan-box{background:linear-gradient(140deg,#0d1a30,#0a1220);border:1px solid rgba(212,165,58,.3);border-radius:var(--r-lg);padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;overflow:hidden}
-.plan-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
-.plan-box-left h2{font-size:22px;font-weight:800;margin-bottom:4px}
-.plan-box-left p{font-size:12px;color:var(--text2);line-height:1.5}
-.plan-price-big{font-size:38px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--gold-text)}
-.plan-price-big span{font-size:14px;color:var(--muted);font-weight:400}
-.plan-next-bill{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
-
-.usage-bar-wrap{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:16px}
-.usage-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.usage-name{font-size:13px;font-weight:700}
-.usage-nums{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
-.usage-track{height:6px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:4px}
-.usage-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-text));border-radius:4px;transition:width .5s}
-.usage-fill.warn{background:linear-gradient(90deg,var(--warn),#fbbf24)}
-.usage-fill.full{background:linear-gradient(90deg,var(--danger),#fb7185)}
-
-.invoice-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
-.invoice-row:last-child{border-bottom:none}
-.invoice-date{color:var(--muted);font-family:'IBM Plex Mono',monospace}
-.invoice-amt{font-weight:700;font-family:'IBM Plex Mono',monospace}
-.invoice-badge{font-size:9px;padding:2px 8px;border-radius:10px}
-.invoice-badge.paid{background:rgba(45,212,191,.1);color:#99f6e4;border:1px solid rgba(45,212,191,.25)}
-.invoice-dl{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:color .15s}
-.invoice-dl:hover{color:var(--gold-text)}
-
-/* ── SETTINGS ───────────────────────────────────────── */
-.settings-wrap{padding:20px;display:flex;flex-direction:column;gap:16px}
-.setting-section{background:var(--surface2);border:1px solid var(--border-s);border-radius:var(--r);padding:20px}
-.setting-section h3{font-size:13px;font-weight:800;margin-bottom:4px}
-.setting-section p{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.5}
-.setting-field{margin-bottom:14px}
-.setting-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
-.setting-field input,.setting-field select{width:100%;background:var(--bg);border:1px solid var(--border-s);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
-.setting-field input:focus,.setting-field select:focus{border-color:var(--gold)}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.setting-row:last-child{border-bottom:none;padding-bottom:0}
-.setting-row-info h4{font-size:13px;font-weight:700;margin-bottom:2px}
-.setting-row-info p{font-size:11px;color:var(--muted);line-height:1.4}
-/* Toggle switch */
-.toggle{position:relative;width:42px;height:24px;cursor:pointer;flex-shrink:0}
-.toggle input{opacity:0;position:absolute}
-.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.08);border:1px solid var(--border-s);border-radius:999px;transition:all .2s}
-.toggle input:checked+.toggle-track{background:rgba(45,212,191,.3);border-color:rgba(45,212,191,.5)}
-.toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:left .2s}
-.toggle input:checked~.toggle-knob{left:20px;background:var(--gig)}
-
-/* ── DANGER ZONE ────────────────────────────────────── */
-.danger-zone{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);padding:20px}
-.danger-zone h3{font-size:13px;font-weight:800;color:var(--danger);margin-bottom:4px}
-.danger-zone p{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5}
-.btn-danger{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:9px;color:var(--danger);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;cursor:pointer;transition:all .2s}
-.btn-danger:hover{background:rgba(244,63,94,.2);border-color:var(--danger)}
-
-/* ── MODAL ──────────────────────────────────────────── */
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
-#modal-overlay.open{display:flex}
-.modal-box{background:var(--surface);border:1px solid var(--border-s);border-radius:var(--r-lg);padding:32px;width:100%;max-width:460px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.modal-title{font-size:19px;font-weight:800;margin-bottom:6px;letter-spacing:-.2px}
-.modal-sub{font-size:12px;color:var(--text2);margin-bottom:22px;line-height:1.5}
-.modal-close{position:absolute;top:14px;right:14px;background:var(--surface2);border:1px solid var(--border-s);border-radius:7px;color:var(--muted);cursor:pointer;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.modal-close:hover{color:var(--danger);border-color:rgba(244,63,94,.4)}
-.modal-field{margin-bottom:14px}
-.modal-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
-.modal-field input,.modal-field select{width:100%;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;padding:11px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
-.modal-field input:focus,.modal-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,58,.1)}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.btn-modal-cancel{flex:1;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:11px;cursor:pointer;transition:all .18s}
-.btn-modal-cancel:hover{color:var(--text);border-color:var(--border-s)}
-.btn-modal-confirm{flex:2;background:linear-gradient(135deg,#b8891e,var(--gold));color:#07090f;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:800;padding:11px;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(212,165,58,.25)}
-.btn-modal-confirm:hover{filter:brightness(1.08)}
-
-/* ── RESPONSIVE ─────────────────────────────────────── */
-@media(max-width:900px){
-  .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .terr-grid{grid-template-columns:repeat(2,1fr)}
+/* ── TOPBAR ─────────────────────────────────────────── */
+#topbar {
+  height: var(--top-h); flex-shrink: 0;
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+  background: rgba(7,9,15,.96);
+  border-bottom: 1px solid var(--border-s);
+  backdrop-filter: blur(12px);
 }
-@media(max-width:700px){
-  #sidebar{display:none}
-  .rt-head,.rt-row{grid-template-columns:2fr 1fr 80px}
-  .rt-cell:nth-child(3),.rt-cell:nth-child(4),.rt-hcell:nth-child(3),.rt-hcell:nth-child(4){display:none}
-  .stat-grid{grid-template-columns:repeat(2,1fr)}
+.tb-title { font-size: 16px; font-weight: 800; flex: 1; }
+.tb-owner {
+  padding: 4px 11px; border-radius: 999px;
+  font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  background: linear-gradient(135deg, #b8891e, var(--gold));
+  color: #07090f; font-family: 'IBM Plex Mono', monospace;
+}
+.tb-action {
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: 1px solid var(--border-s);
+  background: var(--s2); color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all .18s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+}
+.tb-action:hover { border-color: var(--gold); color: var(--gold-t); }
+.tb-action.primary {
+  background: linear-gradient(135deg, #b8891e, var(--gold));
+  color: #07090f; border-color: transparent;
+}
+.tb-action.primary:hover { filter: brightness(1.08); color: #07090f; }
+
+/* ── KPI BAR ────────────────────────────────────────── */
+#kpi-bar {
+  display: flex; gap: 10px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; overflow-x: auto;
+}
+.kpi-pill {
+  background: var(--surface);
+  border: 1px solid var(--border-s);
+  border-radius: 12px;
+  padding: 10px 16px; min-width: 100px; flex-shrink: 0;
+  position: relative; overflow: hidden;
+}
+.kpi-pill::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: .4;
+}
+.kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -.5px; line-height: 1; }
+.kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .5px; margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+/* ── TAB BAR ────────────────────────────────────────── */
+#tab-bar {
+  display: flex; gap: 2px; padding: 10px 20px 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; overflow-x: auto;
+  height: var(--tabs-h);
+}
+.tab {
+  padding: 7px 16px; border-radius: 8px 8px 0 0;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: 1px solid transparent; border-bottom: none;
+  background: transparent; color: var(--t2);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all .15s; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.tab.active {
+  background: var(--s2);
+  color: var(--gold-t);
+  border-color: var(--border-s);
+  border-bottom-color: var(--s2);
+}
+
+/* ── CONTENT ────────────────────────────────────────── */
+#content { flex: 1; overflow-y: auto; padding: 18px 20px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── CARDS ──────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-s);
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: .3;
+}
+.card-head {
+  font-size: 13px; font-weight: 800; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-sub { font-size: 11px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ── TEAM TAB ───────────────────────────────────────── */
+.mgr-perf-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;
+}
+.mgr-metric {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.mgr-metric-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .8px; font-family: 'IBM Plex Mono', monospace; margin-bottom: 5px; }
+.mgr-metric-val { font-size: 21px; font-weight: 800; color: var(--gig); }
+.mgr-metric-sub { font-size: 10px; color: var(--t2); margin-top: 4px; }
+
+.mgr-list-head { font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  font-family: 'IBM Plex Mono', monospace; }
+
+.mgr-rep-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border-radius: 10px; margin-bottom: 8px;
+  background: var(--s2); border: 1px solid var(--border);
+}
+.mgr-rep-card.rep-online { border-color: rgba(45,212,191,.25); }
+.mgr-rep-avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #07090f;
+  background: var(--s3); color: var(--muted);
+}
+.mgr-rep-card.rep-online .mgr-rep-avatar {
+  background: linear-gradient(135deg, #0d9488, var(--gig));
+  color: #07090f;
+}
+.mgr-rep-info { flex: 1; min-width: 0; }
+.mgr-rep-name { font-size: 13px; font-weight: 700; }
+.mgr-rep-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.mgr-signout  { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.mgr-rep-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.mgr-status-badge {
+  padding: 3px 8px; border-radius: 999px;
+  font-size: 9px; font-weight: 800; letter-spacing: .5px;
+  font-family: 'IBM Plex Mono', monospace;
+  display: flex; align-items: center; gap: 4px;
+}
+.mgr-status-badge.online  { background: rgba(45,212,191,.15); color: var(--gig); }
+.mgr-status-badge.offline { background: rgba(77,96,128,.15);  color: var(--muted); }
+.mgr-status-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  background: currentColor;
+}
+.mgr-rep-sales { font-size: 12px; font-weight: 700; color: var(--gold-t); }
+
+/* ── ANALYTICS TAB ──────────────────────────────────── */
+.tod-chart {
+  display: flex; align-items: flex-end; gap: 3px;
+  height: 80px; margin-bottom: 4px;
+}
+.tod-bar-wrap { flex: 1; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+.tod-bar {
+  width: 100%; border-radius: 3px 3px 0 0; position: relative;
+  min-height: 3px; transition: height .3s;
+}
+.tod-bar-val {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  font-size: 8px; color: var(--text); white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.tod-x-labels { display: flex; gap: 3px; margin-top: 4px; }
+.tod-x-labels span { flex: 1; text-align: center; font-size: 8px; color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace; }
+
+.status-bars { display: flex; flex-direction: column; gap: 6px; }
+.sbar-row { display: flex; align-items: center; gap: 8px; }
+.sbar-lbl { font-size: 11px; color: var(--t2); width: 115px; flex-shrink: 0; text-align: right; }
+.sbar-track { flex: 1; height: 8px; background: rgba(255,255,255,.06); border-radius: 4px; overflow: hidden; }
+.sbar-fill  { height: 100%; border-radius: 4px; transition: width .4s; }
+.sbar-count { font-size: 11px; color: var(--muted); width: 30px;
+  font-family: 'IBM Plex Mono', monospace; }
+
+.competitor-grid { display: flex; flex-direction: column; gap: 9px; }
+.comp-row-inner { display: flex; align-items: center; gap: 8px; }
+.comp-lbl { font-size: 11px; color: var(--t2); width: 90px; flex-shrink: 0; text-align: right; }
+.comp-track { flex: 1; height: 10px; background: rgba(255,255,255,.06); border-radius: 5px; overflow: hidden; }
+.comp-fill  { height: 100%; border-radius: 5px; transition: width .4s; }
+.comp-count { font-size: 11px; color: var(--muted); width: 30px;
+  font-family: 'IBM Plex Mono', monospace; }
+
+.leaderboard-list { display: flex; flex-direction: column; gap: 6px; }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 10px;
+  background: var(--s2); border-radius: 8px; }
+.lb-rank {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+  background: rgba(255,255,255,.06); color: var(--muted);
+}
+.lb-rank.gold   { background: rgba(212,165,58,.25); color: var(--gold-t); }
+.lb-rank.silver { background: rgba(148,163,184,.2); color: #94a3b8; }
+.lb-rank.bronze { background: rgba(180,83,9,.2);    color: var(--warn); }
+.lb-name  { font-size: 12px; font-weight: 700; flex: 1; }
+.lb-stats { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+.lb-rate  { font-size: 14px; font-weight: 800; color: var(--gig); }
+
+/* ── COVERAGE TAB ───────────────────────────────────── */
+.cov-terr-row { margin-bottom: 14px; }
+.cov-terr-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.cov-terr-name  { font-size: 12px; font-weight: 700; }
+.cov-terr-stats { font-size: 10px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+.cov-track { height: 10px; background: rgba(255,255,255,.06); border-radius: 5px; overflow: hidden; }
+.cov-fill  { height: 100%; float: left; border-radius: 5px; transition: width .4s; }
+
+.cov-legend { display: flex; flex-direction: column; gap: 7px; }
+.cov-leg-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--t2); }
+.cov-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; display: inline-block; }
+
+/* ── FORECAST TAB ───────────────────────────────────── */
+.forecast-hero { text-align: center; padding: 24px 20px; }
+.forecast-mrr { font-size: 52px; font-weight: 800; color: var(--gold-t);
+  letter-spacing: -2px; margin: 14px 0 6px; }
+.forecast-mrr-label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1px; font-family: 'IBM Plex Mono', monospace; }
+.fc-inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.fc-input-cell { background: var(--s2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px; text-align: center; }
+.fc-input-val { font-size: 18px; font-weight: 800; }
+.fc-input-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .5px; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; }
+.fc-pkg-split { display: flex; gap: 10px; margin-top: 10px; }
+.fc-pkg-cell {
+  flex: 1; background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; text-align: center;
+}
+.fc-pkg-val { font-size: 18px; font-weight: 800; }
+.fc-pkg-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .5px; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; }
+.fc-terr-table-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px; background: var(--s2); border-radius: 8px;
+  margin-bottom: 6px; border: 1px solid var(--border);
+}
+
+/* ── TERRITORY TAB ──────────────────────────────────── */
+.ti-terr-card { background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 13px; margin-bottom: 10px; }
+.ti-terr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.ti-terr-name { font-size: 13px; font-weight: 800; }
+.ti-terr-sig  { font-size: 10px; margin-top: 3px; }
+.ti-terr-pct  { font-size: 22px; font-weight: 800; flex-shrink: 0; margin-left: 10px; }
+.ti-track { height: 8px; background: rgba(255,255,255,.06); border-radius: 4px;
+  overflow: hidden; margin-bottom: 8px; }
+.ti-fill  { height: 100%; float: left; border-radius: 4px; }
+.ti-terr-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.ti-terr-stats span { font-size: 10px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+.ti-comp-header { display: grid; grid-template-columns: 1fr 75px 75px 75px 75px;
+  padding: 7px 10px; gap: 4px;
+  font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--muted); font-family: 'IBM Plex Mono', monospace;
+  border-bottom: 1px solid var(--border); }
+.ti-comp-row  { display: grid; grid-template-columns: 1fr 75px 75px 75px 75px;
+  padding: 8px 10px; gap: 4px; border-radius: 7px; margin-bottom: 2px; }
+.ti-comp-row:hover { background: rgba(255,255,255,.025); }
+.ti-comp-terr { font-size: 12px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ti-comp-bar-wrap { display: flex; align-items: center; gap: 4px; }
+.ti-comp-num   { font-size: 11px; font-family: 'IBM Plex Mono', monospace; width: 20px; flex-shrink: 0; }
+.ti-mini-track { flex: 1; height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+
+.ti-stale-row { display: flex; align-items: center; gap: 10px; padding: 10px;
+  background: var(--s2); border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border); }
+.ti-stale-icon { font-size: 16px; flex-shrink: 0; }
+.ti-stale-info { flex: 1; min-width: 0; }
+.ti-stale-addr { font-size: 12px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ti-stale-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.ti-stale-right { text-align: right; flex-shrink: 0; }
+.ti-stale-age  { font-size: 10px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+.ti-stale-dist { font-size: 10px; color: var(--t2); font-family: 'IBM Plex Mono', monospace; }
+
+.ti-rec-card { background: var(--s2); border: 1px solid var(--border);
+  border-left: 3px solid var(--muted); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+.ti-rec-header  { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 5px; }
+.ti-rec-icon    { font-size: 16px; flex-shrink: 0; }
+.ti-rec-action  { font-size: 12px; font-weight: 700; line-height: 1.4; flex: 1; }
+.ti-rec-territory { font-size: 9px; color: var(--gold-t); font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.ti-rec-detail  { font-size: 11px; color: var(--t2); line-height: 1.5; }
+.ti-empty { text-align: center; padding: 20px 14px; font-size: 11px; color: var(--muted); line-height: 1.7; }
+
+/* ── AI TAB ─────────────────────────────────────────── */
+.ai-key-row {
+  background: var(--s2); border: 1px solid var(--border-s);
+  border-radius: 10px; padding: 13px 14px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.ai-key-label { font-size: 11px; font-weight: 700; color: var(--t2); flex-shrink: 0; }
+.ai-key-input-wrap { flex: 1; min-width: 200px; display: flex; gap: 6px; }
+.ai-key-input {
+  flex: 1; background: var(--bg);
+  border: 1px solid var(--border-s); border-radius: 7px;
+  padding: 8px 11px; color: var(--text);
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  outline: none; transition: border-color .2s;
+}
+.ai-key-input:focus { border-color: var(--gold); }
+.ai-key-toggle {
+  padding: 8px 10px; background: transparent;
+  border: 1px solid var(--border-s); border-radius: 7px;
+  cursor: pointer; font-size: 13px;
+}
+.ai-key-hint { font-size: 10px; color: var(--muted); flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace; }
+.ai-key-hint.saved { color: var(--gig); }
+
+.ai-hero-card {
+  background: var(--s2); border: 1px solid var(--border-s);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.ai-hero-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.ai-hero-sub   { font-size: 11px; color: var(--t2); line-height: 1.5; }
+.ai-run-btn {
+  flex-shrink: 0; padding: 11px 22px;
+  background: linear-gradient(135deg, #7c3aed, var(--mega));
+  color: #fff; border: none; border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  transition: all .25s;
+  box-shadow: 0 4px 20px rgba(167,139,250,.3);
+  white-space: nowrap;
+}
+.ai-run-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.ai-run-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+.ai-context-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.ai-pill {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 999px; padding: 4px 10px;
+  font-size: 10px; color: var(--t2);
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.ai-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gig); flex-shrink: 0; }
+.ai-pill-dot.warn { background: var(--warn); }
+.ai-pill-dot.dim  { background: var(--muted); }
+
+#ai-output { background: var(--s2); border: 1px solid var(--border-s);
+  border-radius: 12px; padding: 18px; min-height: 120px; }
+
+.ai-output-placeholder { text-align: center; padding: 36px 20px; }
+.ai-placeholder-icon   { font-size: 32px; margin-bottom: 8px; }
+.ai-placeholder-txt    { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.ai-output-loading { background: var(--s2); border: 1px solid var(--border-s);
+  border-radius: 12px; padding: 36px 20px; text-align: center; }
+.ai-loading-orb {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid rgba(167,139,250,.2);
+  border-top-color: var(--mega);
+  animation: spin .8s linear infinite;
+  margin: 0 auto 12px;
+}
+.ai-loading-label { font-size: 13px; font-weight: 700; color: var(--mega); margin-bottom: 6px; }
+.ai-loading-steps { font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+
+.ai-output-active  { background: var(--s2); border: 1px solid var(--border-s);
+  border-radius: 12px; padding: 18px; }
+.ai-section        { margin-bottom: 16px; }
+.ai-section-head   { font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px;
+  font-family: 'IBM Plex Mono', monospace; }
+.ai-summary-grid   { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 8px; margin-bottom: 14px; }
+.ai-summary-cell   { background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px; text-align: center; }
+.ai-summary-val    { font-size: 16px; font-weight: 800; color: var(--gig); }
+.ai-summary-lbl    { font-size: 9px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .5px; font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
+.ai-rec-card { background: var(--bg); border: 1px solid var(--border);
+  border-left: 3px solid var(--gold); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+.ai-rec-card.priority-high   { border-left-color: var(--danger); }
+.ai-rec-card.priority-medium { border-left-color: var(--warn); }
+.ai-rec-card.priority-low    { border-left-color: var(--muted); }
+.ai-rec-header   { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.ai-rec-priority {
+  padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;
+  font-family: 'IBM Plex Mono', monospace; letter-spacing: .5px; flex-shrink: 0;
+  background: rgba(255,255,255,.06); color: var(--muted); text-transform: uppercase;
+}
+.ai-rec-territory { font-size: 10px; color: var(--gold-t); font-family: 'IBM Plex Mono', monospace; margin-bottom: 2px; }
+.ai-rec-action  { font-size: 12px; font-weight: 700; }
+.ai-rec-detail  { font-size: 11px; color: var(--t2); line-height: 1.5; }
+.ai-insight-row { display: flex; gap: 8px; padding: 6px 0;
+  border-bottom: 1px solid var(--border); font-size: 11px; color: var(--t2); line-height: 1.5; }
+.ai-insight-row:last-child { border-bottom: none; }
+.ai-insight-icon { flex-shrink: 0; width: 18px; }
+.ai-focus-box {
+  background: rgba(212,165,58,.07); border: 1px solid rgba(212,165,58,.2);
+  border-radius: 9px; padding: 12px 14px;
+  font-size: 12px; color: var(--text); line-height: 1.6;
+}
+.ai-error-box {
+  background: rgba(244,63,94,.08); border: 1px solid rgba(244,63,94,.25);
+  border-radius: 9px; padding: 14px; font-size: 12px; color: var(--danger); line-height: 1.6;
+}
+.ai-timestamp { font-size: 9px; color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace; text-align: right; margin-top: 10px; }
+
+/* ── SPINNER / LOADING ──────────────────────────────── */
+.mgr-loading {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 24px; font-size: 12px; color: var(--muted);
+}
+.mgr-spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.1);
+  border-top-color: var(--gold-t);
+  animation: spin .6s linear infinite;
+}
+.mgr-empty { text-align: center; padding: 24px 14px; font-size: 11px;
+  color: var(--muted); line-height: 1.7; }
+.mgr-empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+@media (max-width: 900px) {
+  #sidebar { display: none; }
+  .two-col { grid-template-columns: 1fr; }
+  .mgr-perf-grid { grid-template-columns: repeat(2,1fr); }
+  .ti-comp-header, .ti-comp-row { grid-template-columns: 1fr 60px 60px 60px 60px; }
 }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
+<!-- ══════════ SIDEBAR ══════════ -->
 <nav id="sidebar">
   <div class="sb-logo">
-    <div class="sb-logo-mark">F</div>
+    <div class="sb-mark">F</div>
     <div>
-      <div class="sb-logo-text">FieldOS</div>
-      <div class="sb-logo-sub">ADMIN CONSOLE</div>
+      <div class="sb-brand">FieldOS</div>
+      <div class="sb-sub">Zito Media</div>
     </div>
   </div>
 
-  <div class="sb-ws">
-    <div class="sb-ws-label">Workspace</div>
-    <div class="sb-ws-name" id="ws-name-display">Zito Telecom</div>
-    <div class="sb-ws-plan">Growth Plan</div>
+  <div class="sb-profile">
+    <div class="sb-avatar">KP</div>
+    <div class="sb-name">Kasey Pelchy</div>
+    <div class="sb-role-row">
+      <span class="sb-role">Owner</span>
+      <span class="sb-owner-badge">OWNER</span>
+    </div>
   </div>
 
   <div class="sb-nav">
-    <div class="sb-section">Main</div>
-    <div class="sb-item active" data-panel="overview"><span class="sb-item-icon">📊</span>Overview</div>
-    <div class="sb-item" data-panel="reps"><span class="sb-item-icon">👥</span>Reps &amp; Seats<span class="sb-badge" id="badge-reps"></span></div>
-    <div class="sb-item" data-panel="territories"><span class="sb-item-icon">🗺️</span>Territories</div>
-    <div class="sb-item" data-panel="invites"><span class="sb-item-icon">📨</span>Invite Center</div>
+    <div class="sb-section">Dashboard</div>
+    <div class="sb-item active" data-tab="team"><span class="sb-icon">👥</span>Team Status</div>
+    <div class="sb-item" data-tab="analytics"><span class="sb-icon">📊</span>Analytics</div>
+    <div class="sb-item" data-tab="coverage"><span class="sb-icon">🗺️</span>Coverage</div>
+    <div class="sb-item" data-tab="forecast"><span class="sb-icon">💰</span>Forecast</div>
+    <div class="sb-item" data-tab="territory"><span class="sb-icon">🎯</span>Territory Intel</div>
+    <div class="sb-item" data-tab="ai"><span class="sb-icon">🤖</span>AI Briefing</div>
 
-    <div class="sb-section">Analytics</div>
-    <div class="sb-item" data-panel="analytics"><span class="sb-item-icon">📈</span>Performance</div>
-    <div class="sb-item" onclick="goToFieldApp()"><span class="sb-item-icon">🗺️</span>Field App ↗</div>
-    <div class="sb-item" onclick="goToRouteReplay()"><span class="sb-item-icon">▶️</span>Route Replay ↗</div>
-
-    <div class="sb-section">Account</div>
-    <div class="sb-item" data-panel="billing"><span class="sb-item-icon">💳</span>Billing</div>
-    <div class="sb-item" data-panel="settings"><span class="sb-item-icon">⚙️</span>Settings</div>
+    <div class="sb-section">Tools</div>
+    <div class="sb-item" onclick="window.open('route-replay.html','_blank')">
+      <span class="sb-icon">▶️</span>Route Replay ↗
+    </div>
+    <div class="sb-item" onclick="window.open('index.html','_blank')">
+      <span class="sb-icon">📍</span>Field App ↗
+    </div>
+    <div class="sb-item" onclick="window.open('rep-invite.html','_blank')">
+      <span class="sb-icon">➕</span>Invite Rep ↗
+    </div>
   </div>
 
-  <div class="sb-footer">
-    <div class="sb-user">
-      <div class="sb-avatar" id="sb-avatar-init">JD</div>
-      <div>
-        <div class="sb-user-name" id="sb-admin-name">Jordan Davis</div>
-        <div class="sb-user-role">Workspace Admin</div>
-      </div>
-      <button class="sb-signout" title="Sign out" onclick="signOut()">⎋</button>
-    </div>
+  <div class="sb-bottom">
+    <button class="refresh-btn" id="refresh-btn" onclick="loadAll()">
+      <span class="spin-icon">↻</span> Refresh Data
+    </button>
+    <div class="last-refresh" id="last-refresh">—</div>
   </div>
 </nav>
 
-<!-- MAIN -->
+<!-- ══════════ MAIN ══════════ -->
 <div id="main">
+
+  <!-- TOPBAR -->
   <div id="topbar">
-    <div>
-      <div class="topbar-title" id="topbar-title">Overview</div>
-      <div class="topbar-sub" id="topbar-sub">workspace dashboard</div>
-    </div>
-    <div class="topbar-actions">
-      <button class="btn-sm" onclick="openModal('invite')">+ Invite Rep</button>
-      <button class="btn-sm" onclick="openModal('territory')">+ Territory</button>
-      <button class="btn-sm primary" onclick="goToFieldApp()">🗺 Open Field App</button>
-    </div>
+    <div class="tb-title" id="tb-title">Team Status</div>
+    <div class="tb-owner">OWNER</div>
+    <a class="tb-action" href="rep-invite.html" target="_blank">+ Invite Rep</a>
+    <a class="tb-action primary" href="route-replay.html" target="_blank">▶ Route Replay</a>
   </div>
 
+  <!-- KPI BAR -->
+  <div id="kpi-bar">
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-online" style="color:var(--gig)">—</div><div class="kpi-lbl">Online</div></div>
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-offline" style="color:var(--muted)">—</div><div class="kpi-lbl">Offline</div></div>
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-sales" style="color:var(--gold-t)">—</div><div class="kpi-lbl">Sales Today</div></div>
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-doors" style="color:var(--mega)">—</div><div class="kpi-lbl">Doors Worked</div></div>
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-homes" style="color:var(--warn)">—</div><div class="kpi-lbl">Total Homes</div></div>
+    <div class="kpi-pill"><div class="kpi-val" id="kpi-pending" style="color:var(--t2)">—</div><div class="kpi-lbl">Pending</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tab-bar">
+    <button class="tab active" data-tab="team"><span>👥</span> Team</button>
+    <button class="tab" data-tab="analytics"><span>📊</span> Analytics</button>
+    <button class="tab" data-tab="coverage"><span>🗺️</span> Coverage</button>
+    <button class="tab" data-tab="forecast"><span>💰</span> Forecast</button>
+    <button class="tab" data-tab="territory"><span>🎯</span> Territory</button>
+    <button class="tab" data-tab="ai"><span>🤖</span> AI Briefing</button>
+  </div>
+
+  <!-- CONTENT -->
   <div id="content">
 
-    <!-- OVERVIEW -->
-    <div class="panel active" id="panel-overview">
-      <div class="stat-grid">
-        <div class="stat-card gold">
-          <div class="stat-val" id="stat-reps">—</div>
-          <div class="stat-label">Active Reps</div>
-          <div class="stat-delta up" id="stat-reps-d">↑ 2 this week</div>
+    <!-- ── TAB: TEAM ─────────────────────────────────── -->
+    <div id="panel-team" class="panel active">
+
+      <!-- Live Performance metrics -->
+      <div class="mgr-perf-grid">
+        <div class="mgr-metric">
+          <div class="mgr-metric-lbl">Close Rate</div>
+          <div class="mgr-metric-val" id="mgr-m-close">—</div>
+          <div class="mgr-metric-sub" id="mgr-m-close-sub">—</div>
         </div>
-        <div class="stat-card teal">
-          <div class="stat-val" id="stat-sales">—</div>
-          <div class="stat-label">Sales This Month</div>
-          <div class="stat-delta up" id="stat-sales-d">↑ 18% vs last month</div>
+        <div class="mgr-metric">
+          <div class="mgr-metric-lbl">Sales / Hour</div>
+          <div class="mgr-metric-val" id="mgr-m-pace">—</div>
+          <div class="mgr-metric-sub" id="mgr-m-pace-sub">—</div>
         </div>
-        <div class="stat-card purple">
-          <div class="stat-val" id="stat-doors">—</div>
-          <div class="stat-label">Doors Knocked</div>
-          <div class="stat-delta neutral" id="stat-doors-d">past 30 days</div>
+        <div class="mgr-metric">
+          <div class="mgr-metric-lbl">Gig Mix</div>
+          <div class="mgr-metric-val" id="mgr-m-gigmix">—</div>
+          <div class="mgr-metric-sub" id="mgr-m-gigmix-sub">—</div>
         </div>
-        <div class="stat-card red">
-          <div class="stat-val" id="stat-rate">—</div>
-          <div class="stat-label">Close Rate</div>
-          <div class="stat-delta up" id="stat-rate-d">↑ 1.2% vs avg</div>
+        <div class="mgr-metric">
+          <div class="mgr-metric-lbl">Sales / Rep</div>
+          <div class="mgr-metric-val" id="mgr-m-spr">—</div>
+          <div class="mgr-metric-sub" id="mgr-m-spr-sub">—</div>
         </div>
       </div>
 
-      <!-- Activity feed + quick actions -->
-      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px">
-        <div class="sec-card">
-          <div class="sec-head">
-            <div>
-              <div class="sec-title">Recent Activity</div>
-              <div class="sec-sub">live field updates</div>
-            </div>
-          </div>
-          <div id="activity-feed" style="padding:4px 0"></div>
-        </div>
-
-        <div class="sec-card">
-          <div class="sec-head"><div><div class="sec-title">Quick Stats</div><div class="sec-sub">today</div></div></div>
-          <div id="quick-stats" style="padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+      <!-- Rep list -->
+      <div class="card">
+        <div class="card-head">Field Reps</div>
+        <div class="mgr-list-head" style="margin-top:4px">Live Status — refreshes every 30 s</div>
+        <div id="mgr-rep-list">
+          <div class="mgr-loading"><div class="mgr-spinner"></div>Loading rep data…</div>
         </div>
       </div>
+
     </div>
 
-    <!-- REPS -->
-    <div class="panel" id="panel-reps">
-      <div class="sec-card">
-        <div class="sec-head">
-          <div>
-            <div class="sec-title">Team Roster</div>
-            <div class="sec-sub" id="seats-label">— / — seats used</div>
-          </div>
-          <button class="btn-sm primary" onclick="openModal('invite')">+ Invite Rep</button>
+    <!-- ── TAB: ANALYTICS ────────────────────────────── -->
+    <div id="panel-analytics" class="panel">
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">🕐 Best Hours to Knock</div>
+          <div class="card-sub">Close rate by hour of day — based on all recorded door knocks</div>
+          <div id="ana-tod-chart" class="tod-chart"></div>
+          <div class="tod-x-labels" id="ana-tod-labels"></div>
         </div>
-        <div class="rep-table">
-          <div class="rt-head">
-            <div class="rt-hcell">Rep</div>
-            <div class="rt-hcell">Territory</div>
-            <div class="rt-hcell">Status</div>
-            <div class="rt-hcell">Sales</div>
-            <div class="rt-hcell">Last Active</div>
-            <div class="rt-hcell"></div>
-          </div>
-          <div id="rep-rows"></div>
+        <div class="card">
+          <div class="card-head">📶 Status Breakdown</div>
+          <div class="card-sub">Disposition of all worked doors</div>
+          <div id="ana-status-bars" class="status-bars"></div>
         </div>
       </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">🆚 Competitor Landscape</div>
+          <div class="card-sub">What service do prospects already have?</div>
+          <div id="ana-competitor" class="competitor-grid"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">👤 Rep Leaderboard</div>
+          <div class="card-sub">Ranked by close rate — minimum 5 doors worked</div>
+          <div id="ana-leaderboard" class="leaderboard-list"></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- TERRITORIES -->
-    <div class="panel" id="panel-territories">
-      <div class="sec-card">
-        <div class="sec-head">
-          <div><div class="sec-title">Territories</div><div class="sec-sub">geographic coverage zones</div></div>
-          <button class="btn-sm primary" onclick="openModal('territory')">+ Add Territory</button>
+    <!-- ── TAB: COVERAGE ─────────────────────────────── -->
+    <div id="panel-coverage" class="panel">
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head">Territory Coverage</div>
+          <div class="card-sub">% of addresses knocked per territory</div>
+          <div id="cov-territory-bars"></div>
         </div>
-        <div class="terr-grid" id="terr-grid"></div>
+        <div class="card">
+          <div class="card-head">📍 Coverage Legend</div>
+          <div class="cov-legend" style="margin-top:6px">
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#10b981"></span>Mega Sale</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:rgba(0,86,150,.6)"></span>Gig Sale (worked, not sold)</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#d97706"></span>Not Home</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#ef4444"></span>Not Interested / Brightspeed</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#818cf8"></span>In Contract</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#06b6d4"></span>Go Back Later</div>
+            <div class="cov-leg-row"><span class="cov-swatch" style="background:#6b7280"></span>Pending / Untouched</div>
+          </div>
+        </div>
       </div>
+
     </div>
 
-    <!-- INVITE CENTER -->
-    <div class="panel" id="panel-invites">
-      <div class="sec-card">
-        <div class="sec-head">
-          <div><div class="sec-title">Invite Center</div><div class="sec-sub">share access with your team</div></div>
-          <button class="btn-sm" onclick="regenerateToken()">↺ Regenerate Link</button>
-        </div>
-        <div class="invite-zone">
-          <div class="invite-link-box">
-            <div class="inv-label">Workspace Invite Link</div>
-            <div class="inv-row">
-              <div class="inv-link" id="inv-link-display">Loading…</div>
-              <button class="btn-copy" id="inv-copy-btn">Copy</button>
-            </div>
-            <div class="inv-meta">
-              <div class="inv-meta-item">Uses: <strong id="inv-uses">0</strong></div>
-              <div class="inv-meta-item">Pending: <strong id="inv-pending">0</strong></div>
-              <div class="inv-meta-item">Expires: <strong>Never</strong></div>
-            </div>
-          </div>
+    <!-- ── TAB: FORECAST ─────────────────────────────── -->
+    <div id="panel-forecast" class="panel">
 
-          <div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:10px">Send Email Invites</div>
-            <div style="display:flex;gap:8px;margin-bottom:10px">
-              <input type="email" id="inv-email-input" placeholder="rep@company.com" style="flex:1;background:var(--surface2);border:1px solid var(--border-s);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none">
-              <button class="btn-sm primary" onclick="sendEmailInvite()" style="padding:10px 18px">Send Invite</button>
-            </div>
-            <div id="invite-email-list" style="display:flex;flex-direction:column;gap:6px"></div>
-          </div>
-        </div>
+      <div class="card forecast-hero">
+        <div class="card-head" style="justify-content:center">📡 Revenue Projection</div>
+        <div class="card-sub" style="text-align:center">Based on current close rate applied to remaining pending homes</div>
+        <div class="forecast-mrr" id="fc-mrr">—</div>
+        <div class="forecast-mrr-label">Projected Monthly Recurring Revenue</div>
       </div>
+
+      <div class="card">
+        <div class="card-head">Projection Inputs</div>
+        <div class="fc-inputs-grid" id="fc-inputs-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">Territory Breakdown</div>
+        <div id="fc-territory-table"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">Package Revenue Split</div>
+        <div class="fc-pkg-split" id="fc-pkg-split"></div>
+      </div>
+
     </div>
 
-    <!-- ANALYTICS (placeholder) -->
-    <div class="panel" id="panel-analytics">
-      <div class="sec-card" style="padding:60px;text-align:center">
-        <div style="font-size:48px;margin-bottom:16px">📈</div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Full Analytics Available</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:20px">Open the Field App's Manager Dashboard for live analytics, leaderboards, and territory intelligence.</div>
-        <button class="btn-sm primary" onclick="goToFieldApp()" style="display:inline-block;padding:12px 28px;font-size:14px">Open Manager Dashboard →</button>
+    <!-- ── TAB: TERRITORY INTEL ──────────────────────── -->
+    <div id="panel-territory" class="panel">
+
+      <div class="card">
+        <div class="card-head">📡 Territory Saturation</div>
+        <div class="card-sub">How worked-out is each territory? When to rotate reps in.</div>
+        <div id="ti-saturation"></div>
       </div>
+
+      <div class="card">
+        <div class="card-head">🆚 Competitor Breakdown by Territory</div>
+        <div class="card-sub">Brightspeed, in-contract, open market and Zito sales — per territory</div>
+        <div id="ti-competitor-table"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">🔄 Follow-Up Queue</div>
+        <div class="card-sub">Go Back Later &amp; Not Home doors — sorted oldest first</div>
+        <div id="ti-stale-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">📋 Deploy Recommendations</div>
+        <div class="card-sub">Where to focus reps next based on coverage and close rate data</div>
+        <div id="ti-recommendations"></div>
+      </div>
+
     </div>
 
-    <!-- BILLING -->
-    <div class="panel" id="panel-billing">
-      <div class="sec-card">
-        <div class="sec-head"><div><div class="sec-title">Current Plan</div><div class="sec-sub">billing &amp; usage</div></div></div>
-        <div class="billing-wrap">
-          <div class="plan-box">
-            <div class="plan-box-left">
-              <h2>Growth Plan</h2>
-              <p>Unlimited territories · Up to 25 reps · AI analysis · Manager dashboard · Priority support</p>
-              <div style="display:flex;gap:8px;margin-top:16px">
-                <button class="btn-sm">Upgrade to Enterprise</button>
-                <button class="btn-sm">View All Plans</button>
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div class="plan-price-big">$149<span>/mo</span></div>
-              <div class="plan-next-bill">Next billing: <strong id="next-bill-date">—</strong></div>
-              <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);border-radius:20px;padding:3px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:#99f6e4;font-weight:700">
-                <div style="width:6px;height:6px;border-radius:50%;background:var(--gig)"></div> ACTIVE
-              </div>
-            </div>
-          </div>
+    <!-- ── TAB: AI BRIEFING ──────────────────────────── -->
+    <div id="panel-ai" class="panel">
 
-          <div class="usage-bar-wrap">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:14px">Usage This Period</div>
-            <div id="usage-bars"></div>
-          </div>
+      <div class="ai-key-row">
+        <div class="ai-key-label">Anthropic API Key</div>
+        <div class="ai-key-input-wrap">
+          <input class="ai-key-input" id="ai-key-input" type="password"
+            placeholder="sk-ant-api03-…" oninput="aiKeySave()"
+            autocomplete="off" spellcheck="false">
+          <button class="ai-key-toggle" onclick="aiKeyToggle()" title="Show/hide">👁</button>
+        </div>
+        <div class="ai-key-hint" id="ai-key-hint">Saved in your browser only — never sent to the sheet</div>
+      </div>
 
-          <div class="sec-card">
-            <div class="sec-head"><div><div class="sec-title">Invoice History</div></div></div>
-            <div id="invoice-list" style="padding:4px 20px 8px"></div>
-          </div>
+      <div class="ai-hero-card">
+        <div>
+          <div class="ai-hero-title">🤖 Field Intelligence Briefing</div>
+          <div class="ai-hero-sub">Claude analyses all live territory, rep, competitor, and forecast data to give you actionable deployment recommendations.</div>
+        </div>
+        <button class="ai-run-btn" id="ai-run-btn" onclick="runAIAnalysis()">
+          <span id="ai-run-btn-label">▶ Run Analysis</span>
+        </button>
+      </div>
+
+      <div class="ai-context-pills" id="ai-context-pills"></div>
+
+      <div id="ai-output">
+        <div class="ai-output-placeholder">
+          <div class="ai-placeholder-icon">🧠</div>
+          <div class="ai-placeholder-txt">Enter your Anthropic API key above, then press Run Analysis.<br>Claude will analyse all your live field data and generate a full briefing.</div>
         </div>
       </div>
-    </div>
+      <div class="ai-timestamp" id="ai-timestamp"></div>
 
-    <!-- SETTINGS -->
-    <div class="panel" id="panel-settings">
-      <div class="sec-card">
-        <div class="sec-head"><div><div class="sec-title">Workspace Settings</div></div></div>
-        <div class="settings-wrap">
-
-          <div class="setting-section">
-            <h3>Company Profile</h3>
-            <p>This information appears in reports and rep-facing interfaces.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-              <div class="setting-field"><label>Company Name</label><input type="text" id="set-company" value="Zito Telecom"></div>
-              <div class="setting-field"><label>Workspace Slug</label><input type="text" id="set-slug" value="zito-telecom-ab12cd"></div>
-              <div class="setting-field"><label>Admin Email</label><input type="email" id="set-email" value="admin@zitotelecom.com"></div>
-              <div class="setting-field"><label>Industry</label>
-                <select><option>Telecom / ISP</option><option>Utilities</option><option>Cable / Fiber</option></select>
-              </div>
-            </div>
-            <button class="btn-sm primary" style="margin-top:4px">Save Changes</button>
-          </div>
-
-          <div class="setting-section">
-            <h3>Notifications</h3>
-            <p>Control what events trigger email or in-app alerts.</p>
-            <div style="display:flex;flex-direction:column;gap:0">
-              ${[
-                ['New sale recorded','Get alerted every time a rep logs a sale'],
-                ['Rep goes offline','Notify when a rep\'s status changes to offline'],
-                ['Low seat availability','Alert when 90% of seats are used'],
-                ['Weekly performance digest','Summary email every Monday morning'],
-                ['Territory coverage milestone','When a territory hits 50% / 100% coverage']
-              ].map(([n,d],i) => `
-                <div class="setting-row">
-                  <div class="setting-row-info"><h4>${n}</h4><p>${d}</p></div>
-                  <label class="toggle"><input type="checkbox"${i<3?' checked':''}><div class="toggle-track"></div><div class="toggle-knob"></div></label>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="setting-section">
-            <h3>Security</h3>
-            <p>Access controls and session management.</p>
-            <div style="display:flex;flex-direction:column;gap:0">
-              ${[
-                ['Require email verification for new reps','Reps must verify email before accessing field app'],
-                ['Auto-expire inactive sessions','Sign out reps after 12 hours of inactivity'],
-                ['Log all disposition changes','Maintain audit trail of every status update'],
-              ].map(([n,d],i) => `
-                <div class="setting-row">
-                  <div class="setting-row-info"><h4>${n}</h4><p>${d}</p></div>
-                  <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-knob"></div></label>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <div class="danger-zone">
-            <h3>⚠️ Danger Zone</h3>
-            <p>Deleting your workspace is permanent and cannot be undone. All rep data, territories, and sales history will be lost.</p>
-            <button class="btn-danger">Delete Workspace</button>
-          </div>
-
-        </div>
-      </div>
     </div>
 
   </div><!-- /content -->
 </div><!-- /main -->
 
-<!-- MODAL -->
-<div id="modal-overlay">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div id="modal-content"></div>
-  </div>
-</div>
-
 <script>
-// ── AUTH GUARD ────────────────────────────────────────
-(function() {
-  var session = localStorage.getItem('fieldos_manager');
-  if (!session) { window.location.replace('landing.html'); return; }
-  try {
-    var s = JSON.parse(session);
-    if (!s.loggedIn || !s.name) throw new Error('invalid');
-    if (Date.now() - s.loginTime > 8 * 60 * 60 * 1000) {
-      localStorage.removeItem('fieldos_manager');
-      window.location.replace('landing.html');
-      return;
-    }
-    window.MANAGER_NAME  = s.name;
-    window.MANAGER_EMAIL = s.email;
-  } catch(e) {
-    localStorage.removeItem('fieldos_manager');
-    window.location.replace('landing.html');
-  }
-})();
+// ══════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════
+var SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
+var OWNER_NAME  = 'Kasey Pelchy';
+var STALE_HOURS = 2;
+var FC_MONTHLY  = { mega: 35.95, gig: 45.95 };  // base + eero + proc
+var mgrAutoRefresh = null;
+var aiLastResult   = null;
 
-function signOut() {
-  localStorage.removeItem('fieldos_manager');
-  window.location.replace('landing.html');
+// ══════════════════════════════════════════════════════
+//  STATE — mirrors field app globals
+// ══════════════════════════════════════════════════════
+var addresses = [];
+var repList   = [];
+
+// ══════════════════════════════════════════════════════
+//  HELPERS — exact copies from app.js
+// ══════════════════════════════════════════════════════
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-// ── END AUTH GUARD ────────────────────────────────────
+function pct(x)  { return Math.round(x * 100) + '%'; }
+function usd(n)  { return '$' + Number(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function num1(x) { return (Math.round(Number(x) * 10) / 10).toFixed(1); }
 
-// ── CONFIG ───────────────────────────────────────────
-// ▶ zito.gs — your real backend
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
-const params = new URLSearchParams(window.location.search);
-const WS_ID  = params.get('ws') || 'zito-telecom-ab12cd';
-const WORKSPACE = { name:'Zito Media', plan:'Growth', adminName:'Manager', adminEmail:'' };
-const INVITE_TOKEN = params.get('token') || 'invite';
-
-// ── LIVE DATA — loaded from zito.gs ─────────────────
-let REPS        = [];   // from action=repstatus
-let TERRITORIES = [];   // from action=workspace_info
-let STATS       = {};   // from action=dailystats
-
-async function loadDashboardData() {
-  try {
-    // Load rep live status
-    const repRes = await fetch(SCRIPT_URL + '?action=repstatus&_t=' + Date.now());
-    const repJson = await repRes.json();
-    if (repJson.reps) {
-      REPS = repJson.reps.map((r,i) => ({
-        id:        'r' + i,
-        name:      r.name,
-        email:     '',
-        territory: '',
-        status:    r.status || 'offline',
-        sales:     r.totalSales || 0,
-        megaSales: r.megaSales  || 0,
-        gigSales:  r.gigSales   || 0,
-        doors:     r.doorsWorked || 0,
-        lastSeen:  r.lastSeen ? timeSince(r.lastSeen) : '—'
-      }));
-    }
-  } catch(e) { console.warn('Rep status load failed:', e); }
-
-  try {
-    // Load territory list + stats
-    const wsRes  = await fetch(SCRIPT_URL + '?action=workspace_info&_t=' + Date.now());
-    const wsJson = await wsRes.json();
-    if (wsJson.territories) {
-      TERRITORIES = wsJson.territories.map(name => ({
-        name, region:'', addresses:0, reps:0, sales:0, pct:0
-      }));
-    }
-    if (wsJson.company) WORKSPACE.name = wsJson.company;
-  } catch(e) { console.warn('Workspace info load failed:', e); }
-
-  try {
-    // Enrich territories with daily stats
-    const statRes  = await fetch(SCRIPT_URL + '?action=dailystats&days=1&_t=' + Date.now());
-    const statJson = await statRes.json();
-    if (statJson.rows) {
-      statJson.rows.forEach(function(row) {
-        const t = TERRITORIES.find(x => x.name === row.territory);
-        if (t) {
-          t.sales    = row.totalSales   || 0;
-          t.addresses= row.totalHomes   || 0;
-          t.pct      = row.totalHomes > 0
-            ? Math.round((row.worked / row.totalHomes) * 100) : 0;
-        }
-        STATS = row; // keep latest for summary
-      });
-    }
-  } catch(e) { console.warn('Stats load failed:', e); }
-
-  // Render everything with real data
-  // Use the logged-in manager name from session
-  const sessionName = window.MANAGER_NAME || WORKSPACE.adminName;
-  document.querySelector('#sb-admin-name').textContent   = sessionName;
-  document.querySelector('#sb-avatar-init').textContent  = initials(sessionName);
-  document.querySelector('#ws-name-display').textContent = WORKSPACE.name;
-  document.querySelector('#next-bill-date').textContent  = nextBillDate();
-
-  fillOverview();
-  fillReps();
-  fillTerritories();
-  fillInvites();
-  fillBilling();
+function isKnockable(a) {
+  var ac = (a.activeCount || '').toLowerCase().trim();
+  var s  = (a.status      || '').toLowerCase().trim();
+  if (ac === 'active' || ac === 'existing' || ac === 'customer') return false;
+  if (s  === 'active' || s  === 'activecustomer')                return false;
+  return true;
 }
 
-function timeSince(iso) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1)  return 'Now';
-  if (m < 60) return m + 'm ago';
-  const h = Math.floor(m / 60);
-  if (h < 24) return h + 'h ago';
-  return Math.floor(h/24) + 'd ago';
-}
-
-// Init immediately, then auto-refresh every 90 seconds
-loadDashboardData();
-setInterval(loadDashboardData, 90000);
-
-// Nav
-document.querySelectorAll('.sb-item[data-panel]').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    item.classList.add('active');
-    const pid = 'panel-' + item.dataset.panel;
-    document.getElementById(pid).classList.add('active');
-    document.querySelector('#topbar-title').textContent = item.textContent.trim().replace('↗','').trim();
-    document.querySelector('#topbar-sub').textContent = item.dataset.panel + ' management';
+function buildTerrMap() {
+  var m = {};
+  addresses.forEach(function(a) {
+    var t = (a.territory || 'Unknown').trim();
+    if (!m[t]) m[t] = {
+      total:0, worked:0, pending:0, sales:0,
+      mega:0, gig:0, nothome:0,
+      brightspeed:0, incontract:0, goback:0,
+      notinterested:0, vacant:0, business:0,
+      existingCustomers:0
+    };
+    var d = m[t];
+    var s = (a.status || 'pending').toLowerCase();
+    if (!isKnockable(a)) { d.existingCustomers++; return; }
+    d.total++;
+    if (!s || s === 'pending' || s === 'homes passed') { d.pending++; return; }
+    d.worked++;
+    if      (s === 'mega')          { d.mega++;         d.sales++; }
+    else if (s === 'gig')           { d.gig++;          d.sales++; }
+    else if (s.startsWith('nothome')) d.nothome++;
+    else if (s === 'brightspeed' || s === 'competitor') d.brightspeed++;
+    else if (s === 'incontract')    d.incontract++;
+    else if (s === 'goback')        d.goback++;
+    else if (s === 'notinterested') d.notinterested++;
+    else if (s === 'vacant')        d.vacant++;
+    else if (s === 'business')      d.business++;
   });
-});
+  return m;
+}
 
-// ── OVERVIEW ─────────────────────────────────────────
-function fillOverview() {
-  const online     = REPS.filter(r => r.status === 'online').length;
-  const totalSales = REPS.reduce((a,r) => a + r.sales, 0);
-  const totalDoors = REPS.reduce((a,r) => a + (r.doors || 0), 0);
-  const closeRate  = totalDoors > 0 ? ((totalSales / totalDoors) * 100).toFixed(1) + '%' : '—';
-
-  document.querySelector('#stat-reps').textContent  = online;
-  document.querySelector('#stat-sales').textContent = totalSales;
-  document.querySelector('#stat-doors').textContent = totalDoors > 0 ? totalDoors.toLocaleString() : '—';
-  document.querySelector('#stat-rate').textContent  = closeRate;
-  document.querySelector('#badge-reps').textContent = online > 0 ? online + ' live' : '';
-
-  // Activity feed: online reps sorted by last seen
-  const feed = document.querySelector('#activity-feed');
-  const onlineReps = [...REPS].filter(r => r.status === 'online')
-    .sort((a,b) => b.sales - a.sales);
-  if (onlineReps.length === 0) {
-    feed.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">No reps currently online</div>';
-  } else {
-    feed.innerHTML = onlineReps.map(r => `
-      <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:1px solid rgba(255,255,255,.04)">
-        <div style="font-size:16px;flex-shrink:0;margin-top:1px">🟢</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12px;color:var(--text);line-height:1.4">
-            <strong>${r.name}</strong> — ${r.sales} sales · ${r.doors} doors knocked
-          </div>
-          <div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px">Active · ${r.lastSeen}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  // Quick stats panel
-  const bestRep = [...REPS].sort((a,b) => b.sales - a.sales)[0];
-  const avgCov  = TERRITORIES.length > 0
-    ? Math.round(TERRITORIES.reduce((a,t) => a + t.pct, 0) / TERRITORIES.length) + '%'
-    : '—';
-  const qs = document.querySelector('#quick-stats');
-  qs.innerHTML = '';
-  [
-    ['Online Now',    online + ' rep' + (online !== 1 ? 's' : ''), 'var(--gig)'],
-    ['Sales Today',   totalSales + ' total', 'var(--gold-text)'],
-    ['Doors Today',   totalDoors > 0 ? totalDoors.toLocaleString() : '—', 'var(--text2)'],
-    ['Close Rate',    closeRate, 'var(--gig)'],
-    ['Best Rep',      bestRep ? bestRep.name.split(' ')[0] + ' — ' + bestRep.sales + ' sales' : '—', 'var(--mega)'],
-    ['Avg Coverage',  avgCov, 'var(--text2)'],
-  ].forEach(([l,v,c]) => {
-    qs.innerHTML += `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
-        <span style="font-size:12px;color:var(--muted)">${l}</span>
-        <span style="font-size:12px;font-weight:700;color:${c}">${v}</span>
-      </div>`;
+function getStaleAddresses() {
+  var now = Date.now();
+  return addresses.filter(function(a) {
+    var s = (a.status || '').toLowerCase();
+    if (s !== 'nothome' && s !== 'goback') return false;
+    if (!a.knockedAt) return true;
+    return (now - new Date(a.knockedAt).getTime()) / 3600000 >= STALE_HOURS;
+  }).sort(function(a, b) {
+    var ta = a.knockedAt ? new Date(a.knockedAt).getTime() : 0;
+    var tb = b.knockedAt ? new Date(b.knockedAt).getTime() : 0;
+    return ta - tb;
   });
 }
 
-// ── REPS ─────────────────────────────────────────────
-function fillReps() {
-  const online = REPS.filter(r=>r.status==='online').length;
-  document.querySelector('#seats-label').textContent = `${REPS.length} reps · ${online} online now`;
-  document.querySelector('#rep-rows').innerHTML = REPS.length === 0
-    ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);font-size:12px">No reps found — add reps to the Reps tab in your Google Sheet</td></tr>'
-    : REPS.map(r => `
-    <div class="rt-row">
-      <div class="rep-info">
-        <div class="rep-av ${r.status}">${initials(r.name)}</div>
-        <div><div class="rep-name">${r.name}</div><div class="rep-email">${r.email}</div></div>
-      </div>
-      <div class="rt-cell" style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${r.territory}</div>
-      <div class="rt-cell">
-        <div class="status-badge ${r.status}">
-          <div class="status-dot"></div>${r.status}
-        </div>
-      </div>
-      <div class="rt-cell" style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--gold-text)">${r.sales}</div>
-      <div class="rt-cell" style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${r.lastSeen}</div>
-      <div class="rt-actions">
-        <button class="rt-btn" onclick="viewRep('${r.id}')">View</button>
-        <button class="rt-btn danger" onclick="deactivateRep('${r.id}')">×</button>
-      </div>
-    </div>
-  `).join('');
+function timeAgo(iso) {
+  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60)    return diff + 's ago';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
 }
 
-// ── TERRITORIES ──────────────────────────────────────
-function fillTerritories() {
-  const g = document.querySelector('#terr-grid');
-  g.innerHTML = TERRITORIES.map(t => `
-    <div class="terr-card">
-      <div class="terr-name">${t.name}</div>
-      <div class="terr-region">${t.region}</div>
-      <div class="terr-stats">
-        <div class="terr-stat"><div class="terr-stat-val">${t.reps}</div><div class="terr-stat-lbl">Reps</div></div>
-        <div class="terr-stat"><div class="terr-stat-val">${t.sales}</div><div class="terr-stat-lbl">Sales</div></div>
-        <div class="terr-stat"><div class="terr-stat-val">${t.addresses.toLocaleString()}</div><div class="terr-stat-lbl">Addresses</div></div>
-        <div class="terr-stat"><div class="terr-stat-val" style="color:${t.pct>40?'var(--gig)':t.pct>15?'var(--warn)':'var(--muted)'}">${t.pct}%</div><div class="terr-stat-lbl">Coverage</div></div>
-      </div>
-      <div class="terr-actions">
-        <button class="terr-btn">Edit</button>
-        <button class="terr-btn" onclick="goToRouteReplay('${t.name}')">▶ Route Replay</button>
-        <button class="terr-btn" onclick="window.location.href='index.html'">Open Field App</button>
-      </div>
-    </div>
-  `).join('') + `
-    <div class="terr-card add-terr-card" onclick="openModal('territory')">
-      <div class="add-terr-icon">＋</div>
-      <div class="add-terr-label">Add Territory</div>
-    </div>
-  `;
+function noDataMsg(msg) {
+  return '<div class="ti-empty">' + escHtml(msg) + '</div>';
 }
 
-// ── INVITES ──────────────────────────────────────────
-function fillInvites() {
-  const link = `${window.location.origin}/rep-invite.html?ws=${WS_ID}&token=${INVITE_TOKEN}`;
-  const linkEl = document.querySelector('#inv-link-display');
-  if(linkEl) linkEl.textContent = link;
-  document.querySelector('#inv-uses').textContent    = REPS.length;
-  document.querySelector('#inv-pending').textContent = INVITES.length;
+// ══════════════════════════════════════════════════════
+//  DATA LOADING
+// ══════════════════════════════════════════════════════
+function loadAll() {
+  var btn = document.getElementById('refresh-btn');
+  if (btn) btn.classList.add('spinning');
 
-  const btn = document.querySelector('#inv-copy-btn');
-  if(btn) btn.addEventListener('click', function() {
-    navigator.clipboard.writeText(link).then(() => {
-      this.textContent = '✓ Copied!'; this.classList.add('copied');
-      setTimeout(() => { this.textContent = 'Copy'; this.classList.remove('copied'); }, 2500);
+  var repUrl  = SCRIPT_URL + '?action=repStatus&_t=' + Date.now();
+  var addrUrl = SCRIPT_URL + '?action=addresses&repName=' + encodeURIComponent(OWNER_NAME) +
+                '&isManager=true&_t=' + Date.now();
+
+  Promise.all([
+    fetch(repUrl).then(function(r){ return r.json(); }).catch(function(){ return {reps:[]}; }),
+    fetch(addrUrl).then(function(r){ return r.json(); }).catch(function(){ return {rows:[]}; })
+  ]).then(function(results) {
+    repList   = results[0].reps || [];
+    addresses = (results[1].rows || []).map(function(row, i){
+      return Object.assign({}, row, { id: i });
     });
+
+    updateKPIs();
+    renderActiveTab();
+
+    var now = new Date();
+    document.getElementById('last-refresh').textContent =
+      'Refreshed ' + now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+
+    if (btn) btn.classList.remove('spinning');
+  }).catch(function(err){
+    console.error('Load failed:', err);
+    if (btn) btn.classList.remove('spinning');
   });
-  renderInviteEmails();
 }
 
-function renderInviteEmails() {
-  const el = document.querySelector('#invite-email-list');
-  if(!el) return;
-  el.innerHTML = INVITES.map(e => `
-    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid rgba(251,146,60,.2);border-radius:9px;padding:9px 13px;font-size:12px">
-      <span style="color:var(--text2)">${e}</span>
-      <span style="font-size:10px;color:var(--warn);font-family:'IBM Plex Mono',monospace;font-weight:700">PENDING</span>
-    </div>
-  `).join('');
+// ══════════════════════════════════════════════════════
+//  KPI BAR
+// ══════════════════════════════════════════════════════
+function updateKPIs() {
+  var online  = repList.filter(function(r){ return r.status === 'online'; }).length;
+  var offline = repList.filter(function(r){ return r.status !== 'online'; }).length;
+  var sales   = repList.reduce(function(s,r){ return s + (Number(r.totalSales)||0); }, 0);
+  var doors   = repList.reduce(function(s,r){ return s + (Number(r.doorsWorked)||0); }, 0);
+
+  var knockable = addresses.filter(isKnockable);
+  var homes     = knockable.length;
+  var pending   = knockable.filter(function(a){
+    var s = (a.status||'pending').toLowerCase();
+    return !s || s === 'pending';
+  }).length;
+
+  document.getElementById('kpi-online').textContent  = online;
+  document.getElementById('kpi-offline').textContent = offline;
+  document.getElementById('kpi-sales').textContent   = sales;
+  document.getElementById('kpi-doors').textContent   = doors || '—';
+  document.getElementById('kpi-homes').textContent   = homes ? homes.toLocaleString() : '—';
+  document.getElementById('kpi-pending').textContent = pending ? pending.toLocaleString() : '—';
 }
 
-function sendEmailInvite() {
-  const inp = document.querySelector('#inv-email-input');
-  const v = inp.value.trim();
-  if(v && v.includes('@') && !INVITES.includes(v)) {
-    INVITES.push(v); inp.value = '';
-    document.querySelector('#inv-pending').textContent = INVITES.length;
-    renderInviteEmails();
+// ══════════════════════════════════════════════════════
+//  TEAM TAB  (mirrors refreshManagerPanel → renderRepList)
+// ══════════════════════════════════════════════════════
+function renderRepList(reps) {
+  var onlineReps  = reps.filter(function(r){ return r.status === 'online'; });
+  var offlineReps = reps.filter(function(r){ return r.status !== 'online'; });
+
+  var megaTotal  = reps.reduce(function(s,r){ return s + (Number(r.megaSales)||0); }, 0);
+  var gigTotal   = reps.reduce(function(s,r){ return s + (Number(r.gigSales)||0);  }, 0);
+  var totalSales = reps.reduce(function(s,r){ return s + (Number(r.totalSales)||0); }, 0);
+  var doorsWorked= reps.reduce(function(s,r){ return s + (Number(r.doorsWorked)||0); }, 0);
+  if (!doorsWorked && totalSales) doorsWorked = totalSales * 3;
+
+  var nowMs       = Date.now();
+  var activeHours = onlineReps.reduce(function(s,r){
+    var t0 = r.firstSeen ? new Date(r.firstSeen).getTime()
+           : (r.lastSeen ? new Date(r.lastSeen).getTime() : nowMs);
+    return s + Math.max((nowMs - t0) / 3600000, 0.25);
+  }, 0);
+
+  // Performance metrics
+  var closeRate = doorsWorked > 0 ? totalSales / doorsWorked : 0;
+  var pace      = activeHours > 0 ? totalSales / activeHours : 0;
+  var denom     = megaTotal + gigTotal;
+  var gigMix    = denom > 0 ? gigTotal / denom : 0;
+  var spr       = onlineReps.length > 0 ? totalSales / onlineReps.length : 0;
+
+  document.getElementById('mgr-m-close').textContent   = doorsWorked > 0 ? pct(closeRate) : '—';
+  document.getElementById('mgr-m-pace').textContent    = activeHours > 0 ? num1(pace) : '—';
+  document.getElementById('mgr-m-gigmix').textContent  = denom > 0 ? pct(gigMix) : '—';
+  document.getElementById('mgr-m-spr').textContent     = onlineReps.length > 0 ? num1(spr) : '—';
+  document.getElementById('mgr-m-close-sub').textContent  = doorsWorked > 0 ? totalSales + ' sales / ' + doorsWorked + ' worked' : 'No door activity reported';
+  document.getElementById('mgr-m-pace-sub').textContent   = activeHours > 0 ? 'Across ' + onlineReps.length + ' online rep' + (onlineReps.length===1?'':'s') : '—';
+  document.getElementById('mgr-m-gigmix-sub').textContent = denom > 0 ? gigTotal + ' Gig • ' + megaTotal + ' Mega' : 'No sales reported';
+  document.getElementById('mgr-m-spr-sub').textContent    = onlineReps.length > 0 ? 'Online reps only' : '—';
+
+  if (reps.length === 0) {
+    document.getElementById('mgr-rep-list').innerHTML =
+      '<div class="mgr-empty"><div class="mgr-empty-icon">📡</div>' +
+      'No reps have checked in yet.<br>Status updates appear here once reps log in.</div>';
+    return;
   }
+
+  var sorted = onlineReps.concat(offlineReps).sort(function(a,b){
+    if (a.status==='online' && b.status!=='online') return -1;
+    if (a.status!=='online' && b.status==='online') return  1;
+    return (a.name||'').localeCompare(b.name||'');
+  });
+
+  document.getElementById('mgr-rep-list').innerHTML = sorted.map(function(rep) {
+    var isOn   = rep.status === 'online';
+    var parts  = (rep.name||'Rep').trim().split(/\s+/);
+    var initials = parts.length >= 2
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : (rep.name||'?').slice(0,2).toUpperCase();
+    var lastSeen = rep.lastSeen ? timeAgo(rep.lastSeen) : 'No activity';
+    var mega     = Number(rep.megaSales)||0;
+    var gig      = Number(rep.gigSales)||0;
+    var total    = Number(rep.totalSales)||(mega+gig);
+    var salesStr = total + ' sale' + (total===1?'':'s');
+    if (mega||gig) salesStr += ' (' + mega + ' Mega / ' + gig + ' Gig)';
+
+    return '<div class="mgr-rep-card ' + (isOn?'rep-online':'') + '">' +
+      '<div class="mgr-rep-avatar">' + escHtml(initials) + '</div>' +
+      '<div class="mgr-rep-info">' +
+        '<div class="mgr-rep-name">' + escHtml(rep.name||'Unknown') + '</div>' +
+        '<div class="mgr-rep-meta">Last seen: ' + lastSeen + '</div>' +
+        (!isOn && rep.signOutTime ? '<div class="mgr-signout">Signed out ' + timeAgo(rep.signOutTime) + '</div>' : '') +
+      '</div>' +
+      '<div class="mgr-rep-right">' +
+        '<div class="mgr-status-badge ' + (isOn?'online':'offline') + '">' +
+          '<span class="mgr-status-dot"></span>' + (isOn?'ONLINE':'OFFLINE') +
+        '</div>' +
+        '<div class="mgr-rep-sales">' + escHtml(salesStr) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
-function regenerateToken() {
-  alert('Invite link regenerated. Old link is now invalid.');
+// ══════════════════════════════════════════════════════
+//  ANALYTICS TAB — exact copies from app.js
+// ══════════════════════════════════════════════════════
+function renderAnalyticsTab() {
+  renderTodChart();
+  renderStatusBars();
+  renderCompetitor();
+  renderLeaderboard();
 }
 
-// ── BILLING ──────────────────────────────────────────
-function fillBilling() {
-  const ub = document.querySelector('#usage-bars');
-  if(!ub) return;
-  const items = [
-    { name:'Rep Seats', used:5, total:25 },
-    { name:'Territories', used:3, total:null },
-    { name:'AI Analysis Runs', used:14, total:50 },
-  ];
-  ub.innerHTML = items.map(it => {
-    const pct = it.total ? Math.round((it.used/it.total)*100) : null;
-    const cls = pct > 90 ? 'full' : pct > 70 ? 'warn' : '';
-    return `
-      <div style="margin-bottom:14px">
-        <div class="usage-row">
-          <div class="usage-name">${it.name}</div>
-          <div class="usage-nums">${it.used}${it.total?' / '+it.total:' used'}</div>
-        </div>
-        ${it.total ? `<div class="usage-track"><div class="usage-fill ${cls}" style="width:${pct}%"></div></div>` : ''}
-      </div>`;
+function renderTodChart() {
+  var hourSales  = new Array(24).fill(0);
+  var hourKnocks = new Array(24).fill(0);
+
+  addresses.forEach(function(a) {
+    if (!a.knockedAt) return;
+    var h = new Date(a.knockedAt).getHours();
+    if (h < 0 || h > 23) return;
+    hourKnocks[h]++;
+    if (a.status === 'mega' || a.status === 'gig') hourSales[h]++;
+  });
+
+  var hours = [], labels = [];
+  for (var h = 7; h <= 21; h++) {
+    hours.push(h);
+    labels.push(h < 12 ? h + 'a' : h === 12 ? '12p' : (h-12) + 'p');
+  }
+
+  var maxRate = 0;
+  var rates = hours.map(function(h) {
+    var rate = hourKnocks[h] > 0 ? hourSales[h] / hourKnocks[h] : 0;
+    if (rate > maxRate) maxRate = rate;
+    return { h:h, rate:rate, knocks:hourKnocks[h], sales:hourSales[h] };
+  });
+
+  var chartEl = document.getElementById('ana-tod-chart');
+  var labelEl = document.getElementById('ana-tod-labels');
+  var total   = hourKnocks.reduce(function(s,v){ return s+v; }, 0);
+
+  if (total === 0) {
+    chartEl.innerHTML = '<div style="width:100%;text-align:center;padding:20px 0;font-size:11px;color:var(--muted)">No knock data yet — populates as reps log door contacts</div>';
+    labelEl.innerHTML = '';
+    return;
+  }
+
+  chartEl.innerHTML = rates.map(function(r) {
+    var hp  = maxRate > 0 ? Math.max((r.rate / maxRate) * 100, r.knocks > 0 ? 5 : 1) : 2;
+    var col = r.rate >= 0.15 ? '#10b981' : r.rate >= 0.08 ? '#facc15' : r.knocks > 0 ? '#d97706' : 'rgba(255,255,255,.08)';
+    var lbl = r.knocks > 0 ? pct(r.rate) : '';
+    return '<div class="tod-bar-wrap">' +
+      '<div class="tod-bar" style="height:' + hp + '%;background:' + col + '">' +
+        (lbl ? '<div class="tod-bar-val">' + lbl + '</div>' : '') +
+      '</div></div>';
   }).join('');
 
-  const il = document.querySelector('#invoice-list');
-  if(!il) return;
-  const months = ['Feb 2026','Jan 2026','Dec 2025','Nov 2025'];
-  il.innerHTML = months.map(m => `
-    <div class="invoice-row">
-      <div class="invoice-date">${m}</div>
-      <div style="color:var(--text2);font-size:12px">Growth Plan</div>
-      <div class="invoice-badge paid">Paid</div>
-      <div class="invoice-amt">$149.00</div>
-      <button class="invoice-dl" title="Download PDF">⬇</button>
-    </div>
-  `).join('');
+  labelEl.innerHTML = labels.map(function(l){ return '<span>' + l + '</span>'; }).join('');
 }
 
-// ── MODALS ───────────────────────────────────────────
-function openModal(type) {
-  const mc = document.querySelector('#modal-content');
-  if(type === 'invite') {
-    mc.innerHTML = `
-      <div class="modal-title">Invite a Rep</div>
-      <div class="modal-sub">They'll receive an email with their workspace invite link and setup instructions.</div>
-      <div class="modal-field"><label>Full Name</label><input type="text" id="m-name" placeholder="Alex Johnson"></div>
-      <div class="modal-field"><label>Work Email</label><input type="email" id="m-email" placeholder="alex@company.com"></div>
-      <div class="modal-field"><label>Assign Territory</label>
-        <select id="m-terr">${TERRITORIES.map(t=>`<option>${t.name}</option>`).join('')}</select>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn-modal-confirm" onclick="sendInvite()">Send Invite →</button>
-      </div>`;
-  } else if(type === 'territory') {
-    mc.innerHTML = `
-      <div class="modal-title">Add Territory</div>
-      <div class="modal-sub">Create a new coverage zone. Upload your KML file to populate addresses automatically.</div>
-      <div class="modal-field"><label>Territory Name</label><input type="text" id="m-tname" placeholder="Nacogdoches, TX"></div>
-      <div class="modal-field"><label>Region / State</label><input type="text" id="m-tregion" placeholder="East Texas"></div>
-      <div class="modal-field"><label>KML File <span style="color:var(--muted);font-size:9px">OPTIONAL — upload after setup</span></label>
-        <input type="file" accept=".kml" style="background:var(--surface2);border:1px dashed rgba(212,165,58,.3);padding:14px;border-radius:9px;color:var(--text2);cursor:pointer">
-      </div>
-      <div class="modal-actions">
-        <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn-modal-confirm" onclick="addTerritory()">Create Territory →</button>
-      </div>`;
+function renderStatusBars() {
+  var el = document.getElementById('ana-status-bars');
+  if (!el) return;
+
+  var counts = {};
+  var worked = addresses.filter(function(a) {
+    var s = (a.status || 'pending').toLowerCase();
+    return isKnockable(a) && s !== 'pending' && s !== '' && s !== 'homes passed';
+  });
+  worked.forEach(function(a) {
+    var s = (a.status||'other').toLowerCase();
+    counts[s] = (counts[s]||0) + 1;
+  });
+
+  var total = worked.length;
+  if (!total) { el.innerHTML = noDataMsg('No worked doors yet'); return; }
+
+  var statusColors = {
+    mega:'#a78bfa', gig:'#2dd4bf', nothome:'#d97706', nothome2:'#d97706', nothome3:'#d97706', nothome4:'#d97706',
+    brightspeed:'#ef4444', competitor:'#ef4444', incontract:'#818cf8',
+    goback:'#06b6d4', notinterested:'#f43f5e', vacant:'#6b7280', business:'#94a3b8'
+  };
+  var statusLabels = {
+    mega:'Mega Sale', gig:'Gig Sale', nothome:'Not Home', nothome2:'Not Home ×2',
+    nothome3:'Not Home ×3', nothome4:'Not Home ×4', brightspeed:'Brightspeed',
+    competitor:'Competitor', incontract:'In Contract', goback:'Go Back Later',
+    notinterested:'Not Interested', vacant:'Vacant', business:'Business', activecustomer:'Active Cust.'
+  };
+
+  el.innerHTML = Object.entries(counts)
+    .sort(function(a,b){ return b[1]-a[1]; })
+    .slice(0, 10)
+    .map(function(entry) {
+      var s = entry[0], c = entry[1];
+      var col = statusColors[s] || '#4d6080';
+      var lbl = statusLabels[s] || s;
+      var w   = ((c / total) * 100).toFixed(1);
+      return '<div class="sbar-row">' +
+        '<div class="sbar-lbl">' + escHtml(lbl) + '</div>' +
+        '<div class="sbar-track"><div class="sbar-fill" style="width:' + w + '%;background:' + col + '"></div></div>' +
+        '<div class="sbar-count">' + c + '</div>' +
+      '</div>';
+    }).join('');
+}
+
+function renderCompetitor() {
+  var el = document.getElementById('ana-competitor');
+  if (!el) return;
+  var knockable = addresses.filter(isKnockable);
+  var total     = knockable.length || 1;
+  var bs   = knockable.filter(function(a){ return a.status==='brightspeed'||a.status==='competitor'; }).length;
+  var ic   = knockable.filter(function(a){ return a.status==='incontract'; }).length;
+  var sold = knockable.filter(function(a){ return a.status==='mega'||a.status==='gig'; }).length;
+  var open = Math.max(total - bs - ic - sold, 0);
+
+  el.innerHTML = [
+    { lbl:'Brightspeed', val:bs,   col:'#ef4444' },
+    { lbl:'In Contract', val:ic,   col:'#818cf8' },
+    { lbl:'Zito Sales',  val:sold, col:'#10b981' },
+    { lbl:'Open Market', val:open, col:'#06b6d4' }
+  ].map(function(x){
+    var w = ((x.val / total) * 100).toFixed(0);
+    return '<div class="comp-row-inner">' +
+      '<div class="comp-lbl">' + x.lbl + '</div>' +
+      '<div class="comp-track"><div class="comp-fill" style="width:' + w + '%;background:' + x.col + '"></div></div>' +
+      '<div class="comp-count">' + x.val + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderLeaderboard() {
+  var el = document.getElementById('ana-leaderboard');
+  if (!el) return;
+
+  var repData = {};
+  addresses.forEach(function(a) {
+    var rep = (a.salesperson || '').trim();
+    if (!rep || !isKnockable(a)) return;
+    if (!repData[rep]) repData[rep] = { doors:0, sales:0 };
+    var s = (a.status||'pending').toLowerCase();
+    if (s !== 'pending' && s !== '' && s !== 'homes passed') repData[rep].doors++;
+    if (s === 'mega' || s === 'gig') repData[rep].sales++;
+  });
+
+  var rows = Object.keys(repData)
+    .filter(function(r){ return repData[r].doors >= 5; })
+    .map(function(r){ var d=repData[r]; return {name:r,doors:d.doors,sales:d.sales,rate:d.doors>0?d.sales/d.doors:0}; })
+    .sort(function(a,b){ return b.rate - a.rate; });
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;font-size:11px;color:var(--muted)">Need at least 5 doors per rep to rank</div>';
+    return;
   }
-  document.querySelector('#modal-overlay').classList.add('open');
+
+  var medals = ['gold','silver','bronze'];
+  el.innerHTML = rows.map(function(r, i) {
+    return '<div class="lb-row">' +
+      '<div class="lb-rank ' + (medals[i]||'') + '">' + (i+1) + '</div>' +
+      '<div style="flex:1">' +
+        '<div class="lb-name">' + escHtml(r.name) + '</div>' +
+        '<div class="lb-stats">' + r.sales + ' sales / ' + r.doors + ' doors</div>' +
+      '</div>' +
+      '<div class="lb-rate">' + pct(r.rate) + '</div>' +
+    '</div>';
+  }).join('');
 }
 
-function closeModal() { document.querySelector('#modal-overlay').classList.remove('open'); }
+// ══════════════════════════════════════════════════════
+//  COVERAGE TAB — mirrors renderCoverageTab in app.js
+// ══════════════════════════════════════════════════════
+function renderCoverageTab() {
+  var el = document.getElementById('cov-territory-bars');
+  if (!el) return;
 
-function sendInvite() {
-  const name  = document.querySelector('#m-name').value.trim();
-  const email = document.querySelector('#m-email').value.trim();
-  if(!name || !email) { alert('Please fill in all fields.'); return; }
-  INVITES.push(email);
-  closeModal();
-  alert(`Invite sent to ${email}!`);
+  var terrMap = buildTerrMap();
+  var names   = Object.keys(terrMap).sort();
+
+  if (!names.length) { el.innerHTML = noDataMsg('No territory data available'); return; }
+
+  el.innerHTML = names.map(function(t) {
+    var d       = terrMap[t];
+    var covPct  = d.total > 0 ? d.worked / d.total : 0;
+    var soldPct = d.total > 0 ? d.sales  / d.total : 0;
+    var soldW   = (soldPct * 100).toFixed(1);
+    var wrkdW   = ((covPct - soldPct) * 100).toFixed(1);
+
+    return '<div class="cov-terr-row">' +
+      '<div class="cov-terr-header">' +
+        '<span class="cov-terr-name">' + escHtml(t) + '</span>' +
+        '<span class="cov-terr-stats">' +
+          d.worked + '/' + d.total + ' worked · ' + pct(covPct) + ' coverage · ' + d.sales + ' sales' +
+        '</span>' +
+      '</div>' +
+      '<div class="cov-track">' +
+        '<div class="cov-fill" style="width:' + soldW + '%;background:#10b981"></div>' +
+        '<div class="cov-fill" style="width:' + wrkdW + '%;background:rgba(0,86,150,.6)"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
-function addTerritory() {
-  const name   = document.querySelector('#m-tname').value.trim();
-  const region = document.querySelector('#m-tregion').value.trim();
-  if(!name) { alert('Territory name required.'); return; }
-  TERRITORIES.push({ name, region:region||'Unknown', addresses:0, reps:0, sales:0, pct:0 });
-  fillTerritories();
-  closeModal();
-}
+// ══════════════════════════════════════════════════════
+//  FORECAST TAB — mirrors renderForecastTab in app.js
+// ══════════════════════════════════════════════════════
+function renderForecastTab() {
+  var knockable  = addresses.filter(isKnockable);
+  var totalHomes = knockable.length;
+  var soldMega   = knockable.filter(function(a){ return a.status==='mega'; }).length;
+  var soldGig    = knockable.filter(function(a){ return a.status==='gig';  }).length;
+  var totalSold  = soldMega + soldGig;
+  var worked     = knockable.filter(function(a){
+    var s = (a.status||'pending').toLowerCase();
+    return s !== 'pending' && s !== '' && s !== 'homes passed';
+  }).length;
+  var pending    = knockable.filter(function(a){
+    var s = (a.status||'pending').toLowerCase();
+    return !s || s === 'pending';
+  }).length;
 
-function deactivateRep(id) {
-  if(confirm('Deactivate this rep? They will lose access to the field app.')) {
-    alert('Rep deactivated. Seat freed.');
+  var closeRate  = worked > 0 ? totalSold / worked : 0;
+  var gigMix     = totalSold > 0 ? soldGig / totalSold : 0.40;
+  var projSales  = Math.round(pending * closeRate);
+  var projGig    = Math.round(projSales * gigMix);
+  var projMega   = projSales - projGig;
+  var currentMRR = (soldMega * FC_MONTHLY.mega) + (soldGig  * FC_MONTHLY.gig);
+  var projMRR    = currentMRR + (projMega * FC_MONTHLY.mega) + (projGig * FC_MONTHLY.gig);
+
+  var mrrEl = document.getElementById('fc-mrr');
+  if (mrrEl) mrrEl.textContent = usd(projMRR);
+
+  var inputsEl = document.getElementById('fc-inputs-grid');
+  if (inputsEl) {
+    inputsEl.innerHTML = [
+      { val: totalHomes, lbl: 'Total Homes' },
+      { val: pending,    lbl: 'Pending' },
+      { val: worked > 0 ? pct(closeRate) : '—', lbl: 'Close Rate' },
+      { val: projSales,  lbl: 'Projected Sales' },
+      { val: usd(currentMRR), lbl: 'Current MRR' },
+      { val: pct(gigMix), lbl: 'Gig Mix' }
+    ].map(function(x){
+      return '<div class="fc-input-cell">' +
+        '<div class="fc-input-val">' + x.val + '</div>' +
+        '<div class="fc-input-lbl">' + x.lbl + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Territory table
+  var terrMap  = buildTerrMap();
+  var tNames   = Object.keys(terrMap).sort();
+  var tableEl  = document.getElementById('fc-territory-table');
+  if (tableEl) {
+    if (!tNames.length) { tableEl.innerHTML = noDataMsg('No territory data'); }
+    else {
+      tableEl.innerHTML = tNames.map(function(t) {
+        var d   = terrMap[t];
+        var cr  = d.worked > 0 ? d.sales / d.worked : closeRate;
+        var pSales = Math.round(d.pending * cr);
+        var pG     = Math.round(pSales * gigMix);
+        var pM     = pSales - pG;
+        var pMRR   = (pM * FC_MONTHLY.mega) + (pG * FC_MONTHLY.gig);
+        return '<div class="fc-terr-table-row">' +
+          '<div>' +
+            '<div style="font-size:12px;font-weight:700">' + escHtml(t) + '</div>' +
+            '<div style="font-size:10px;color:var(--muted);margin-top:2px;font-family:\'IBM Plex Mono\',monospace">' +
+              d.sales + ' sold · ' + d.pending + ' pending · ' + (worked>0?pct(cr):'—') + ' close rate' +
+            '</div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<div style="font-size:14px;font-weight:800;color:var(--gold-t)">' + usd(pMRR) + '</div>' +
+            '<div style="font-size:9px;color:var(--muted);font-family:\'IBM Plex Mono\',monospace">projected MRR</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  // Package split
+  var splitEl = document.getElementById('fc-pkg-split');
+  if (splitEl) {
+    splitEl.innerHTML = [
+      { lbl:'Mega Speed',  count:soldMega, proj:soldMega+projMega, mrr:(soldMega+projMega)*FC_MONTHLY.mega, col:var_mega() },
+      { lbl:'Gig Speed',   count:soldGig,  proj:soldGig+projGig,   mrr:(soldGig+projGig)*FC_MONTHLY.gig,   col:var_gig()  }
+    ].map(function(x){
+      return '<div class="fc-pkg-cell">' +
+        '<div class="fc-pkg-val" style="color:' + x.col + '">' + usd(x.mrr) + '</div>' +
+        '<div class="fc-pkg-lbl">' + x.lbl + '</div>' +
+        '<div style="font-size:10px;color:var(--muted);margin-top:4px">' +
+          x.count + ' current · ' + x.proj + ' projected' +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 }
-function viewRep(id) { alert('Rep profile — coming soon in next update.'); }
-function goToFieldApp() { window.location.href = 'index.html'; }
-function goToRouteReplay(territory) {
-  const terr = territory || (TERRITORIES[0] && TERRITORIES[0].name) || '';
-  window.location.href = 'route-replay.html' + (terr ? '?territory=' + encodeURIComponent(terr) : '');
+
+function var_mega(){ return '#a78bfa'; }
+function var_gig() { return '#2dd4bf'; }
+
+// ══════════════════════════════════════════════════════
+//  TERRITORY INTEL TAB — mirrors renderTerritoryTab
+// ══════════════════════════════════════════════════════
+function renderTerritoryTab() {
+  renderSaturation();
+  renderCompetitorByTerritory();
+  renderStaleList();
+  renderDeployRecommendations();
 }
 
-// ── HELPERS ──────────────────────────────────────────
-function initials(name) { return name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
-function nextBillDate() {
-  const d = new Date(); d.setMonth(d.getMonth()+1);
-  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+function renderSaturation() {
+  var el = document.getElementById('ti-saturation');
+  if (!el) return;
+  var terrMap = buildTerrMap();
+  var names   = Object.keys(terrMap).sort();
+  if (!names.length) { el.innerHTML = noDataMsg('No territory data loaded'); return; }
+
+  el.innerHTML = names.map(function(t) {
+    var d   = terrMap[t];
+    var cov = d.total > 0 ? d.worked / d.total : 0;
+    var cr  = d.worked > 0 ? d.sales / d.worked : 0;
+
+    var sig, sigColor;
+    if      (cov >= 0.90) { sig='Saturated — consider rotating reps out';             sigColor='#ef4444'; }
+    else if (cov >= 0.70) { sig='Well-worked — push for closes on remaining homes';    sigColor='#facc15'; }
+    else if (cov >= 0.40) { sig='Active — good opportunity remaining';                 sigColor='#10b981'; }
+    else                  { sig='Fresh territory — high opportunity';                   sigColor='#06b6d4'; }
+
+    var covW  = (cov * 100).toFixed(1);
+    var soldW = d.total > 0 ? ((d.sales / d.total) * 100).toFixed(1) : 0;
+
+    return '<div class="ti-terr-card">' +
+      '<div class="ti-terr-header">' +
+        '<div>' +
+          '<div class="ti-terr-name">' + escHtml(t) + '</div>' +
+          '<div class="ti-terr-sig" style="color:' + sigColor + '">' + sig + '</div>' +
+        '</div>' +
+        '<div class="ti-terr-pct" style="color:' + sigColor + '">' + covW + '%</div>' +
+      '</div>' +
+      '<div class="ti-track">' +
+        '<div class="ti-fill" style="width:' + soldW + '%;background:#10b981"></div>' +
+        '<div class="ti-fill" style="width:' + (covW - soldW) + '%;background:rgba(0,86,150,.55)"></div>' +
+      '</div>' +
+      '<div class="ti-terr-stats">' +
+        '<span>' + d.worked + '/' + d.total + ' knocked</span>' +
+        '<span>' + d.sales + ' sales</span>' +
+        '<span>Close rate: ' + pct(cr) + '</span>' +
+        '<span>' + d.pending + ' remaining</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
-// Close modal on overlay click
-document.querySelector('#modal-overlay').addEventListener('click', function(e) {
-  if(e.target === this) closeModal();
+function renderCompetitorByTerritory() {
+  var el = document.getElementById('ti-competitor-table');
+  if (!el) return;
+  var terrMap = buildTerrMap();
+  var names   = Object.keys(terrMap).sort();
+  if (!names.length) { el.innerHTML = noDataMsg('No territory data loaded'); return; }
+
+  var rows = '<div class="ti-comp-header">' +
+    '<span class="ti-comp-terr">Territory</span>' +
+    '<span style="color:#ef4444;font-size:9px;font-weight:700;font-family:\'IBM Plex Mono\',monospace">Brightspd</span>' +
+    '<span style="color:#818cf8;font-size:9px;font-weight:700;font-family:\'IBM Plex Mono\',monospace">In Contr</span>' +
+    '<span style="color:#10b981;font-size:9px;font-weight:700;font-family:\'IBM Plex Mono\',monospace">Zito</span>' +
+    '<span style="color:#06b6d4;font-size:9px;font-weight:700;font-family:\'IBM Plex Mono\',monospace">Open</span>' +
+  '</div>';
+
+  rows += names.map(function(t) {
+    var d     = terrMap[t];
+    var total = d.total || 1;
+    var open  = Math.max(total - d.brightspeed - d.incontract - d.sales, 0);
+
+    function bar(val, color) {
+      var w = ((val / total) * 100).toFixed(0);
+      return '<div class="ti-comp-bar-wrap">' +
+        '<span class="ti-comp-num">' + val + '</span>' +
+        '<div class="ti-mini-track"><div style="width:' + w + '%;background:' + color + ';height:100%;border-radius:2px"></div></div>' +
+      '</div>';
+    }
+
+    return '<div class="ti-comp-row">' +
+      '<span class="ti-comp-terr" title="' + escHtml(t) + '">' + escHtml(t) + '</span>' +
+      bar(d.brightspeed, '#ef4444') +
+      bar(d.incontract,  '#818cf8') +
+      bar(d.sales,       '#10b981') +
+      bar(open,          '#06b6d4') +
+    '</div>';
+  }).join('');
+
+  el.innerHTML = rows;
+}
+
+function renderStaleList() {
+  var el    = document.getElementById('ti-stale-list');
+  if (!el) return;
+  var stale = getStaleAddresses();
+
+  if (!stale.length) {
+    el.innerHTML = '<div class="ti-empty">No follow-up contacts — all Not Home and Go Back doors are fresh or cleared 👍</div>';
+    return;
+  }
+
+  var now = Date.now();
+  el.innerHTML = stale.slice(0, 20).map(function(a) {
+    var s     = (a.status||'').toLowerCase();
+    var icon  = s === 'goback' ? '🔄' : '🚪';
+    var label = s === 'goback' ? 'Go Back' : 'Not Home';
+    var color = s === 'goback' ? '#06b6d4' : '#d97706';
+    var age   = a.knockedAt
+      ? (function(){ var hrs=(now-new Date(a.knockedAt).getTime())/3600000;
+          return hrs<1?Math.round(hrs*60)+'m ago':hrs<24?hrs.toFixed(1)+'h ago':Math.floor(hrs/24)+'d ago'; })()
+      : 'unknown';
+
+    return '<div class="ti-stale-row">' +
+      '<div class="ti-stale-icon">' + icon + '</div>' +
+      '<div class="ti-stale-info">' +
+        '<div class="ti-stale-addr">' + escHtml(a.address) + '</div>' +
+        '<div class="ti-stale-meta">' +
+          '<span style="color:' + color + '">' + label + '</span>' +
+          (a.note ? ' · ' + escHtml(a.note.substring(0, 40)) : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="ti-stale-right">' +
+        '<div class="ti-stale-age">' + age + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('') +
+  (stale.length > 20 ? '<div class="ti-empty" style="margin-top:8px">+ ' + (stale.length-20) + ' more</div>' : '');
+}
+
+function renderDeployRecommendations() {
+  var el = document.getElementById('ti-recommendations');
+  if (!el) return;
+  var terrMap = buildTerrMap();
+  var names   = Object.keys(terrMap);
+  if (!names.length) { el.innerHTML = noDataMsg('No territory data to analyze'); return; }
+
+  var recs = [];
+  names.forEach(function(t) {
+    var d    = terrMap[t];
+    var cov  = d.total > 0 ? d.worked / d.total : 0;
+    var cr   = d.worked > 0 ? d.sales / d.worked : 0;
+    var staleCount = addresses.filter(function(a){
+      return (a.territory||'').trim()===t && (a.status==='nothome'||a.status==='goback');
+    }).length;
+
+    if (cov >= 0.90) {
+      recs.push({ t, priority:'high',   icon:'🔴', action:'Rotate out — '+(cov*100).toFixed(0)+'% worked, only '+d.pending+' homes left', detail:'Territory is effectively saturated. Move reps to a fresh area to maintain pace.' });
+    } else if (staleCount >= 10 && cov >= 0.50) {
+      recs.push({ t, priority:'medium', icon:'🔄', action:'Schedule a revisit day — '+staleCount+' Not Home / Go Back contacts waiting', detail:'High stale count suggests many residents were not home. A dedicated revisit run could yield hidden sales.' });
+    } else if (cr >= 0.12 && cov < 0.50) {
+      recs.push({ t, priority:'high',   icon:'🟢', action:'Double down — '+pct(cr)+' close rate with '+d.pending+' homes untouched', detail:'Above-average performance with significant runway remaining. Add more reps or extend hours here.' });
+    } else if (cr < 0.05 && d.worked >= 20) {
+      recs.push({ t, priority:'low',    icon:'🟡', action:'Review approach — only '+pct(cr)+' close rate after '+d.worked+' doors', detail:'Low close rate may indicate high competitor penetration or wrong rep-territory fit. Check competitor data.' });
+    } else if (cov < 0.20 && d.total > 50) {
+      recs.push({ t, priority:'medium', icon:'🔵', action:'Fresh territory — send more reps to '+t, detail:'Only '+(cov*100).toFixed(0)+'% worked. High opportunity — deploy additional reps to increase pace.' });
+    }
+  });
+
+  if (!recs.length) {
+    el.innerHTML = '<div class="ti-empty">All territories are well-balanced — no urgent recommendations right now.</div>';
+    return;
+  }
+
+  var order = { high:0, medium:1, low:2 };
+  recs.sort(function(a,b){ return (order[a.priority]||0) - (order[b.priority]||0); });
+
+  var borderColors = { high:'#ef4444', medium:'#facc15', low:'#6b7280' };
+
+  el.innerHTML = recs.map(function(r) {
+    return '<div class="ti-rec-card" style="border-left-color:' + (borderColors[r.priority]||'#6b7280') + '">' +
+      '<div class="ti-rec-territory">' + escHtml(r.t) + '</div>' +
+      '<div class="ti-rec-header">' +
+        '<div class="ti-rec-icon">' + r.icon + '</div>' +
+        '<div class="ti-rec-action">' + escHtml(r.action) + '</div>' +
+      '</div>' +
+      '<div class="ti-rec-detail">' + escHtml(r.detail) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  AI TAB — exact copy of app.js renderAITab / runAIAnalysis / renderAIResult
+// ══════════════════════════════════════════════════════
+function renderAITab() {
+  var saved = localStorage.getItem('fieldos_ai_key') || '';
+  var input = document.getElementById('ai-key-input');
+  if (input && saved) {
+    input.value = saved;
+    var hint = document.getElementById('ai-key-hint');
+    if (hint) { hint.textContent = '✓ Key saved in this browser'; hint.className = 'ai-key-hint saved'; }
+  }
+  renderAIContextPills();
+  if (aiLastResult) renderAIResult(aiLastResult);
+}
+
+function aiKeySave() {
+  var input = document.getElementById('ai-key-input');
+  var hint  = document.getElementById('ai-key-hint');
+  if (!input) return;
+  var val = input.value.trim();
+  if (val) {
+    localStorage.setItem('fieldos_ai_key', val);
+    if (hint) { hint.textContent = '✓ Key saved in this browser'; hint.className = 'ai-key-hint saved'; }
+  } else {
+    localStorage.removeItem('fieldos_ai_key');
+    if (hint) { hint.textContent = 'Saved in your browser only — never sent to the sheet'; hint.className = 'ai-key-hint'; }
+  }
+}
+
+function aiKeyToggle() {
+  var input = document.getElementById('ai-key-input');
+  if (input) input.type = (input.type === 'password') ? 'text' : 'password';
+}
+
+function renderAIContextPills() {
+  var el = document.getElementById('ai-context-pills');
+  if (!el) return;
+  var terrMap     = buildTerrMap();
+  var territories = Object.keys(terrMap);
+  var knockable   = addresses.filter(isKnockable);
+  var worked      = knockable.filter(function(a){
+    var s=(a.status||'pending').toLowerCase();
+    return s!=='pending'&&s!==''&&s!=='homes passed';
+  }).length;
+  var totalSales  = knockable.filter(function(a){ return a.status==='mega'||a.status==='gig'; }).length;
+  var staleCount  = getStaleAddresses().length;
+
+  var pills = [
+    { dot:'default', label: territories.length + ' territor' + (territories.length===1?'y':'ies') },
+    { dot:'default', label: knockable.length + ' homes' },
+    { dot:'default', label: worked + ' knocked' },
+    { dot: totalSales > 0 ? 'default' : 'dim', label: totalSales + ' sales' },
+    { dot: staleCount > 5 ? 'warn' : 'default', label: staleCount + ' follow-ups' }
+  ];
+
+  el.innerHTML = pills.map(function(p){
+    return '<div class="ai-pill">' +
+      '<div class="ai-pill-dot ' + (p.dot!=='default'?p.dot:'') + '"></div>' +
+      p.label +
+    '</div>';
+  }).join('');
+}
+
+function buildAIPayload() {
+  var terrMap   = buildTerrMap();
+  var knockable = addresses.filter(isKnockable);
+
+  var territoryStats = Object.keys(terrMap).map(function(t) {
+    var d  = terrMap[t];
+    var cr = d.worked>0 ? d.sales/d.worked : 0;
+    var cov= d.total>0  ? d.worked/d.total : 0;
+    return {
+      name:t, totalHomes:d.total, knocked:d.worked, pending:d.pending,
+      coveragePct:Math.round(cov*100), sales:d.sales, mega:d.mega, gig:d.gig,
+      closeRatePct:Math.round(cr*100), notHome:d.nothome, brightspeed:d.brightspeed,
+      inContract:d.incontract, goBack:d.goback, notInterested:d.notinterested,
+      vacant:d.vacant, business:d.business, existingCustomers:d.existingCustomers
+    };
+  });
+
+  var totalWorked = knockable.filter(function(a){
+    var s=(a.status||'pending').toLowerCase();
+    return s!=='pending'&&s!==''&&s!=='homes passed';
+  }).length;
+  var totalSold  = knockable.filter(function(a){ return a.status==='mega'||a.status==='gig'; }).length;
+  var totalMega  = knockable.filter(function(a){ return a.status==='mega'; }).length;
+  var totalGig   = knockable.filter(function(a){ return a.status==='gig';  }).length;
+  var pending    = knockable.filter(function(a){ var s=(a.status||'pending').toLowerCase(); return !s||s==='pending'; }).length;
+  var globalCR   = totalWorked>0 ? totalSold/totalWorked : 0;
+  var gigMix     = totalSold>0   ? totalGig/totalSold    : 0;
+
+  var stale = getStaleAddresses();
+  var staleByTerritory = {};
+  stale.forEach(function(a){
+    var t=(a.territory||'Unknown').trim();
+    if (!staleByTerritory[t]) staleByTerritory[t]={goBack:0,notHome:0};
+    if (a.status==='goback') staleByTerritory[t].goBack++;
+    else                     staleByTerritory[t].notHome++;
+  });
+
+  var currentMRR = (totalMega*FC_MONTHLY.mega)+(totalGig*FC_MONTHLY.gig);
+  var projSales  = Math.round(pending*globalCR);
+  var projGig    = Math.round(projSales*(gigMix||0.40));
+  var projMega   = projSales-projGig;
+  var projMRR    = currentMRR+(projMega*FC_MONTHLY.mega)+(projGig*FC_MONTHLY.gig);
+
+  return {
+    generatedAt: new Date().toISOString(),
+    summary: {
+      totalKnockableHomes:knockable.length, totalKnocked:totalWorked,
+      totalPending:pending, totalSales:totalSold, megaSales:totalMega, gigSales:totalGig,
+      globalCloseRatePct:Math.round(globalCR*100), gigMixPct:Math.round(gigMix*100),
+      currentMRR:Math.round(currentMRR), projectedMRR:Math.round(projMRR),
+      projectedAdditionalSales:projSales, totalFollowUps:stale.length,
+      onlineReps:repList.filter(function(r){return r.status==='online';}).length,
+      totalReps:repList.length
+    },
+    territories:  territoryStats,
+    reps:         repList.map(function(r){ return {name:r.name,online:r.status==='online',sales:r.totalSales||0}; }),
+    followUpsByTerritory: staleByTerritory
+  };
+}
+
+function runAIAnalysis() {
+  var btn   = document.getElementById('ai-run-btn');
+  var label = document.getElementById('ai-run-btn-label');
+  var out   = document.getElementById('ai-output');
+
+  function resetBtn(txt) {
+    if (btn)   btn.disabled = false;
+    if (label) label.textContent = txt || '↻ Re-run Analysis';
+  }
+
+  var apiKey = ((document.getElementById('ai-key-input')||{}).value||'').trim() ||
+               (localStorage.getItem('fieldos_ai_key')||'').trim();
+
+  if (!apiKey) {
+    if (out) { out.className='ai-output-active'; out.innerHTML='<div class="ai-error-box">⚠ Enter your Anthropic API key above first.</div>'; }
+    return;
+  }
+
+  if (btn)   btn.disabled = true;
+  if (label) label.textContent = '⏳ Analysing…';
+  if (out) {
+    out.className = 'ai-output-loading';
+    out.innerHTML = '<div class="ai-loading-orb"></div>' +
+      '<div class="ai-loading-label">Analysing field data…</div>' +
+      '<div class="ai-loading-steps" id="ai-loading-step">Building territory snapshot</div>';
+  }
+
+  var steps = ['Building territory snapshot','Computing close rates & coverage','Scanning competitor landscape',
+    'Evaluating follow-up queue','Generating deployment recommendations','Writing briefing…'];
+  var stepIdx  = 0;
+  var stepTimer = setInterval(function(){
+    stepIdx = (stepIdx+1) % steps.length;
+    var el = document.getElementById('ai-loading-step');
+    if (el) el.textContent = steps[stepIdx];
+  }, 1800);
+
+  var payload;
+  try { payload = buildAIPayload(); }
+  catch(e) { clearInterval(stepTimer); if(out){out.className='ai-output-active';out.innerHTML='<div class="ai-error-box">⚠ '+escHtml(e.message)+'</div>';} resetBtn('▶ Run Analysis'); return; }
+
+  var s = payload.summary || {};
+  var summaryLines = [
+    'Total knockable homes: '         + s.totalKnockableHomes,
+    'Total knocked: '                 + s.totalKnocked,
+    'Pending (untouched): '           + s.totalPending,
+    'Total sales: '                   + s.totalSales + ' (' + s.megaSales + ' Mega, ' + s.gigSales + ' Gig)',
+    'Global close rate: '             + s.globalCloseRatePct + '%',
+    'Gig mix: '                       + s.gigMixPct + '%',
+    'Current MRR: $'                  + s.currentMRR,
+    'Projected full-territory MRR: $' + s.projectedMRR,
+    'Projected additional sales: '    + s.projectedAdditionalSales,
+    'Open follow-up contacts: '       + s.totalFollowUps,
+    'Online reps: '                   + s.onlineReps + ' of ' + s.totalReps
+  ].join('\n');
+
+  var terrLines = (payload.territories||[]).map(function(t){
+    return '  • '+t.name+': '+t.coveragePct+'% coverage, '+t.closeRatePct+'% close rate, '+t.sales+' sales, '+t.pending+
+      ' pending | Brightspeed='+t.brightspeed+' InContract='+t.inContract+' NotHome='+t.notHome+' GoBack='+t.goBack;
+  }).join('\n') || '  No territory data';
+
+  var repLines = (payload.reps||[]).map(function(r){
+    return '  • '+r.name+' ['+(r.online?'ONLINE':'offline')+'] — '+r.sales+' sales';
+  }).join('\n') || '  No rep data';
+
+  var followUpLines = Object.keys(payload.followUpsByTerritory||{}).map(function(t){
+    var f=payload.followUpsByTerritory[t];
+    return '  • '+t+': '+f.goBack+' Go Back, '+f.notHome+' Not Home';
+  }).join('\n') || '  None';
+
+  var systemPrompt =
+    'You are a field sales operations analyst for Zito Media, a fiber internet company. ' +
+    'You receive real-time door-knocking data and produce a concise, actionable daily briefing for the owner. ' +
+    'Be direct and specific. Use exact numbers. Avoid generic advice. ' +
+    'Prioritize actions by urgency and revenue impact. ' +
+    'Gig Speed ($54.95/mo) is higher value than Mega Speed ($44.95/mo). ' +
+    'Respond ONLY with a valid JSON object — no markdown fences, no preamble. ' +
+    'Schema:\n{"headline":"one punchy sentence","situation":"2-3 sentences","metrics":[{"label":"","value":""}],' +
+    '"recommendations":[{"priority":"high|medium|low","territory":"name or null","action":"specific action","reasoning":"why, citing data"}],' +
+    '"insights":[{"icon":"📊","text":"insight"}],"repCoaching":[{"rep":"Name","note":"specific note"}],' +
+    '"todaysFocus":"one paragraph: single most important thing right now"}';
+
+  var userPrompt =
+    '── OVERALL SUMMARY ──\n' + summaryLines +
+    '\n\n── TERRITORY BREAKDOWN ──\n' + terrLines +
+    '\n\n── REP STATUS ──\n' + repLines +
+    '\n\n── FOLLOW-UP QUEUE ──\n' + followUpLines +
+    '\n\nProduce the JSON briefing now.';
+
+  var MAX_RETRIES = 3, retryCount = 0;
+  var requestBody = JSON.stringify({
+    model:'claude-sonnet-4-6', max_tokens:4000,
+    system:systemPrompt, messages:[{role:'user',content:userPrompt}]
+  });
+
+  function attemptFetch() {
+    var ctrl = new AbortController();
+    var tid  = setTimeout(function(){ ctrl.abort(); }, 45000);
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', signal:ctrl.signal,
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:requestBody
+    })
+    .then(function(r){
+      clearTimeout(tid);
+      if (r.status===529||r.status===503) {
+        retryCount++;
+        if (retryCount<=MAX_RETRIES) {
+          var delay=retryCount*8000;
+          var el=document.getElementById('ai-loading-step');
+          if(el) el.textContent='API busy — retrying in '+(delay/1000)+'s ('+retryCount+'/'+MAX_RETRIES+')';
+          setTimeout(attemptFetch,delay); return null;
+        }
+        return r.text().then(function(){ throw new Error('Anthropic API overloaded. Wait 30–60 s and try again.'); });
+      }
+      if (!r.ok) return r.text().then(function(t){ throw new Error('HTTP '+r.status+': '+t.substring(0,200)); });
+      return r.json();
+    })
+    .then(function(apiResult){
+      if (!apiResult) return;
+      clearInterval(stepTimer);
+      var raw = (apiResult.content&&apiResult.content[0]&&apiResult.content[0].text)
+        ? apiResult.content[0].text.trim() : '';
+      if (!raw) throw new Error('Empty response from Claude.');
+      raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+      var bs=raw.indexOf('{'), be=raw.lastIndexOf('}');
+      if (bs>0||(be>0&&be<raw.length-1)) raw=raw.substring(bs,be+1);
+
+      var analysis;
+      try { analysis=JSON.parse(raw); }
+      catch(e){
+        var fixed=raw.replace(/,\s*([}\]])/g,'$1').replace(/([{,]\s*)'([^']+)'(\s*:)/g,'$1"$2"$3').replace(/:\s*'([^']*)'/g,': "$1"');
+        try { analysis=JSON.parse(fixed); } catch(e2){ throw new Error('Could not parse response. Raw: '+raw.substring(0,120)); }
+      }
+
+      aiLastResult = { status:'ok', analysis:analysis };
+      renderAIResult(aiLastResult);
+      var ts=document.getElementById('ai-timestamp');
+      if (ts) ts.textContent='Generated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      resetBtn('↻ Re-run Analysis');
+    })
+    .catch(function(err){
+      clearInterval(stepTimer); clearTimeout(tid);
+      var msg=err.name==='AbortError'?'Request timed out after 45 s. Check your API key and try again.':String(err.message||err);
+      if(out){out.className='ai-output-active';out.innerHTML='<div class="ai-error-box">⚠ '+escHtml(msg)+'</div>';}
+      resetBtn('▶ Run Analysis');
+    });
+  }
+
+  attemptFetch();
+}
+
+function renderAIResult(data) {
+  var out = document.getElementById('ai-output');
+  if (!out) return;
+  out.className = 'ai-output-active';
+  var r = data.analysis || {};
+  var html = '';
+
+  if (r.headline) {
+    html += '<div class="ai-section">' +
+      '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4">' + escHtml(r.headline) + '</div>';
+    if (r.situation) html += '<div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:10px">' + escHtml(r.situation) + '</div>';
+    html += '</div>';
+  }
+
+  if (r.metrics && r.metrics.length) {
+    html += '<div class="ai-summary-grid">';
+    r.metrics.forEach(function(m){ html += '<div class="ai-summary-cell"><div class="ai-summary-val">'+escHtml(String(m.value))+'</div><div class="ai-summary-lbl">'+escHtml(m.label)+'</div></div>'; });
+    html += '</div>';
+  }
+
+  if (r.recommendations && r.recommendations.length) {
+    html += '<div class="ai-section"><div class="ai-section-head">🎯 Deployment Recommendations</div>';
+    r.recommendations.forEach(function(rec){
+      var pri=(rec.priority||'medium').toLowerCase();
+      html += '<div class="ai-rec-card priority-'+escHtml(pri)+'">' +
+        '<div class="ai-rec-header">' +
+          '<span class="ai-rec-priority">'+pri.toUpperCase()+'</span>' +
+          '<div>' +
+            (rec.territory?'<div class="ai-rec-territory">📍 '+escHtml(rec.territory)+'</div>':'') +
+            '<div class="ai-rec-action">'+escHtml(rec.action)+'</div>' +
+          '</div>' +
+        '</div>' +
+        (rec.reasoning?'<div class="ai-rec-detail">'+escHtml(rec.reasoning)+'</div>':'') +
+      '</div>';
+    });
+    html += '</div>';
+  }
+
+  if (r.insights && r.insights.length) {
+    html += '<div class="ai-section"><div class="ai-section-head">💡 Key Insights</div>';
+    r.insights.forEach(function(ins){ html += '<div class="ai-insight-row"><span class="ai-insight-icon">'+escHtml(ins.icon||'▸')+'</span><span>'+escHtml(ins.text)+'</span></div>'; });
+    html += '</div>';
+  }
+
+  if (r.repCoaching && r.repCoaching.length) {
+    html += '<div class="ai-section"><div class="ai-section-head">👤 Rep Coaching Notes</div>';
+    r.repCoaching.forEach(function(note){ html += '<div class="ai-insight-row"><span class="ai-insight-icon">•</span><span><strong>'+escHtml(note.rep)+'</strong> — '+escHtml(note.note)+'</span></div>'; });
+    html += '</div>';
+  }
+
+  if (r.todaysFocus) {
+    html += '<div class="ai-section"><div class="ai-section-head">⚡ Today\'s Focus</div>' +
+      '<div class="ai-focus-box">'+escHtml(r.todaysFocus)+'</div></div>';
+  }
+
+  out.innerHTML = html || '<div class="ai-output-placeholder"><div class="ai-placeholder-icon">✅</div><div class="ai-placeholder-txt">Analysis complete but no structured output returned.</div></div>';
+}
+
+// ══════════════════════════════════════════════════════
+//  TAB ROUTING
+// ══════════════════════════════════════════════════════
+var TAB_TITLES = {
+  team:'Team Status', analytics:'Analytics', coverage:'Coverage',
+  forecast:'Forecast', territory:'Territory Intel', ai:'AI Briefing'
+};
+var activeTab = 'team';
+
+function renderActiveTab() {
+  if      (activeTab === 'team')      renderRepList(repList);
+  else if (activeTab === 'analytics') renderAnalyticsTab();
+  else if (activeTab === 'coverage')  renderCoverageTab();
+  else if (activeTab === 'forecast')  renderForecastTab();
+  else if (activeTab === 'territory') renderTerritoryTab();
+  else if (activeTab === 'ai')        renderAITab();
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.sb-item[data-tab]').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+
+  document.querySelectorAll('[data-tab="'+tab+'"]').forEach(function(el){ el.classList.add('active'); });
+  var panel = document.getElementById('panel-'+tab);
+  if (panel) panel.classList.add('active');
+
+  var title = document.getElementById('tb-title');
+  if (title) title.textContent = TAB_TITLES[tab] || tab;
+
+  renderActiveTab();
+}
+
+// Wire up all tab buttons + sidebar items
+document.querySelectorAll('[data-tab]').forEach(function(el){
+  el.addEventListener('click', function(){ switchTab(el.dataset.tab); });
+});
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+window.addEventListener('load', function(){
+  // Restore AI key
+  var saved = localStorage.getItem('fieldos_ai_key') || '';
+  if (saved) {
+    var inp = document.getElementById('ai-key-input');
+    if (inp) inp.value = saved;
+    var hint = document.getElementById('ai-key-hint');
+    if (hint) { hint.textContent = '✓ Key saved in this browser'; hint.className = 'ai-key-hint saved'; }
+  }
+
+  loadAll();
+  // Auto-refresh every 30 s — same cadence as field app manager panel
+  mgrAutoRefresh = setInterval(loadAll, 30000);
 });
 </script>
 </body>
