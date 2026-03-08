@@ -222,7 +222,7 @@ function showSuccess({ first, last, email, territory }) {
 function launchApp() {
   const rep = JSON.parse(localStorage.getItem('fieldos_rep') || '{}');
   // Pass rep name as URL param — app.js reads it and auto-fills the name field
-  const url = 'index.html?rep=' + encodeURIComponent(rep.name || '') +
+  const url = 'app.html?rep=' + encodeURIComponent(rep.name || '') +
               '&territory=' + encodeURIComponent(rep.territory || '');
   window.location.href = url;
 }
