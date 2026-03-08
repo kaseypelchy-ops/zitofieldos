@@ -2,7 +2,7 @@
   "name": "Zito FieldOS",
   "short_name": "FieldOS",
   "description": "Zito FieldOS \u2014 Field Operations & Sales Intelligence (Internal)",
-  "start_url": "./index.html?source=pwa",
+  "start_url": "./app.html?source=pwa",
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#005696",
@@ -38,7 +38,7 @@
       "name": "Team Dashboard",
       "short_name": "Team",
       "description": "Open Manager Team Status",
-      "url": "./index.html#manager",
+      "url": "./app.html#manager",
       "icons": [
         {
           "src": "https://www.zitomedia.net/wp-content/uploads/2025/03/Untitled-design-6.png",
@@ -52,7 +52,7 @@
       "name": "My Badge",
       "short_name": "Badge",
       "description": "Open Rep Badge",
-      "url": "./index.html#badge",
+      "url": "./app.html#badge",
       "icons": [
         {
           "src": "https://www.zitomedia.net/wp-content/uploads/2025/03/Untitled-design-6.png",
