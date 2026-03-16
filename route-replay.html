@@ -35,9 +35,9 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 .tb-title span{color:var(--gold-t)}
 
 /* Controls row */
-.tb-controls{display:flex;align-items:center;gap:10px;padding:0 16px;flex:1}
+.tb-controls{display:flex;align-items:center;gap:10px;padding:0 16px;flex:1;overflow-x:auto}
 .ctrl-group{display:flex;align-items:center;gap:6px}
-.ctrl-sep{width:1px;height:24px;background:var(--border-s);margin:0 6px}
+.ctrl-sep{width:1px;height:24px;background:var(--border-s);margin:0 6px;flex-shrink:0}
 
 /* Date selector */
 .ctrl-date{background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:6px 11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;cursor:pointer;transition:border-color .18s}
@@ -48,11 +48,27 @@ html,body{height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif
 .date-list:focus{border-color:var(--gold)}
 option{background:var(--s2)}
 
+/* Mode toggle (single / multi) */
+.mode-toggle{display:flex;background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:2px;gap:2px}
+.mt-opt{padding:4px 10px;border-radius:6px;font-size:9px;font-weight:700;cursor:pointer;transition:all .18s;color:var(--muted);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+.mt-opt.active{background:var(--gold-dim);border:1px solid rgba(212,165,58,.3);color:var(--gold-t)}
+
+/* Multi-day controls */
+.multi-day-controls{display:flex;align-items:center;gap:6px}
+.multi-day-controls.hidden{display:none}
+.range-label{font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+
 /* Rep pills */
 .rep-pills{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;max-width:380px}
 .rep-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .18s;white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
 .rep-pill.active{border-color:currentColor}
 .rep-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Day pills (multi-day mode) */
+.day-pills{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;max-width:300px}
+.day-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .18s;white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.day-pill.active{border-color:currentColor}
+.day-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
 /* View toggle */
 .view-toggle{display:flex;background:var(--s2);border:1px solid var(--border-s);border-radius:8px;padding:2px;gap:2px}
@@ -116,12 +132,21 @@ option{background:var(--s2)}
 .ev-street{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ev-meta{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px}
 .ev-tag{font-size:8px;font-weight:700;padding:1px 6px;border-radius:999px;font-family:'IBM Plex Mono',monospace;flex-shrink:0;align-self:center}
+.ev-day-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:4px;font-family:'IBM Plex Mono',monospace;margin-left:4px;opacity:.7}
 
 /* Rep comparison */
 .rep-stat-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .rep-color-bar{width:3px;height:36px;border-radius:2px;flex-shrink:0}
 .rep-stat-name{font-size:12px;font-weight:800;margin-bottom:2px}
 .rep-stat-nums{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+
+/* Day summary cards (multi-day) */
+.day-summary{background:var(--s2);border:1px solid var(--border-s);border-radius:10px;padding:14px;margin-bottom:10px;border-left:3px solid var(--gold)}
+.day-summary-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.day-summary-date{font-size:12px;font-weight:800}
+.day-summary-badge{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:999px;font-weight:700}
+.day-summary-stats{display:flex;gap:12px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.day-summary-stats strong{color:var(--text)}
 
 /* No data state */
 .no-data{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--muted);text-align:center;padding:24px}
@@ -163,6 +188,9 @@ option{background:var(--s2)}
 .tl-thumb:active{cursor:grabbing;transform:translate(-50%,-50%) scale(1.2)}
 .tl-markers{position:absolute;top:0;left:0;right:0;height:100%;pointer-events:none}
 .tl-marker{position:absolute;top:-2px;width:3px;height:10px;border-radius:2px;transform:translateX(-50%)}
+/* Day dividers on the timeline */
+.tl-day-divider{position:absolute;top:-10px;bottom:-4px;width:1px;background:rgba(212,165,58,.4);transform:translateX(-50%);pointer-events:none}
+.tl-day-label{position:absolute;top:-18px;transform:translateX(-50%);font-size:7px;font-family:'IBM Plex Mono',monospace;color:var(--gold);white-space:nowrap;pointer-events:none;letter-spacing:.5px}
 
 /* Door count ticker */
 .tl-counts{display:flex;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:10px}
@@ -202,6 +230,7 @@ option{background:var(--s2)}
 .popup-street{font-size:13px;font-weight:800;margin-bottom:4px}
 .popup-meta{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:6px}
 .popup-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;font-family:'IBM Plex Mono',monospace;letter-spacing:.3px}
+.popup-day{display:inline-block;font-size:8px;font-weight:600;padding:1px 6px;border-radius:4px;font-family:'IBM Plex Mono',monospace;margin-left:4px;opacity:.8}
 
 /* ── LOADING OVERLAY ─────────────────────────────── */
 #loading{
@@ -215,8 +244,13 @@ option{background:var(--s2)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-label{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
 
-/* Fetch spinner (inline, smaller) */
+/* Fetch spinner */
 .fetch-ring{width:14px;height:14px;border:2px solid rgba(212,165,58,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+
+/* Multi-day progress bar */
+.multi-progress{display:flex;align-items:center;gap:8px;font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.multi-progress-bar{width:80px;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.multi-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .2s}
 
 /* ── HEATMAP CANVAS ──────────────────────────────── */
 #heatmap-canvas{position:fixed;top:52px;left:0;right:340px;bottom:100px;z-index:3;pointer-events:none;display:none}
@@ -268,15 +302,44 @@ option{background:var(--s2)}
   </div>
 
   <div class="tb-controls">
-    <!-- Date quick-pick (populated from available_dates) -->
+    <!-- Mode toggle: single day vs multi-day -->
     <div class="ctrl-group">
+      <div class="mode-toggle">
+        <div class="mt-opt active" onclick="setDateMode('single')" id="mt-single">Single Day</div>
+        <div class="mt-opt" onclick="setDateMode('multi')" id="mt-multi">Multi-Day</div>
+      </div>
+    </div>
+    <div class="ctrl-sep"></div>
+
+    <!-- Single-day controls -->
+    <div class="ctrl-group" id="single-day-controls">
       <select class="date-list" id="date-list" title="Select date">
         <option value="">Loading dates…</option>
       </select>
       <input type="date" class="ctrl-date" id="date-picker" title="Custom date">
     </div>
+
+    <!-- Multi-day controls (hidden by default) -->
+    <div class="multi-day-controls hidden" id="multi-day-controls">
+      <span class="range-label">FROM</span>
+      <input type="date" class="ctrl-date" id="date-start" title="Start date">
+      <span class="range-label">TO</span>
+      <input type="date" class="ctrl-date" id="date-end" title="End date">
+      <button class="btn-tb gold" id="load-range-btn" onclick="loadMultiDay()">Load Range</button>
+      <div class="multi-progress hidden" id="multi-progress">
+        <div class="multi-progress-bar"><div class="multi-progress-fill" id="multi-progress-fill" style="width:0%"></div></div>
+        <span id="multi-progress-text">0/0</span>
+      </div>
+    </div>
+
     <div class="ctrl-sep"></div>
-    <!-- Rep pills (dynamic) -->
+    <!-- Day pills (multi-day mode, hidden by default) -->
+    <div class="ctrl-group hidden" id="day-pills-group">
+      <div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-right:2px">DAYS</div>
+      <div class="day-pills" id="day-pills"></div>
+    </div>
+
+    <!-- Rep pills -->
     <div class="ctrl-group">
       <div style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-right:2px">REPS</div>
       <div class="rep-pills" id="rep-pills">
@@ -310,6 +373,7 @@ option{background:var(--s2)}
     <div class="ptab active" onclick="setTab('stats')" id="tab-stats">Stats</div>
     <div class="ptab" onclick="setTab('events')" id="tab-events">Timeline</div>
     <div class="ptab" onclick="setTab('compare')" id="tab-compare">Compare</div>
+    <div class="ptab" onclick="setTab('daily')" id="tab-daily" style="display:none">Daily</div>
   </div>
   <div class="panel-body" id="panel-body">
     <div class="no-data">
@@ -339,13 +403,13 @@ option{background:var(--s2)}
     <div class="tl-counts" id="tl-counts"></div>
   </div>
   <div class="tl-progress">
-    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:40px;flex-shrink:0" id="tl-start-label">—</div>
+    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:60px;flex-shrink:0" id="tl-start-label">—</div>
     <div class="tl-track" id="tl-track">
       <div class="tl-fill" id="tl-fill" style="width:0%"></div>
       <div class="tl-markers" id="tl-markers"></div>
       <div class="tl-thumb" id="tl-thumb" style="left:0%"></div>
     </div>
-    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:40px;text-align:right;flex-shrink:0" id="tl-end-label">—</div>
+    <div style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:60px;text-align:right;flex-shrink:0" id="tl-end-label">—</div>
   </div>
 </div>
 
@@ -359,13 +423,12 @@ option{background:var(--s2)}
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyqHh3H5qbBxB2fP9dPsymDoreXGwvrjCLT-ROQGBLMjBXKpprt3LWCC2aHbbeovJp/exec';
 const URL_PARAMS = new URLSearchParams(window.location.search);
 const RAW_TERRITORY = URL_PARAMS.get('territory') || '';
-// Pretty-print territory for the topbar
 const TERRITORY_DISPLAY = RAW_TERRITORY
   ? RAW_TERRITORY.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/Tx$/, 'TX').replace(/Nc$/, 'NC')
   : 'All Territories';
 
 // ═══════════════════════════════════════════════════
-//  COLOUR PALETTE — auto-assigned to reps
+//  COLOUR PALETTES
 // ═══════════════════════════════════════════════════
 const PALETTE = [
   { line:'#2dd4bf', dot:'#99f6e4', dim:'rgba(45,212,191,.2)'   },
@@ -378,7 +441,24 @@ const PALETTE = [
   { line:'#34d399', dot:'#a7f3d0', dim:'rgba(52,211,153,.2)'   },
 ];
 
-// Disposition colours & labels
+// Day-specific colours (for multi-day mode overlays)
+const DAY_PALETTE = [
+  { line:'#3b82f6', dot:'#93c5fd', dim:'rgba(59,130,246,.15)'  },
+  { line:'#f59e0b', dot:'#fcd34d', dim:'rgba(245,158,11,.15)'  },
+  { line:'#10b981', dot:'#6ee7b7', dim:'rgba(16,185,129,.15)'  },
+  { line:'#ef4444', dot:'#fca5a5', dim:'rgba(239,68,68,.15)'   },
+  { line:'#8b5cf6', dot:'#c4b5fd', dim:'rgba(139,92,246,.15)'  },
+  { line:'#ec4899', dot:'#f9a8d4', dim:'rgba(236,72,153,.15)'  },
+  { line:'#14b8a6', dot:'#99f6e4', dim:'rgba(20,184,166,.15)'  },
+  { line:'#f97316', dot:'#fdba74', dim:'rgba(249,115,22,.15)'  },
+  { line:'#06b6d4', dot:'#67e8f9', dim:'rgba(6,182,212,.15)'   },
+  { line:'#84cc16', dot:'#bef264', dim:'rgba(132,204,22,.15)'  },
+  { line:'#e879f9', dot:'#f0abfc', dim:'rgba(232,121,249,.15)' },
+  { line:'#fb7185', dot:'#fda4af', dim:'rgba(251,113,133,.15)' },
+  { line:'#22d3ee', dot:'#a5f3fc', dim:'rgba(34,211,238,.15)'  },
+  { line:'#facc15', dot:'#fef08a', dim:'rgba(250,204,21,.15)'  },
+];
+
 const DISP_COLOR = {
   sold:'#2dd4bf', mega:'#a78bfa', nh:'#fb923c',
   ni:'#f43f5e',   cb:'#d4a53a',   ic:'#3b82f6',
@@ -398,11 +478,17 @@ let view = 'replay', playing = false, speed = 1;
 let animFrame = null, lastTick = null;
 let activeTab = 'stats';
 let activeReps = new Set();
+let activeDays = new Set(); // for multi-day filtering
 
-// Live data (populated from API)
+// Date mode
+let dateMode = 'single'; // 'single' | 'multi'
+let loadedDates = [];     // array of date strings loaded in multi-day
+let DAY_COLORS = {};      // dateStr → {line, dot, dim}
+
+// Live data
 let ALL_EVENTS = [];
 let ALL_REPS   = [];
-let REP_COLORS = {};   // repName → {line, dot, dim}
+let REP_COLORS = {};
 
 let markers   = {};
 let polylines = {};
@@ -418,32 +504,25 @@ let dataLoaded = false;
 // ═══════════════════════════════════════════════════
 window.addEventListener('load', async () => {
   document.getElementById('tb-territory').textContent = TERRITORY_DISPLAY;
-
-  // Init map first (needs DOM)
   initMap();
 
-  // Set today's date as default
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('date-picker').value = today;
   document.getElementById('date-picker').max   = today;
+  document.getElementById('date-start').value  = today;
+  document.getElementById('date-start').max    = today;
+  document.getElementById('date-end').value    = today;
+  document.getElementById('date-end').max      = today;
 
   setLabel('Fetching available dates…');
-  try {
-    await loadAvailableDates();
-  } catch(e) {
-    console.warn('available_dates failed:', e);
-  }
+  try { await loadAvailableDates(); } catch(e) { console.warn('available_dates failed:', e); }
 
   setLabel('Loading today\'s route data…');
   await loadRouteData(today);
-
   hideLoader();
 });
 
-function setLabel(txt) {
-  document.getElementById('loading-label').textContent = txt;
-}
-
+function setLabel(txt) { document.getElementById('loading-label').textContent = txt; }
 function hideLoader() {
   const el = document.getElementById('loading');
   el.classList.add('hide');
@@ -451,27 +530,48 @@ function hideLoader() {
 }
 
 // ═══════════════════════════════════════════════════
+//  DATE MODE SWITCHING
+// ═══════════════════════════════════════════════════
+function setDateMode(mode) {
+  dateMode = mode;
+  document.getElementById('mt-single').classList.toggle('active', mode === 'single');
+  document.getElementById('mt-multi').classList.toggle('active',  mode === 'multi');
+
+  const singleC = document.getElementById('single-day-controls');
+  const multiC  = document.getElementById('multi-day-controls');
+  const dayPG   = document.getElementById('day-pills-group');
+  const dailyTab = document.getElementById('tab-daily');
+
+  if (mode === 'single') {
+    singleC.style.display = '';
+    multiC.classList.add('hidden');
+    dayPG.classList.add('hidden');
+    dailyTab.style.display = 'none';
+    if (activeTab === 'daily') setTab('stats');
+  } else {
+    singleC.style.display = 'none';
+    multiC.classList.remove('hidden');
+    // Set sensible defaults: last 7 days
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 6 * 86400000);
+    document.getElementById('date-end').value   = today.toISOString().split('T')[0];
+    document.getElementById('date-start').value = weekAgo.toISOString().split('T')[0];
+  }
+}
+
+// ═══════════════════════════════════════════════════
 //  MAP INIT
 // ═══════════════════════════════════════════════════
 function initMap() {
-  // Default center — will be recentered once data loads
   map = L.map('map', {
     center: [32.0, -95.5],
     zoom: 13,
     zoomControl: false,
     attributionControl: false
   });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
-  }).addTo(map);
-
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
   L.control.zoom({ position:'bottomleft' }).addTo(map);
-
-  // Redraw canvas overlays on map move
-  map.on('moveend zoomend', () => {
-    if (view !== 'replay') redrawCanvas();
-  });
+  map.on('moveend zoomend', () => { if (view !== 'replay') redrawCanvas(); });
 }
 
 // ═══════════════════════════════════════════════════
@@ -480,7 +580,6 @@ function initMap() {
 async function loadAvailableDates() {
   let url = SCRIPT_URL + '?action=available_dates';
   if (RAW_TERRITORY) url += '&territory=' + encodeURIComponent(RAW_TERRITORY);
-
   const res  = await fetch(url);
   const json = await res.json();
   const dates = json.dates || [];
@@ -490,25 +589,11 @@ async function loadAvailableDates() {
     sel.innerHTML = '<option value="">No dates with data</option>';
     return;
   }
-
-  sel.innerHTML = dates.map(d => {
-    const label = formatDateLabel(d);
-    return `<option value="${d}">${label}</option>`;
-  }).join('');
-
-  // Wire up quick-pick list
+  sel.innerHTML = dates.map(d => `<option value="${d}">${formatDateLabel(d)}</option>`).join('');
   sel.addEventListener('change', () => {
-    if (sel.value) {
-      document.getElementById('date-picker').value = sel.value;
-      loadRouteData(sel.value);
-    }
+    if (sel.value) { document.getElementById('date-picker').value = sel.value; loadRouteData(sel.value); }
   });
-
-  // Wire up manual date picker
-  document.getElementById('date-picker').addEventListener('change', e => {
-    const v = e.target.value;
-    if (v) loadRouteData(v);
-  });
+  document.getElementById('date-picker').addEventListener('change', e => { if (e.target.value) loadRouteData(e.target.value); });
 }
 
 function formatDateLabel(isoDate) {
@@ -519,20 +604,22 @@ function formatDateLabel(isoDate) {
   if (d.toDateString() === yest.toDateString())  return `Yesterday — ${isoDate}`;
   return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }) + ' — ' + isoDate;
 }
+function shortDateLabel(isoDate) {
+  const d = new Date(isoDate + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
 
 // ═══════════════════════════════════════════════════
-//  FETCH: ROUTE DATA
+//  FETCH: SINGLE-DAY ROUTE DATA
 // ═══════════════════════════════════════════════════
 async function loadRouteData(dateStr) {
-  // Reset playback
   stopPlayback();
   resetMap();
   dataLoaded = false;
+  loadedDates = [dateStr];
   setPlaybackEnabled(false);
-
-  // Show status
   setDataStatus('loading', 'Fetching…');
-  renderPanel(); // shows loading state
+  renderPanel();
 
   let url = SCRIPT_URL + '?action=route_data&date=' + encodeURIComponent(dateStr);
   if (RAW_TERRITORY) url += '&territory=' + encodeURIComponent(RAW_TERRITORY);
@@ -540,80 +627,26 @@ async function loadRouteData(dateStr) {
   try {
     const res  = await fetch(url);
     const json = await res.json();
-
     if (json.error) throw new Error(json.error);
-
     const events = json.events || [];
 
     if (!events.length) {
-      ALL_EVENTS = [];
-      ALL_REPS   = [];
-      REP_COLORS = {};
-      activeReps = new Set();
+      ALL_EVENTS = []; ALL_REPS = []; REP_COLORS = {}; activeReps = new Set();
+      DAY_COLORS = {}; loadedDates = [];
       setDataStatus('error', 'No data for this date');
       document.getElementById('tb-date-label').textContent = dateStr;
-      document.getElementById('tl-duration').textContent = 'no data';
-      document.getElementById('tl-time').textContent = '— : —';
-      document.getElementById('tl-start-label').textContent = '—';
-      document.getElementById('tl-end-label').textContent   = '—';
-      document.getElementById('tl-markers').innerHTML = '';
-      document.getElementById('tl-fill').style.width  = '0%';
-      document.getElementById('tl-thumb').style.left  = '0%';
-      document.getElementById('tl-counts').innerHTML  = '';
+      clearTimeline();
       renderPanel();
       return;
     }
 
-    // ── Assign rep colours ──
-    const repSet = [...new Set(events.map(e => e.rep))].sort();
-    REP_COLORS = {};
-    repSet.forEach((rep, i) => {
-      REP_COLORS[rep] = PALETTE[i % PALETTE.length];
-    });
+    // Tag each event with its date
+    events.forEach(ev => { ev._date = dateStr; });
 
-    ALL_REPS   = repSet;
-    ALL_EVENTS = events.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-    activeReps = new Set(ALL_REPS);
+    ingestEvents(events, [dateStr]);
 
-    MIN_TS    = new Date(ALL_EVENTS[0].timestamp).getTime();
-    MAX_TS    = new Date(ALL_EVENTS[ALL_EVENTS.length-1].timestamp).getTime();
-    currentTs = MIN_TS;
-    shownUpTo = 0;
-
-    // ── Init polylines and marker arrays per rep ──
-    // Remove old
-    Object.values(polylines).forEach(p => map.removeLayer(p));
-    polylines  = {};
-    pathPoints = {};
-    markers    = {};
-
-    ALL_REPS.forEach(rep => {
-      const c = REP_COLORS[rep];
-      polylines[rep]  = L.polyline([], { color:c.line, weight:2.5, opacity:.8 }).addTo(map);
-      pathPoints[rep] = [];
-      markers[rep]    = [];
-    });
-
-    // ── Build rep pills ──
-    buildRepPills();
-
-    // ── Timeline init ──
-    initTimeline();
-
-    // ── Center map on data ──
-    const lats = ALL_EVENTS.map(e => e.lat);
-    const lngs = ALL_EVENTS.map(e => e.lng);
-    const bounds = L.latLngBounds(
-      [Math.min(...lats), Math.min(...lngs)],
-      [Math.max(...lats), Math.max(...lngs)]
-    );
-    map.fitBounds(bounds, { padding:[40,40] });
-
-    // ── Update UI ──
     const pretty = formatDateLabel(dateStr).replace(/ — .*/, '');
     document.getElementById('tb-date-label').textContent = pretty;
-
-    // Sync the list select to this date
     const sel = document.getElementById('date-list');
     if ([...sel.options].some(o => o.value === dateStr)) sel.value = dateStr;
 
@@ -621,40 +654,188 @@ async function loadRouteData(dateStr) {
     setPlaybackEnabled(true);
     setDataStatus('loaded', `${events.length} stops · ${ALL_REPS.length} rep${ALL_REPS.length!==1?'s':''}`);
     document.getElementById('export-btn').disabled = false;
-
     renderPanel();
     renderTlCounts();
 
   } catch(err) {
     console.error('Route data fetch failed:', err);
     setDataStatus('error', 'Load failed — check connection');
-    document.getElementById('panel-body').innerHTML = `
-      <div class="no-data">
-        <div class="no-data-icon">⚠️</div>
-        <h3>Could not load route data</h3>
-        <p>${err.message || 'Network error. Check that the Apps Script is deployed and accessible.'}</p>
-      </div>`;
+    showFetchError(err);
   }
 }
 
-// ── Status chip ──
-function setDataStatus(state, text) {
-  const el = document.getElementById('data-status');
-  el.className = 'data-status ' + state;
-  el.innerHTML = state === 'loading'
-    ? `<span class="fetch-ring"></span>${text}`
-    : text;
-}
+// ═══════════════════════════════════════════════════
+//  FETCH: MULTI-DAY ROUTE DATA
+// ═══════════════════════════════════════════════════
+async function loadMultiDay() {
+  const startStr = document.getElementById('date-start').value;
+  const endStr   = document.getElementById('date-end').value;
+  if (!startStr || !endStr) return;
 
-// ── Playback controls enable/disable ──
-function setPlaybackEnabled(on) {
-  ['play-btn','btn-skipback','btn-skipfwd'].forEach(id => {
-    document.getElementById(id).disabled = !on;
-  });
+  const start = new Date(startStr + 'T12:00:00');
+  const end   = new Date(endStr   + 'T12:00:00');
+  if (start > end) { alert('Start date must be before end date.'); return; }
+
+  // Build list of dates
+  const dates = [];
+  const cur = new Date(start);
+  while (cur <= end) {
+    dates.push(cur.toISOString().split('T')[0]);
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  if (dates.length > 31) { alert('Maximum 31 days in a range.'); return; }
+
+  stopPlayback();
+  resetMap();
+  dataLoaded = false;
+  setPlaybackEnabled(false);
+  setDataStatus('loading', `Fetching ${dates.length} days…`);
+
+  const progEl   = document.getElementById('multi-progress');
+  const progFill = document.getElementById('multi-progress-fill');
+  const progText = document.getElementById('multi-progress-text');
+  progEl.classList.remove('hidden');
+  document.getElementById('load-range-btn').disabled = true;
+
+  let allEvents = [];
+  let datesWithData = [];
+  let failed = 0;
+
+  for (let i = 0; i < dates.length; i++) {
+    progFill.style.width = ((i+1)/dates.length*100).toFixed(0) + '%';
+    progText.textContent = `${i+1}/${dates.length}`;
+
+    try {
+      let url = SCRIPT_URL + '?action=route_data&date=' + encodeURIComponent(dates[i]);
+      if (RAW_TERRITORY) url += '&territory=' + encodeURIComponent(RAW_TERRITORY);
+      const res  = await fetch(url);
+      const json = await res.json();
+      const events = json.events || [];
+      if (events.length) {
+        events.forEach(ev => { ev._date = dates[i]; });
+        allEvents = allEvents.concat(events);
+        datesWithData.push(dates[i]);
+      }
+    } catch(e) {
+      console.warn(`Failed to fetch ${dates[i]}:`, e);
+      failed++;
+    }
+  }
+
+  progEl.classList.add('hidden');
+  document.getElementById('load-range-btn').disabled = false;
+
+  if (!allEvents.length) {
+    ALL_EVENTS = []; ALL_REPS = []; REP_COLORS = {};
+    activeReps = new Set(); DAY_COLORS = {}; loadedDates = [];
+    setDataStatus('error', `No data in range (${failed ? failed + ' failed' : '0 stops'})`);
+    document.getElementById('tb-date-label').textContent = `${shortDateLabel(startStr)} – ${shortDateLabel(endStr)}`;
+    clearTimeline();
+    renderPanel();
+    return;
+  }
+
+  ingestEvents(allEvents, datesWithData);
+
+  // Show day pills + daily tab
+  document.getElementById('day-pills-group').classList.remove('hidden');
+  document.getElementById('tab-daily').style.display = '';
+  buildDayPills();
+
+  loadedDates = datesWithData;
+  document.getElementById('tb-date-label').textContent = `${shortDateLabel(startStr)} – ${shortDateLabel(endStr)}`;
+
+  dataLoaded = true;
+  setPlaybackEnabled(true);
+  const failMsg = failed ? ` (${failed} failed)` : '';
+  setDataStatus('loaded', `${allEvents.length} stops · ${datesWithData.length} days · ${ALL_REPS.length} reps${failMsg}`);
+  document.getElementById('export-btn').disabled = false;
+  renderPanel();
+  renderTlCounts();
 }
 
 // ═══════════════════════════════════════════════════
-//  REP PILLS (DYNAMIC)
+//  INGEST EVENTS (shared by single & multi)
+// ═══════════════════════════════════════════════════
+function ingestEvents(events, dates) {
+  // Assign rep colours
+  const repSet = [...new Set(events.map(e => e.rep))].sort();
+  REP_COLORS = {};
+  repSet.forEach((rep, i) => { REP_COLORS[rep] = PALETTE[i % PALETTE.length]; });
+
+  // Assign day colours
+  DAY_COLORS = {};
+  dates.forEach((d, i) => { DAY_COLORS[d] = DAY_PALETTE[i % DAY_PALETTE.length]; });
+
+  ALL_REPS   = repSet;
+  ALL_EVENTS = events.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+  activeReps = new Set(ALL_REPS);
+  activeDays = new Set(dates);
+
+  MIN_TS    = new Date(ALL_EVENTS[0].timestamp).getTime();
+  MAX_TS    = new Date(ALL_EVENTS[ALL_EVENTS.length-1].timestamp).getTime();
+  currentTs = MIN_TS;
+  shownUpTo = 0;
+
+  // Clean old layers
+  Object.values(polylines).forEach(p => map.removeLayer(p));
+  polylines = {}; pathPoints = {}; markers = {};
+
+  ALL_REPS.forEach(rep => {
+    const c = REP_COLORS[rep];
+    polylines[rep]  = L.polyline([], { color:c.line, weight:2.5, opacity:.8 }).addTo(map);
+    pathPoints[rep] = [];
+    markers[rep]    = [];
+  });
+
+  buildRepPills();
+  initTimeline();
+
+  // Center map
+  const lats = ALL_EVENTS.map(e => e.lat);
+  const lngs = ALL_EVENTS.map(e => e.lng);
+  map.fitBounds(L.latLngBounds(
+    [Math.min(...lats), Math.min(...lngs)],
+    [Math.max(...lats), Math.max(...lngs)]
+  ), { padding:[40,40] });
+}
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+function clearTimeline() {
+  document.getElementById('tl-duration').textContent = 'no data';
+  document.getElementById('tl-time').textContent     = '— : —';
+  document.getElementById('tl-start-label').textContent = '—';
+  document.getElementById('tl-end-label').textContent   = '—';
+  document.getElementById('tl-markers').innerHTML = '';
+  document.getElementById('tl-fill').style.width  = '0%';
+  document.getElementById('tl-thumb').style.left  = '0%';
+  document.getElementById('tl-counts').innerHTML  = '';
+}
+
+function showFetchError(err) {
+  document.getElementById('panel-body').innerHTML = `
+    <div class="no-data">
+      <div class="no-data-icon">⚠️</div>
+      <h3>Could not load route data</h3>
+      <p>${err.message || 'Network error. Check that the Apps Script is deployed and accessible.'}</p>
+    </div>`;
+}
+
+function setDataStatus(state, text) {
+  const el = document.getElementById('data-status');
+  el.className = 'data-status ' + state;
+  el.innerHTML = state === 'loading' ? `<span class="fetch-ring"></span>${text}` : text;
+}
+
+function setPlaybackEnabled(on) {
+  ['play-btn','btn-skipback','btn-skipfwd'].forEach(id => { document.getElementById(id).disabled = !on; });
+}
+
+// ═══════════════════════════════════════════════════
+//  REP PILLS
 // ═══════════════════════════════════════════════════
 function buildRepPills() {
   const c = document.getElementById('rep-pills');
@@ -667,8 +848,6 @@ function buildRepPills() {
     pill.style.background  = col.dim;
     pill.style.borderColor = col.line;
     pill.dataset.rep = rep;
-
-    // Show first name only for space
     const firstName = rep.split(' ')[0];
     pill.innerHTML = `<div class="rep-pill-dot" style="background:${col.line}"></div>${firstName}`;
     pill.title = rep;
@@ -678,25 +857,96 @@ function buildRepPills() {
 }
 
 // ═══════════════════════════════════════════════════
+//  DAY PILLS (Multi-Day)
+// ═══════════════════════════════════════════════════
+function buildDayPills() {
+  const c = document.getElementById('day-pills');
+  c.innerHTML = '';
+  loadedDates.forEach(d => {
+    const col = DAY_COLORS[d];
+    const pill = document.createElement('div');
+    pill.className = 'day-pill active';
+    pill.style.color       = col.dot;
+    pill.style.background  = col.dim;
+    pill.style.borderColor = col.line;
+    pill.dataset.date = d;
+    pill.innerHTML = `<div class="day-pill-dot" style="background:${col.line}"></div>${shortDateLabel(d)}`;
+    pill.title = d;
+    pill.addEventListener('click', () => toggleDay(d, pill));
+    c.appendChild(pill);
+  });
+}
+
+function toggleDay(dateStr, pill) {
+  if (activeDays.has(dateStr) && activeDays.size === 1) return;
+  if (activeDays.has(dateStr)) {
+    activeDays.delete(dateStr);
+    pill.classList.remove('active');
+    pill.style.background  = 'var(--s2)';
+    pill.style.borderColor = 'var(--border-s)';
+  } else {
+    activeDays.add(dateStr);
+    const col = DAY_COLORS[dateStr];
+    pill.classList.add('active');
+    pill.style.background  = col.dim;
+    pill.style.borderColor = col.line;
+  }
+  rebuildToTime(currentTs);
+  renderPanel();
+  renderTlCounts();
+}
+
+// ═══════════════════════════════════════════════════
 //  TIMELINE INIT
 // ═══════════════════════════════════════════════════
 function initTimeline() {
-  const start  = new Date(MIN_TS), end = new Date(MAX_TS);
-  document.getElementById('tl-start-label').textContent = fmtTime12(start);
-  document.getElementById('tl-end-label').textContent   = fmtTime12(end);
+  const start = new Date(MIN_TS), end = new Date(MAX_TS);
+
+  // For multi-day, show date + time
+  const isMulti = loadedDates.length > 1;
+  document.getElementById('tl-start-label').textContent = isMulti ? fmtDateTimeShort(start) : fmtTime12(start);
+  document.getElementById('tl-end-label').textContent   = isMulti ? fmtDateTimeShort(end)   : fmtTime12(end);
 
   const durMs = MAX_TS - MIN_TS;
-  const durH  = Math.floor(durMs / 3600000);
-  const durM  = Math.floor((durMs % 3600000) / 60000);
-  document.getElementById('tl-duration').textContent = durH > 0
-    ? `of ${durH}h ${durM}m`
-    : `of ${durM}m`;
+  const durD  = Math.floor(durMs / 86400000);
+  const durH  = Math.floor((durMs % 86400000) / 3600000);
+  const durM  = Math.floor((durMs % 3600000)  / 60000);
+  let durText = '';
+  if (durD > 0) durText = `of ${durD}d ${durH}h`;
+  else if (durH > 0) durText = `of ${durH}h ${durM}m`;
+  else durText = `of ${durM}m`;
+  document.getElementById('tl-duration').textContent = durText;
 
-  document.getElementById('tl-time').textContent = fmtTime12(start);
+  document.getElementById('tl-time').textContent = isMulti ? fmtDateTimeShort(start) : fmtTime12(start);
 
   // Tick markers for sales
   const mCont = document.getElementById('tl-markers');
   mCont.innerHTML = '';
+
+  // Day dividers for multi-day
+  if (isMulti && loadedDates.length > 1) {
+    // Find the first event timestamp per day
+    const dayStarts = {};
+    ALL_EVENTS.forEach(ev => {
+      if (!dayStarts[ev._date]) dayStarts[ev._date] = new Date(ev.timestamp).getTime();
+    });
+    loadedDates.forEach(d => {
+      if (!dayStarts[d]) return;
+      const pct = (dayStarts[d] - MIN_TS) / (MAX_TS - MIN_TS) * 100;
+      if (pct > 0.5 && pct < 99.5) {
+        const divider = document.createElement('div');
+        divider.className = 'tl-day-divider';
+        divider.style.left = pct + '%';
+        mCont.appendChild(divider);
+        const label = document.createElement('div');
+        label.className = 'tl-day-label';
+        label.style.left = pct + '%';
+        label.textContent = shortDateLabel(d);
+        mCont.appendChild(label);
+      }
+    });
+  }
+
   ALL_EVENTS.forEach(ev => {
     if (ev.disposition === 'sold' || ev.disposition === 'mega') {
       const pct = (new Date(ev.timestamp).getTime() - MIN_TS) / (MAX_TS - MIN_TS) * 100;
@@ -709,20 +959,15 @@ function initTimeline() {
     }
   });
 
-  // Reset fill/thumb
   document.getElementById('tl-fill').style.width = '0%';
   document.getElementById('tl-thumb').style.left = '0%';
 
-  // Track click / drag
   const track = document.getElementById('tl-track');
-  track.onclick = null;
-  track.onmousedown = null;
+  track.onclick = null; track.onmousedown = null;
   track.addEventListener('click', seekTo);
   track.addEventListener('mousedown', () => {
     document.addEventListener('mousemove', seekTo);
-    document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', seekTo);
-    }, { once: true });
+    document.addEventListener('mouseup', () => { document.removeEventListener('mousemove', seekTo); }, { once: true });
   });
 }
 
@@ -764,7 +1009,7 @@ function tick(now) {
   if (!playing) return;
   const dt = now - lastTick;
   lastTick = now;
-  const msPerRealMs = speed * 60000; // at 1×: 1 real second = 1 field minute
+  const msPerRealMs = speed * 60000;
   currentTs += dt * msPerRealMs / 1000;
   if (currentTs > MAX_TS) {
     currentTs = MAX_TS;
@@ -777,11 +1022,15 @@ function tick(now) {
   animFrame = requestAnimationFrame(tick);
 }
 
+function isEventVisible(ev) {
+  return activeReps.has(ev.rep) && activeDays.has(ev._date);
+}
+
 function updateToTime(ts) {
   while (shownUpTo < ALL_EVENTS.length) {
     const ev = ALL_EVENTS[shownUpTo];
     if (new Date(ev.timestamp).getTime() > ts) break;
-    if (activeReps.has(ev.rep)) addEventToMap(ev, shownUpTo);
+    if (isEventVisible(ev)) addEventToMap(ev, shownUpTo);
     shownUpTo++;
   }
 }
@@ -791,7 +1040,7 @@ function rebuildToTime(ts) {
   for (let i = 0; i < ALL_EVENTS.length; i++) {
     const ev = ALL_EVENTS[i];
     if (new Date(ev.timestamp).getTime() > ts) break;
-    if (activeReps.has(ev.rep)) addEventToMap(ev, i);
+    if (isEventVisible(ev)) addEventToMap(ev, i);
     shownUpTo = i + 1;
   }
 }
@@ -799,8 +1048,8 @@ function rebuildToTime(ts) {
 function resetMap() {
   ALL_REPS.forEach(rep => {
     if (markers[rep]) markers[rep].forEach(m => map.removeLayer(m));
-    if (markers[rep])   markers[rep]   = [];
-    if (polylines[rep]) polylines[rep].setLatLngs([]);
+    if (markers[rep])    markers[rep]    = [];
+    if (polylines[rep])  polylines[rep].setLatLngs([]);
     if (pathPoints[rep]) pathPoints[rep] = [];
   });
   shownUpTo = 0;
@@ -810,11 +1059,14 @@ function resetMap() {
 function addEventToMap(ev, idx) {
   const dc = DISP_COLOR[ev.disposition] || '#4d6080';
 
-  // Update polyline
   pathPoints[ev.rep].push([ev.lat, ev.lng]);
   polylines[ev.rep].setLatLngs(pathPoints[ev.rep]);
 
-  // Create dot marker
+  // In multi-day mode, tint the polyline by day color if only 1 rep
+  if (loadedDates.length > 1 && ALL_REPS.length === 1 && DAY_COLORS[ev._date]) {
+    polylines[ev.rep].setStyle({ color: DAY_COLORS[ev._date].line });
+  }
+
   const icon = L.divIcon({
     className: '',
     html: `<div class="cmarker ${ev.disposition}" style="animation:fade-in .3s cubic-bezier(.175,.885,.32,1.275) forwards"></div>`,
@@ -822,21 +1074,22 @@ function addEventToMap(ev, idx) {
     iconAnchor: [6,6]
   });
 
-  const noteHtml = ev.note
-    ? `<div style="font-size:10px;color:var(--t2);margin-top:5px;font-style:italic">"${ev.note}"</div>`
+  const noteHtml = ev.note ? `<div style="font-size:10px;color:var(--t2);margin-top:5px;font-style:italic">"${ev.note}"</div>` : '';
+  const dayCol   = DAY_COLORS[ev._date];
+  const dayBadge = loadedDates.length > 1 && dayCol
+    ? `<span class="popup-day" style="background:${dayCol.dim};color:${dayCol.dot};border:1px solid ${dayCol.line}44">${shortDateLabel(ev._date)}</span>`
     : '';
 
   const marker = L.marker([ev.lat, ev.lng], { icon })
     .bindPopup(`
       <div class="popup-street">${ev.street}</div>
-      <div class="popup-meta">${fmtTime12(new Date(ev.timestamp))} · ${ev.rep}</div>
+      <div class="popup-meta">${fmtTime12(new Date(ev.timestamp))} · ${ev.rep} ${dayBadge}</div>
       <span class="popup-tag" style="background:${dc}22;color:${dc};border:1px solid ${dc}44">${DISP_LABEL[ev.disposition] || ev.disposition.toUpperCase()}</span>
       ${noteHtml}
-    `, { maxWidth: 220 })
+    `, { maxWidth: 240 })
     .addTo(map);
 
   markers[ev.rep].push(marker);
-
   renderTlCounts();
   if (activeTab === 'events') renderPanel();
 }
@@ -853,7 +1106,8 @@ function setSpeed(s) {
 //  TIME DISPLAY
 // ═══════════════════════════════════════════════════
 function updateTimeDisplay() {
-  document.getElementById('tl-time').textContent = fmtTime12(new Date(currentTs));
+  const d = new Date(currentTs);
+  document.getElementById('tl-time').textContent = loadedDates.length > 1 ? fmtDateTimeShort(d) : fmtTime12(d);
 }
 function updateProgress() {
   if (!MIN_TS || MIN_TS === MAX_TS) return;
@@ -866,6 +1120,11 @@ function fmtTime12(d) {
   let h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? 'PM' : 'AM';
   h = h % 12 || 12;
   return `${h}:${m.toString().padStart(2,'0')} ${ap}`;
+}
+
+function fmtDateTimeShort(d) {
+  const mo = d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  return `${mo} ${fmtTime12(d)}`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -932,20 +1191,16 @@ function drawHeatmap() {
   const ctx = canvasSetup();
   const canvas = document.getElementById('heatmap-canvas');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ALL_EVENTS.forEach(ev => {
+  ALL_EVENTS.filter(e => isEventVisible(e)).forEach(ev => {
     const px = map.latLngToContainerPoint([ev.lat, ev.lng]);
     const dc = DISP_COLOR[ev.disposition] || '#4d6080';
     const isSale = ev.disposition === 'sold' || ev.disposition === 'mega';
-    const r    = isSale ? 30 : 18;
-    const a    = isSale ? .22 : .1;
+    const r = isSale ? 30 : 18, a = isSale ? .22 : .1;
     const grad = ctx.createRadialGradient(px.x, px.y, 0, px.x, px.y, r);
     grad.addColorStop(0, hexToRgba(dc, a));
     grad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(px.x, px.y, r, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(px.x, px.y, r, 0, Math.PI * 2); ctx.fill();
   });
 }
 
@@ -953,27 +1208,22 @@ function drawCoverage() {
   const ctx = canvasSetup();
   const canvas = document.getElementById('heatmap-canvas');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   ALL_REPS.forEach(rep => {
     if (!activeReps.has(rep)) return;
     const col = REP_COLORS[rep];
-    ALL_EVENTS.filter(e => e.rep === rep).forEach(ev => {
-      const px   = map.latLngToContainerPoint([ev.lat, ev.lng]);
+    ALL_EVENTS.filter(e => e.rep === rep && activeDays.has(e._date)).forEach(ev => {
+      const px = map.latLngToContainerPoint([ev.lat, ev.lng]);
       const grad = ctx.createRadialGradient(px.x, px.y, 0, px.x, px.y, 24);
       grad.addColorStop(0, hexToRgba(col.line, .18));
       grad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(px.x, px.y, 24, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(px.x, px.y, 24, 0, Math.PI * 2); ctx.fill();
     });
   });
 }
 
 function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
@@ -982,9 +1232,10 @@ function hexToRgba(hex, alpha) {
 // ═══════════════════════════════════════════════════
 function setTab(t) {
   activeTab = t;
-  ['stats','events','compare'].forEach(x =>
-    document.getElementById('tab-'+x).classList.toggle('active', x===t)
-  );
+  ['stats','events','compare','daily'].forEach(x => {
+    const el = document.getElementById('tab-'+x);
+    if (el) el.classList.toggle('active', x===t);
+  });
   renderPanel();
 }
 
@@ -1002,23 +1253,24 @@ function renderPanel() {
   if (activeTab === 'stats')   body.innerHTML = renderStats();
   if (activeTab === 'events')  body.innerHTML = renderEvents();
   if (activeTab === 'compare') body.innerHTML = renderCompare();
+  if (activeTab === 'daily')   body.innerHTML = renderDaily();
 }
 
 // ── Stats helpers ──
+function getVisibleEvents() {
+  return ALL_EVENTS.filter(e => isEventVisible(e) && new Date(e.timestamp).getTime() <= currentTs);
+}
+
 function calcRepStats(rep) {
-  const evs   = ALL_EVENTS.filter(e => e.rep === rep && new Date(e.timestamp).getTime() <= currentTs);
+  const evs   = ALL_EVENTS.filter(e => e.rep === rep && activeDays.has(e._date) && new Date(e.timestamp).getTime() <= currentTs);
   const sold  = evs.filter(e => e.disposition==='sold'||e.disposition==='mega').length;
   const doors = evs.length;
   const rate  = doors ? ((sold/doors)*100).toFixed(1) : '0.0';
-
   let miles = 0;
-  for (let i = 1; i < evs.length; i++) {
-    miles += haversine(evs[i-1].lat, evs[i-1].lng, evs[i].lat, evs[i].lng);
-  }
-  const first  = evs.length ? new Date(evs[0].timestamp) : null;
-  const last   = evs.length ? new Date(evs[evs.length-1].timestamp) : null;
-  const diffH  = first && last ? ((last-first)/3600000).toFixed(1) : 0;
-
+  for (let i = 1; i < evs.length; i++) miles += haversine(evs[i-1].lat, evs[i-1].lng, evs[i].lat, evs[i].lng);
+  const first = evs.length ? new Date(evs[0].timestamp) : null;
+  const last  = evs.length ? new Date(evs[evs.length-1].timestamp) : null;
+  const diffH = first && last ? ((last-first)/3600000).toFixed(1) : 0;
   return { rep, sold, doors, rate, miles:miles.toFixed(1), hours:diffH, evs };
 }
 
@@ -1037,11 +1289,14 @@ function renderStats() {
   const totMiles = combined.reduce((s,x) => s+parseFloat(x.miles), 0).toFixed(1);
 
   const dispCounts = {};
-  ALL_EVENTS
-    .filter(e => activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs)
-    .forEach(e => { dispCounts[e.disposition] = (dispCounts[e.disposition]||0)+1; });
+  getVisibleEvents().forEach(e => { dispCounts[e.disposition] = (dispCounts[e.disposition]||0)+1; });
+
+  const multiLabel = loadedDates.length > 1
+    ? `<div style="font-size:10px;color:var(--gold);font-family:'IBM Plex Mono',monospace;margin-bottom:12px;padding:6px 10px;background:var(--gold-dim);border:1px solid rgba(212,165,58,.2);border-radius:8px">📅 ${loadedDates.length} days loaded · ${activeDays.size} visible</div>`
+    : '';
 
   return `
+    ${multiLabel}
     <div class="stat-grid">
       <div class="stat-card"><div class="stat-val" style="color:var(--gold-t)">${totDoors}</div><div class="stat-label">Doors Knocked</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--gig)">${totSold}</div><div class="stat-label">Sales</div></div>
@@ -1053,8 +1308,7 @@ function renderStats() {
       ${Object.entries(DISP_COLOR)
           .filter(([k]) => dispCounts[k])
           .map(([disp,col]) => {
-            const n = dispCounts[disp]||0;
-            const pct = totDoors ? Math.round(n/totDoors*100) : 0;
+            const n = dispCounts[disp]||0, pct = totDoors ? Math.round(n/totDoors*100) : 0;
             return `<div class="mb-row">
               <div class="mb-dot" style="background:${col}"></div>
               <div class="mb-label">${DISP_LABEL[disp]||disp}</div>
@@ -1078,25 +1332,28 @@ function renderStats() {
 }
 
 function renderEvents() {
-  const shown = ALL_EVENTS.filter(e =>
-    activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs
-  );
+  const shown = getVisibleEvents();
   if (!shown.length) return `<div style="text-align:center;color:var(--muted);font-size:12px;padding:24px 0">No events yet — press ▶ to replay</div>`;
 
   return `<div class="event-list">
-    ${[...shown].reverse().map(ev => {
+    ${[...shown].reverse().slice(0, 200).map(ev => {
       const dc  = DISP_COLOR[ev.disposition] || '#4d6080';
       const col = REP_COLORS[ev.rep] || { dot:'#8fa5c9' };
       const idx = ALL_EVENTS.indexOf(ev);
+      const dayCol = DAY_COLORS[ev._date];
+      const dayBadge = loadedDates.length > 1 && dayCol
+        ? `<span class="ev-day-badge" style="background:${dayCol.dim};color:${dayCol.dot}">${shortDateLabel(ev._date)}</span>`
+        : '';
       return `<div class="ev-row" onclick="focusEvent(${idx})">
         <div class="ev-dot" style="background:${dc};color:${dc}"></div>
         <div class="ev-body">
           <div class="ev-street">${ev.street}</div>
-          <div class="ev-meta">${fmtTime12(new Date(ev.timestamp))} · <span style="color:${col.dot}">${ev.rep}</span></div>
+          <div class="ev-meta">${fmtTime12(new Date(ev.timestamp))} · <span style="color:${col.dot}">${ev.rep}</span>${dayBadge}</div>
         </div>
         <div class="ev-tag" style="background:${dc}22;color:${dc};border:1px solid ${dc}44">${DISP_LABEL[ev.disposition]||ev.disposition}</div>
       </div>`;
     }).join('')}
+    ${shown.length > 200 ? `<div style="text-align:center;color:var(--muted);font-size:10px;padding:12px">Showing latest 200 of ${shown.length} events</div>` : ''}
   </div>`;
 }
 
@@ -1107,7 +1364,7 @@ function renderCompare() {
   const maxSold  = Math.max(...allStats.map(s => s.sold),  1);
 
   return `
-    <div style="font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.5">${[...activeReps].length} of ${ALL_REPS.length} rep${ALL_REPS.length!==1?'s':''} visible. Toggle using pills above.</div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.5">${[...activeReps].length} of ${ALL_REPS.length} rep${ALL_REPS.length!==1?'s':''} visible${loadedDates.length > 1 ? ` · ${activeDays.size} of ${loadedDates.length} days` : ''}.</div>
     ${allStats.map(s => {
       const col    = REP_COLORS[s.rep];
       const pctD   = (s.doors/maxDoors*100).toFixed(0);
@@ -1129,12 +1386,49 @@ function renderCompare() {
     }).join('')}`;
 }
 
+// ═══════════════════════════════════════════════════
+//  DAILY TAB (Multi-Day Only)
+// ═══════════════════════════════════════════════════
+function renderDaily() {
+  if (loadedDates.length <= 1) {
+    return `<div class="no-data"><div class="no-data-icon">📅</div><h3>Single day loaded</h3><p>Switch to Multi-Day mode and load a date range to see day-by-day breakdowns.</p></div>`;
+  }
+
+  return loadedDates.map(d => {
+    const dayEvs  = ALL_EVENTS.filter(e => e._date === d && new Date(e.timestamp).getTime() <= currentTs);
+    const doors   = dayEvs.length;
+    const sold    = dayEvs.filter(e => e.disposition==='sold'||e.disposition==='mega').length;
+    const rate    = doors ? ((sold/doors)*100).toFixed(1) : '0.0';
+    const col     = DAY_COLORS[d];
+    const active  = activeDays.has(d);
+
+    let miles = 0;
+    const sorted = dayEvs.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+    for (let i = 1; i < sorted.length; i++) miles += haversine(sorted[i-1].lat, sorted[i-1].lng, sorted[i].lat, sorted[i].lng);
+
+    // Reps active that day
+    const dayReps = [...new Set(dayEvs.map(e => e.rep))];
+
+    return `<div class="day-summary" style="border-left-color:${col.line};opacity:${active?1:.4}">
+      <div class="day-summary-header">
+        <div class="day-summary-date" style="color:${col.dot}">${formatDateLabel(d).replace(/ — .*/, '')}</div>
+        <div class="day-summary-badge" style="background:${col.dim};color:${col.dot};border:1px solid ${col.line}44">${doors} stops</div>
+      </div>
+      <div class="day-summary-stats">
+        <span><strong>${sold}</strong> sales</span>
+        <span><strong>${rate}%</strong> rate</span>
+        <span><strong>${miles.toFixed(1)}</strong> mi</span>
+        <span><strong>${dayReps.length}</strong> rep${dayReps.length!==1?'s':''}</span>
+      </div>
+      ${dayReps.length ? `<div style="margin-top:6px;font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${dayReps.join(', ')}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
 // ── Timeline door counts ──
 function renderTlCounts() {
   const disp = {};
-  ALL_EVENTS
-    .filter(e => activeReps.has(e.rep) && new Date(e.timestamp).getTime() <= currentTs)
-    .forEach(e => { disp[e.disposition] = (disp[e.disposition]||0)+1; });
+  getVisibleEvents().forEach(e => { disp[e.disposition] = (disp[e.disposition]||0)+1; });
 
   const items = [
     { key:'sold', label:'Sold', col:DISP_COLOR.sold },
@@ -1145,11 +1439,7 @@ function renderTlCounts() {
   ];
   document.getElementById('tl-counts').innerHTML = items
     .filter(it => disp[it.key])
-    .map(it => `
-      <div class="tl-count">
-        <div class="tl-count-dot" style="background:${it.col}"></div>
-        <span><strong>${disp[it.key]}</strong> ${it.label}</span>
-      </div>`).join('');
+    .map(it => `<div class="tl-count"><div class="tl-count-dot" style="background:${it.col}"></div><span><strong>${disp[it.key]}</strong> ${it.label}</span></div>`).join('');
 }
 
 function focusEvent(idx) {
@@ -1168,9 +1458,10 @@ function focusEvent(idx) {
 // ═══════════════════════════════════════════════════
 function exportData() {
   if (!ALL_EVENTS.length) return;
-  const rows = ['timestamp,rep,territory,street,disposition,note,lat,lng'];
+  const rows = ['date,timestamp,rep,territory,street,disposition,note,lat,lng'];
   ALL_EVENTS.forEach(ev => {
     rows.push([
+      ev._date || '',
       ev.timestamp,
       `"${ev.rep}"`,
       `"${ev.territory||''}"`,
@@ -1184,7 +1475,10 @@ function exportData() {
   const blob = new Blob([rows.join('\n')], { type:'text/csv' });
   const a    = document.createElement('a');
   a.href     = URL.createObjectURL(blob);
-  a.download = `fieldos-route-${document.getElementById('date-picker').value || 'today'}.csv`;
+  const dateLabel = loadedDates.length > 1
+    ? `${loadedDates[0]}_to_${loadedDates[loadedDates.length-1]}`
+    : (document.getElementById('date-picker').value || 'today');
+  a.download = `fieldos-route-${dateLabel}.csv`;
   a.click();
 }
 </script>
